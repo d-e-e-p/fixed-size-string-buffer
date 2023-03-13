@@ -1,10 +1,12 @@
-/***********************************************************************
- * AUTHOR: deep@tensorfield.ag
- *   FILE:
- *   DATE: march 2023
- *  DESCR: fixed char size ring buffer to queue string messages
- ***********************************************************************/
+/*
 
+ A pre-allocated ring buffer for std::string messages
+ https://github.com/d-e-e-p/fixed-size-string-buffer
+
+ MIT License <http://opensource.org/licenses/MIT>
+ Copyright (c) 2023 Sandeep <deep@tensorfield.ag>
+
+ */
 #pragma once
 
 #include <iostream>
@@ -46,7 +48,6 @@ class FixedSizeStringBuffer {
   void set_debug(bool debug);
   void clear();
   void push(const std::string_view str);
-  void push_simple(const std::string_view str);
   std::string pop();
 
   //
