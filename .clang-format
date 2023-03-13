@@ -1,0 +1,7 @@
+---
+Language:        Cpp
+BasedOnStyle:  Google
+AllowShortBlocksOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: true
+ColumnLimit:     80
+BreakBeforeBraces: Stroustrup
