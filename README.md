@@ -1,8 +1,9 @@
 
-# A fixed size ring buffer for std::string messages
+# A pre-allocated ring buffer for std::string messages
 
 A C++ char buffer sized at compile-time that stores string messages in a ring buffer.
 When the buffer is full, oldest strings are deleted to make way for the new entries.
+Requires at least -std=c++14 .
 
 ## Credits
 
@@ -12,9 +13,10 @@ When the buffer is full, oldest strings are deleted to make way for the new entr
 
 ## Motivation
 
-Some applications need a fixed-size circular buffer with automatic overwrite of 
-tail messages by the head.  If the sizes of strings were known, then one way to
-achive this in C++ would be to budget for a target capacity and then:
+Some applications need a fixed-size [circular buffer](https://en.wikipedia.org/wiki/Circular_buffer)
+with automatic overwrite of tail messages by the head.  
+If the sizes of strings were known, then one way to achive this in C++ would be to 
+budget for a target capacity and then pop-on-push like:
 ```cpp
 std::deque<std::string> q;
 ...
@@ -33,10 +35,19 @@ on the stack at compile time.
 Turns out that's sometimes pretty useful.  For embeded devices we need to limit 
 dynamic allocation and maintain plenty of sram headroom.  With an stm32f4 for example, 
 the char buffer array can be allocated statically so it ends up in .bss section, 
-when can be assigned to a dedicated bank (eg CSRAM). So there is no potential conflict
-between buffer and operating memory.
+when can be alloted to a dedicated bank (eg CSRAM). So there is no potential conflict
+between buffer and operating heap/stack.
 
-There is also a speed advantage of using this approach.
+There is also a speed advantage of using this approach:
+
+```bash
+make test
+./build/bin/Release/fixed_size_string_buffer
+
+average FixedSizeStringBuffer push time is 23ns
+average std::deque push time is 93ns
+average ratio is 24.7312 %
+```
 
 ## Getting Started
 
@@ -95,12 +106,12 @@ fsb.front();        // access the first element
 fsb.back();         // access the last element
 fsb.size();         // number of strings in buffer
 fsb.empty();        // is the underlying container is empty?
-fsb.free_space();   // unused characters in buffer
+fsb.free_space();   // unused character space in buffer
 fsb.at(0);          // string at location=0 (front)
 
 // Debug
 fsb.set_debug(true); // turns on debug messages
-std::cout << fsb;    // prints every char in buffer
+std::cout << fsb;    // pretty prints the buffer status
 ```
 
 In this example, three messages stuffed into a buffer that can 
