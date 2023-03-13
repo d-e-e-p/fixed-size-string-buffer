@@ -1,10 +1,12 @@
-/***********************************************************************
- * AUTHOR: deep@tensorfield.ag
- *   FILE:
- *   DATE: march 2023
- *  DESCR: fixed char size ring buffer to queue string messages
- ***********************************************************************/
+/*
 
+ A pre-allocated ring buffer for std::string messages
+ https://github.com/d-e-e-p/fixed-size-string-buffer
+
+ MIT License <http://opensource.org/licenses/MIT>
+ Copyright (c) 2023 Sandeep <deep@tensorfield.ag>
+
+ */
 #pragma once
 
 #include <iostream>
@@ -46,7 +48,6 @@ class FixedSizeStringBuffer {
   void set_debug(bool debug);
   void clear();
   void push(const std::string_view str);
-  void push_simple(const std::string_view str);
   std::string pop();
 
   //
@@ -60,8 +61,6 @@ class FixedSizeStringBuffer {
   //
   // Helpers
   //
-  void incr(size_t &i);
-  void clear_space_for_str(size_t from, size_t strlen);
   void dump(std::ostream &os) const;
 
 };  // end class
@@ -71,7 +70,15 @@ std::ostream &operator<<(std::ostream &os, FixedSizeStringBuffer &rb);
 }  // namespace buffer
 
 
+/*
 
+A pre-allocated ring buffer for std::string messages
+https://github.com/d-e-e-p/fixed-size-string-buffer
+      
+MIT License <http://opensource.org/licenses/MIT>
+Copyright (c) 2023 Sandeep <deep@tensorfield.ag>
+
+*/
 #include <deque>
 #include <iostream>
 #include <iomanip>
@@ -118,26 +125,6 @@ void FixedSizeStringBuffer::clear()
   strsizes_.clear();
   back_ = 0;
   free_space_ = max_size_;
-}
-
-void FixedSizeStringBuffer::push_simple(std::string_view str)
-{
-  // can str fit in chars?
-  if (str.length() > max_size_) {
-    const std::string msg = "string length : " + std::to_string(str.length()) +
-                      " > max size " + std::to_string(max_size_);
-    std::cerr << msg << "\n";
-    return;
-  }
-  clear_space_for_str(back_, str.length());
-  // breaking string into segments and using std::copy isn't much faster..so
-  size_t i = back_;
-  for (char ch : str) {
-    chars_[i] = ch;
-    incr(i);
-  }
-  ptr.push_back(back_);
-  back_ = i;
 }
 
 void FixedSizeStringBuffer::push(std::string_view str)
@@ -235,49 +222,6 @@ std::string FixedSizeStringBuffer::at(size_t pos) const
 //
 // Helpers
 //
-void FixedSizeStringBuffer::incr(size_t &i)
-{
-  i++;
-  if (i == max_size_) { i = 0; } // wrap around on max
-}
-// clear the range of next entry
-void FixedSizeStringBuffer::clear_space_for_str(size_t from, size_t strlen)
-{
-  if (ptr.empty()) return;
-  if (debug_) {
-    std::cout << "clearing range from=" << from << " strlen=" <<  strlen  << "\n";
-    for (size_t k = 0; k < ptr.size(); k++) {
-      std::cout << "B  ptr[" << k << "] = " << ptr[k] << "\n";
-    }
-    std::cout << "B    back = " << back_ << "\n";
-  }
-
-  size_t start = from;
-  size_t end = start + strlen;
-  if (end < max_size_) {
-
-    auto to_be_removed = std::remove_if(ptr.begin(), ptr.end(), [start,end] (auto pos){
-      return (pos >= start && pos < end);
-    });
-    ptr.erase(to_be_removed, ptr.end());
-
-  } else {
-
-    size_t tail_segment = strlen - (max_size_ - start);
-    size_t max_size = max_size_;
-    auto to_be_removed = std::remove_if(ptr.begin(), ptr.end(), [start, tail_segment, max_size] (auto pos){
-      return (pos >= start && pos < max_size) ||  (pos >= 0 && pos < tail_segment);
-    });
-    ptr.erase(to_be_removed, ptr.end());
-
-  }
-
-  if (debug_) {
-    for (size_t k = 0; k < ptr.size(); k++) {
-      std::cout << "A  ptr[" << k << "] = " << ptr[k] << "\n";
-    }
-  }
-}
 
 // output char buffer with markers for each string
 void FixedSizeStringBuffer::dump(std::ostream &os = std::cout) const

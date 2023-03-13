@@ -61,8 +61,6 @@ class FixedSizeStringBuffer {
   //
   // Helpers
   //
-  void incr(size_t &i);
-  void clear_space_for_str(size_t from, size_t strlen);
   void dump(std::ostream &os) const;
 
 };  // end class
