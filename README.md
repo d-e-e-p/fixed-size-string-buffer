@@ -27,10 +27,10 @@ if (q.size() > target_capacity) {
 ```
 
 Of course, it would be easier to wrap all this into a class that takes care
-of pop-on-push opperation behind the scenes. You could extend this to take
-into account the sizes of strings added, and achive pretty much the same
-functionality of this library except the ability to pre-allocate buffer space
-on the stack at compile time.
+of pop-on-push opperation behind the scenes. See this [gist](https://gist.github.com/d-e-e-p/fc2697bdef0faa11678fe034d44772d3) .
+You could extend this to take into account the sizes of strings added, and 
+achive pretty much the same functionality of this library except the ability to pre-allocate 
+buffer space on the stack at compile time.
 
 Turns out that's sometimes pretty useful.  For embeded devices we need to limit 
 dynamic allocation and maintain plenty of sram headroom.  With an stm32f4 for example, 
@@ -176,6 +176,24 @@ BreakBeforeBraces: Stroustrup
 ```
 Roughly following https://google.github.io/styleguide/cppguide.html except 
 in this case all functions and variables are snake_case.
+
+Instead of c array `char buf[MAX_SIZE];` we could alter the class to accept std array
+`std::array<char, MAX_SIZE> buf;` : however this would require templating all classes
+and functions:
+
+```cpp
+template <size_t SIZE>
+class FixedSizeStringBuffer {
+  ...
+  explicit FixedSizeStringBuffer<size_t>(std::array<char,SIZE> chars)
+    : chars_(chars),  max_size_(SIZE)
+  {
+    clear();
+  }
+  ...
+```
+
+Left as an exercise for reader :-)
 
 
 ## Versioning
