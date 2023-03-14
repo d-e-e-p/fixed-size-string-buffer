@@ -35,7 +35,7 @@ buffer space on the stack at compile time.
 Turns out that's sometimes pretty useful.  For embeded devices for example we need to limit 
 dynamic allocation and maintain plenty of ram headroom.  This char buffer array can be 
 allocated statically to make it part of the [.bss section](https://en.wikipedia.org/wiki/.bss), 
-when can be alloted to a dedicated bank (eg CCM Memory). So eliminates the possibility
+when can be alloted to a dedicated bank (eg CCM Memory). This eliminates the possibility
 of conflict between message buffer and operating heap/stack memory.  See writeup on [Using CCM
 Memory](https://www.openstm32.org/Using%2BCCM%2BMemory).
 
@@ -61,12 +61,11 @@ coverage             check code coverage quickly GCC
 docs                 generate Doxygen HTML documentation, including API docs
 install              install the package to the INSTALL_LOCATION ~/.local
 format               format the project sources
-gen_single_include   generate an include file combining definition and implementation
 ```
 
-`make test` builds the example <pre>src/main.c</pre> 
+`make install` builds the example `src/main.c` 
 
-An trivial example could be build using the include file :
+An trivial example looks like:
 
 ```cpp
 #include "fixed_size_string_buffer.hpp"
