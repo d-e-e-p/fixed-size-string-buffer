@@ -63,5 +63,5 @@ format: ## format the project sources
 	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION)
 	cmake --build build --target clang-format
 
-gen_single_include: ## generate an include file combining definition and implementation
-	@python utils/amalgamate/amalgamate.py -c utils/single_include.json -s .
+#gen_single_include: ## generate an include file combining definition and implementation
+#	@python utils/amalgamate/amalgamate.py -c utils/single_include.json -s .

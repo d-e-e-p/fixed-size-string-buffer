@@ -1,3 +1,7 @@
+#pragma clang diagnostic ignored "-Wimplicit-int-float-conversion"
+#pragma clang diagnostic ignored "-Wold-style-cast"
+#pragma clang diagnostic ignored "-Wnarrowing"
+
 #include <iostream>
 #include <chrono>
 #include <cstdlib>
@@ -6,13 +10,11 @@
 #include <array>
 #include <cassert>
 
-#include "FixedSizeStringBuffer.hpp"
+#include "fixed_size_string_buffer.hpp"
 
-void test1() {
+void example1() {
   constexpr size_t max_size = 10;
-  char chars[max_size];
-  //std::array<char, max_size> chars;
-  auto rb = buffer::FixedSizeStringBuffer(chars, max_size);
+  auto rb = FixedSizeStringBuffer<max_size>();
   rb.set_debug(true);
   assert(rb.free_space() == max_size);
   assert(rb.empty());
@@ -37,7 +39,7 @@ void test1() {
 }
 
 
-void test2() {
+void example2() {
   using std::chrono::steady_clock;
   using std::chrono::duration_cast;
   using std::chrono::nanoseconds;
@@ -54,11 +56,10 @@ mollit anim id est laborum.
 
   // create buffer just enough size to hold str_capacity_in_buffer values
   constexpr double str_capacity_in_buffer = 10.3; 
-  constexpr auto max_size = static_cast<size_t>(str_test.length() * str_capacity_in_buffer);
-  char chars[max_size];
-  auto rb = buffer::FixedSizeStringBuffer(chars, max_size);
+  constexpr auto max_size = (size_t) (str_test.length() * str_capacity_in_buffer);
+  auto rb = FixedSizeStringBuffer<max_size>();
 
-  int trials = 100000;
+  constexpr int trials = 100000;
   auto t1 = steady_clock::now();
 
   for(auto i = 0; i < trials; ++i) {
@@ -80,10 +81,10 @@ mollit anim id est laborum.
   auto t3 = steady_clock::now();
   auto delta2 = duration_cast<nanoseconds>( t3 - t2 ).count() / trials;
   std::cout << " average std::deque push time is " << delta2 << "ns\n";
-  std::cout << " average ratio is " << 100.0 * delta1 / delta2 << " %\n";
+  std::cout << "  => speedup is " << (long double) delta2 / delta1 << " X\n";
 
 
-  size_t num = static_cast<size_t>(str_capacity_in_buffer);
+  auto num = static_cast<size_t>(str_capacity_in_buffer);
   assert(rb.size() == num);
   for(size_t i = 0; i < num; ++i) {
     assert(rb[i] == str_test);
@@ -93,7 +94,8 @@ mollit anim id est laborum.
 
 
 int main() {
-  test1();
-  test2();
+  std::cout << " fixed_size_string_buffer example \n";
+  example1();
+  example2();
   return 0;
 }

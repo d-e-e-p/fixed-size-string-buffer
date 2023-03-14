@@ -14,7 +14,7 @@ verbose_message("Adding tests under ${CMAKE_PROJECT_NAME}Tests...")
 foreach(file ${test_sources})
   string(REGEX REPLACE "(.*/)([a-zA-Z0-9_ ]+)(\.cpp)" "\\2" test_name ${file}) 
   add_executable(${test_name}_Tests ${file})
-  include_directories("include/fixed_size_string_buffer")
+  include_directories("../include")
 
   #
   # Set the compiler standard
@@ -50,14 +50,14 @@ foreach(file ${test_sources})
       set(GOOGLE_MOCK_LIBRARIES GTest::gmock GTest::gmock_main)
     endif()
 
-    target_link_libraries(
-      ${test_name}_Tests
-      PUBLIC
-        GTest::GTest
-        GTest::Main
-        ${GOOGLE_MOCK_LIBRARIES}
-        ${${CMAKE_PROJECT_NAME}_TEST_LIB}
-    )
+    #   target_link_libraries(
+    #  ${test_name}_Tests
+    #  PUBLIC
+    #    GTest::GTest
+    ##    GTest::Main
+    #    ${GOOGLE_MOCK_LIBRARIES}
+    #    ${${CMAKE_PROJECT_NAME}_TEST_LIB}
+    #)
   elseif(${CMAKE_PROJECT_NAME}_USE_CATCH2)
     find_package(Catch2 REQUIRED)
     target_link_libraries(

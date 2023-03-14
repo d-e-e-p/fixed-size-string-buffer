@@ -32,8 +32,12 @@ flags = [
 #    '-isystem', '/usr/local/include',
 #    '-isystem', '/usr/local/include/eigen3',
 
+    '-I', 'include',
+    '-I', 'single_include',
     '-I', '../include',
+    '-I', '../single_include',
     '-I', '../../include',
+    '-I', '../../single_include',
     '-I', '../src',
     '-I', '.',
 ]

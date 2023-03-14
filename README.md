@@ -45,8 +45,8 @@ make test
 ./build/bin/Release/fixed_size_string_buffer
 
 average FixedSizeStringBuffer push time is 23ns
-average std::deque push time is 93ns
-average ratio is 24.7312 %
+average std::deque push time is 71ns
+  => speedup is 3.08696 X
 ```
 
 ## Getting Started

@@ -10,6 +10,7 @@ project(
   LANGUAGES CXX
 )
 
+
 #
 # Set project options
 #
@@ -71,16 +72,16 @@ if(${PROJECT_NAME}_BUILD_EXECUTABLE)
     endforeach()
   endif()
 
-  if(${PROJECT_NAME}_ENABLE_UNIT_TESTING)
-    add_library(${PROJECT_NAME}_LIB ${headers} ${sources})
-
-    if(${PROJECT_NAME}_VERBOSE_OUTPUT)
-      verbose_message("Found the following headers:")
-      foreach(header IN LISTS headers)
-        verbose_message("* ${header}")
-      endforeach()
-    endif()
-  endif()
+  #  if(${PROJECT_NAME}_ENABLE_UNIT_TESTING)
+  #  add_library(${PROJECT_NAME}_LIB ${headers} ${sources})
+  #
+  #  if(${PROJECT_NAME}_VERBOSE_OUTPUT)
+  #    verbose_message("Found the following headers:")
+  #    foreach(header IN LISTS headers)
+  #      verbose_message("* ${header}")
+  #    endforeach()
+  #  endif()
+  #endif()
 elseif(${PROJECT_NAME}_BUILD_HEADERS_ONLY)
   add_library(${PROJECT_NAME} INTERFACE)
 
@@ -117,14 +118,16 @@ set_target_properties(
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
 )
 if(${PROJECT_NAME}_BUILD_EXECUTABLE AND ${PROJECT_NAME}_ENABLE_UNIT_TESTING)
-  set_target_properties(
-    ${PROJECT_NAME}_LIB
-    PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
-    OUTPUT_NAME ${PROJECT_NAME}
-  )
+    #  set_target_properties(
+    #${PROJECT_NAME}_LIB
+    #PROPERTIES
+    #ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
+    #LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
+    #OUTPUT_NAME ${PROJECT_NAME}
+    #LINKER_LANGUAGE CXX
+    #)
 endif()
+
 
 message(STATUS "Added all header and implementation files.\n")
 
@@ -138,7 +141,7 @@ else()
   target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 
   if(${PROJECT_NAME}_BUILD_EXECUTABLE AND ${PROJECT_NAME}_ENABLE_UNIT_TESTING)
-    target_compile_features(${PROJECT_NAME}_LIB PUBLIC cxx_std_17)
+      #target_compile_features(${PROJECT_NAME}_LIB PUBLIC cxx_std_17)
   endif()
 endif()
 include(cmake/CompilerWarnings.cmake)
@@ -211,14 +214,14 @@ else()
     ${CMAKE_CURRENT_SOURCE_DIR}/src
   )
   if(${PROJECT_NAME}_BUILD_EXECUTABLE AND ${PROJECT_NAME}_ENABLE_UNIT_TESTING)
-    target_include_directories(
-      ${PROJECT_NAME}_LIB
-      PUBLIC
-      $<INSTALL_INTERFACE:include>
-      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-      PRIVATE
-      ${CMAKE_CURRENT_SOURCE_DIR}/src
-    )
+      #target_include_directories(
+      #${PROJECT_NAME}_LIB
+      #PUBLIC
+      #$<INSTALL_INTERFACE:include>
+      #$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      #PRIVATE
+      #${CMAKE_CURRENT_SOURCE_DIR}/src
+      #)
   endif()
 endif()
 
@@ -291,7 +294,7 @@ install(
 
 install(
   FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/single_include/${PROJECT_NAME_LOWERCASE}.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME_LOWERCASE}.hpp
   DESTINATION
   include
 )

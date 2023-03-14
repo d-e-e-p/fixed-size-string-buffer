@@ -18,6 +18,10 @@ Checks: "*,
         -readability-identifier-length,
         -readability-implicit-bool-conversion,
         -readability-static-accessed-through-instance,
+        -misc-const-correctness,
+        -readability-container-data-pointer,
+        -cppcoreguidelines-narrowing-conversions,
+        -bugprone-narrowing-conversions,
 "
 WarningsAsErrors: ''
 HeaderFilterRegex: ''

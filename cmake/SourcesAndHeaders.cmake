@@ -1,5 +1,5 @@
 set(sources
-    src/FixedSizeStringBuffer.cpp
+    #    src/FixedSizeStringBuffer.cpp
 )
 
 set(exe_sources
@@ -8,7 +8,7 @@ set(exe_sources
 )
 
 set(headers
-    include/FixedSizeStringBuffer.hpp
+    include/fixed_size_string_buffer.hpp
 )
 
 set(test_sources
