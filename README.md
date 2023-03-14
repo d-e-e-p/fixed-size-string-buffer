@@ -15,7 +15,7 @@ Requires at least -std=c++14 .
 
 Some applications need a fixed-size [circular buffer](https://en.wikipedia.org/wiki/Circular_buffer)
 with automatic overwrite of tail messages by the head.  
-If the sizes of strings were known, then one way to achive this in C++ would be to 
+If the sizes of strings were known, then one way to achive this would be to 
 budget for a target capacity and then pop-on-push like:
 ```cpp
 std::deque<std::string> q;
@@ -29,14 +29,15 @@ if (q.size() > target_capacity) {
 Of course, it would be easier to wrap all this into a class that takes care
 of pop-on-push opperation behind the scenes. See this [gist](https://gist.github.com/d-e-e-p/fc2697bdef0faa11678fe034d44772d3) .
 You could extend this to take into account the sizes of strings added, and 
-achive pretty much the same functionality of this library except the ability to pre-allocate 
+achieve pretty much the same functionality of this library except the ability to pre-allocate 
 buffer space on the stack at compile time.
 
-Turns out that's sometimes pretty useful.  For embeded devices we need to limit 
-dynamic allocation and maintain plenty of sram headroom.  With an stm32f4 for example, 
-the char buffer array can be allocated statically so it ends up in .bss section, 
-when can be alloted to a dedicated bank (eg CSRAM). So there is no potential conflict
-between buffer and operating heap/stack.
+Turns out that's sometimes pretty useful.  For embeded devices for example we need to limit 
+dynamic allocation and maintain plenty of ram headroom.  This char buffer array can be 
+allocated statically to make it part of the [.bss section](https://en.wikipedia.org/wiki/.bss), 
+when can be alloted to a dedicated bank (eg CCM Memory). So eliminates the possibility
+of conflict between message buffer and operating heap/stack memory.  See writeup on [Using CCM
+Memory](https://www.openstm32.org/Using%2BCCM%2BMemory).
 
 There is also a speed advantage of using this approach:
 
@@ -65,13 +66,12 @@ gen_single_include   generate an include file combining definition and implement
 
 `make test` builds the example <pre>src/main.c</pre> 
 
-An trivial example could be build using the single_include file :
+An trivial example could be build using the include file :
 
 ```cpp
 #include "fixed_size_string_buffer.hpp"
 int main() {
-  char chars[10];
-  auto rb = buffer::FixedSizeStringBuffer(chars, 10);
+  auto rb = FixedSizeStringBuffer<10>();
   rb.push("123");
   rb.push("456");
   rb.pop();
@@ -82,7 +82,7 @@ int main() {
 then compiled with:
 
 ```bash
-g++ -std=c++14 -Isingle_include test.cpp
+g++ -std=c++14 -I include test.cpp
 ./a.out
 ```
 
@@ -92,9 +92,8 @@ Externally this class looks like a simple queue with infinite space.
 
 ```cpp
 // Constructor
-
-char buf[12];
-auto fsb = buffer::FixedSizeStringBuffer(buf, 12);
+constexpr size_t max_size = 12;
+auto rb = FixedSizeStringBuffer<max_size>();
 
 // Modifiers
 fsb.push("abc");     // inserts element at the end
@@ -122,14 +121,14 @@ only hold two:
 #include "fixed_size_string_buffer.hpp"
 
 int main() {
-  char buf[8] = {0};
-  auto foo = buffer::FixedSizeStringBuffer(buf, 8);
+  auto foo = FixedSizeStringBuffer<8>();
 
   // push strings into buffer
   foo.push("0aa");
   foo.push("1bb");
   foo.push("2cc");  // 0aa gets pushed out to make room for 2cc
-  // inspect them
+                    // foo only has space for 8 chars 
+  // inspect  buffer
   std::cout << foo << "\n";
   std::cout << "foo.front(): " << foo.front()  << "\n";
   std::cout << "foo.back() : " << foo.back()   << "\n";
@@ -177,23 +176,33 @@ BreakBeforeBraces: Stroustrup
 Roughly following https://google.github.io/styleguide/cppguide.html except 
 in this case all functions and variables are snake_case.
 
-Instead of c array `char buf[MAX_SIZE];` we could alter the class to accept std array
-`std::array<char, MAX_SIZE> buf;` : however this would require templating all classes
-and functions:
 
 ```cpp
-template <size_t SIZE>
-class FixedSizeStringBuffer {
+# naming conventions
+MyExcitingClass, MyExcitingEnum.
+a_local_variable, a_struct_data_member, a_class_data_member_.
+
+std::string table_name;  // OK - lowercase with underscore.
+
+class TableInfo {
   ...
-  explicit FixedSizeStringBuffer<size_t>(std::array<char,SIZE> chars)
-    : chars_(chars),  max_size_(SIZE)
-  {
-    clear();
-  }
-  ...
+ private:
+  std::string table_name_;  // OK - underscore at end.
+};
+
+// global constexpr or const,
+const int kDaysInAWeek = 7;
+
+// functions should generally with a capital letter and have a capital letter for each new word.
+// in this case all functions are snake_case:
+int count();
+void set_count(int count);
+
+// Namespace names are all lower-case, with words separated by underscores.
+
+
 ```
 
-Left as an exercise for reader :-)
 
 
 ## Versioning

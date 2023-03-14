@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.15)
 
 project(
   "fixed_size_string_buffer"
-  VERSION 1.1
+  VERSION 1.1.0
   LANGUAGES CXX
 )
 
