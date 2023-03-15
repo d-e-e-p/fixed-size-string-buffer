@@ -9,25 +9,26 @@
  */
 #pragma once
 
-#include <deque>
 #include <array>
-#include <iostream>
+#include <deque>
 #include <iomanip>
+#include <iostream>
 
-
-template <size_t SIZE>  
+template <std::size_t SIZE>
 class FixedSizeStringBuffer {
  private:
-  //  we could use std::vector<char> chars_; 
+  //  we could use std::vector<char> chars_;
   //  to make char buffer dynamically resizable
-  std::array<char, SIZE> chars_ = {};
-
-  std::deque<size_t> ptr_;      // pointer to start of strings in chars_
-  std::deque<size_t> strsizes_; // sizes of these strings
-  const size_t max_size_ = 0 ;  // max num of *chars* in buffer
-  size_t back_ = 0;             // pointer to last string in chars_
-  size_t free_space_ = 0;       // free *char* space left in buffer
-  bool debug_ = false;          // print diag messages if true
+  std::array<char, SIZE> chars_ = {}; // main container for strings
+                                      //
+  std::deque<size_t> ptr_ = {};       // pointer to start of each string in chars
+  std::deque<size_t> strsizes_ = {};  // sizes of these strings
+  size_t back_ = 0;                   // pointer to last string in chars_
+                                      //
+  const size_t max_size_;             // max num of *chars* in buffer
+  size_t free_space_ = 0;             // free *char* space left in buffer
+                                      //
+  bool debug_ = false;                // print diag messages if true
 
  public:
 //
@@ -39,32 +40,59 @@ FixedSizeStringBuffer<SIZE>()
       clear(); 
 };
 
+  //
+  // Capacity
+  //
+  bool empty() const { return ptr_.empty(); }
+  size_t size() const { return ptr_.size(); }
+  size_t free_space() const { return free_space_; }
 
+  //
+  // Modifiers
+  //
+  void set_debug(bool debug)
+  {
+    debug_ = debug;
+    std::cout << " debug set to " << std::boolalpha << debug << "\n";
+  }
 
-//
-// Capacity
-//
-bool empty() const { return ptr_.empty(); }
-size_t size() const { return ptr_.size(); }
-size_t free_space() const { return free_space_; }
+  void clear()
+  {
+    chars_ = {};
+    ptr_ = {};
+    strsizes_ = {};
+    back_ = 0;
+    free_space_ = max_size_;
+  }
 
-//
-// Modifiers
-//
-void set_debug(bool debug)
-{
-  debug_ = debug;
-  std::cout << " debug set to " << std::boolalpha << debug << "\n";
-}
-void clear()
-{
-  ptr_.clear();
-  strsizes_.clear();
-  back_ = 0;
-  free_space_ = max_size_;
-}
+  void push(std::string_view str);  // see below
 
-void push(std::string_view str)
+  std::string pop()
+  {
+    std::string str = at(0);
+    ptr_.erase(ptr_.begin());
+    return str;
+  }
+
+  //
+  // Element access
+  //
+  std::string front() const { return at(0); }
+  std::string back() const { return at(ptr_.size() - 1); }
+  std::string operator[](size_t pos) const { return at(pos); }
+  std::string at(size_t pos) const; // see below
+
+  //
+  // Helpers
+  //
+
+  // output char buffer with markers for each string
+  void dump(std::ostream &os = std::cout) const;
+
+};  // end class
+
+template <std::size_t SIZE>
+void FixedSizeStringBuffer<SIZE>::push(std::string_view str)
 {
   // can str fit in chars?
   size_t strlen = str.length();
@@ -109,21 +137,9 @@ void push(std::string_view str)
   free_space_ -= strlen;
 }
 
-std::string pop()
-{
-  std::string str = at(0);
-  ptr_.erase(ptr_.begin());
-  return str;
-}
 
-//
-// Element access
-//
-std::string front() const { return at(0); }
-std::string back() const { return at(ptr_.size() - 1); }
-std::string operator[](size_t pos) const { return at(pos); }
-
-std::string at(size_t pos) const
+template <std::size_t SIZE>
+std::string FixedSizeStringBuffer<SIZE>::at(size_t pos) const
 {
   // reject requests when empty
   if (ptr_.empty()) {
@@ -155,39 +171,32 @@ std::string at(size_t pos) const
   return str;
 }
 
-//
-// Helpers
-//
 
-// output char buffer with markers for each string
-void dump(std::ostream &os = std::cout) const
+template <std::size_t SIZE>
+void FixedSizeStringBuffer<SIZE>::dump(std::ostream &os) const
 {
   for (size_t i = 0; i < max_size_; i++) {
     os << " chars[" << std::setw(2) << i << "] = " << chars_[i];
     for (size_t k = 0; k < ptr_.size(); k++) {
-      if (ptr_[k] == i) {os << " <-- ptr_[" << std::setw(2) << k << "]";}
+      if (ptr_[k] == i) { os << " <-- ptr_[" << std::setw(2) << k << "]"; }
     }
-    if (! empty()) {
-      if (ptr_[0] == i) {os << " <-- front ";}
+    if (!empty()) {
+      if (ptr_[0] == i) { os << " <-- front "; }
     }
-    if (back_ == i) {os << " <-- back ";}
+    if (back_ == i) { os << " <-- back "; }
     os << "\n";
   }
 
   os << "\n";
   for (size_t k = 0; k < ptr_.size(); k++) {
-    os << "   ptr_[" << std::setw(2) << k << "] = " << ptr_[k] << " str = " << at(k) << "\n";
+    os << "   ptr_[" << std::setw(2) << k << "] = " << ptr_[k]
+       << " str = " << at(k) << "\n";
   }
 }
 
-};  // end class
-
-template <size_t SIZE>  
-std::ostream &operator<<(std::ostream &os, FixedSizeStringBuffer<SIZE> &rb) {
+template <std::size_t SIZE>
+std::ostream &operator<<(std::ostream &os, FixedSizeStringBuffer<SIZE> &rb)
+{
   rb.dump(os);
   return os;
 }
-
-
-
-
