@@ -15,16 +15,16 @@
 #include <iomanip>
 
 
-template <std::size_t SIZE>  
+template <size_t SIZE>  
 class FixedSizeStringBuffer {
  private:
   //  we could use std::vector<char> chars_; 
   //  to make char buffer dynamically resizable
-  std::array<char,SIZE> chars_ = {};
+  std::array<char, SIZE> chars_ = {};
 
   std::deque<size_t> ptr_;      // pointer to start of strings in chars_
   std::deque<size_t> strsizes_; // sizes of these strings
-  const size_t max_size_ ;      // max num of *chars* in buffer
+  const size_t max_size_ = 0 ;  // max num of *chars* in buffer
   size_t back_ = 0;             // pointer to last string in chars_
   size_t free_space_ = 0;       // free *char* space left in buffer
   bool debug_ = false;          // print diag messages if true
@@ -33,7 +33,7 @@ class FixedSizeStringBuffer {
 //
 // Constructor
 //
-FixedSizeStringBuffer<std::size_t>()
+FixedSizeStringBuffer<SIZE>()
     : max_size_(SIZE) 
 { 
       clear(); 
@@ -182,7 +182,7 @@ void dump(std::ostream &os = std::cout) const
 
 };  // end class
 
-template <std::size_t SIZE>  
+template <size_t SIZE>  
 std::ostream &operator<<(std::ostream &os, FixedSizeStringBuffer<SIZE> &rb) {
   rb.dump(os);
   return os;
