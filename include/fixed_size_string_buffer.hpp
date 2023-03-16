@@ -8,37 +8,42 @@
 
  */
 #pragma once
+#pragma clang diagnostic ignored "-Wnarrowing"
 
 #include <array>
 #include <deque>
 #include <iomanip>
 #include <iostream>
 
-template <std::size_t SIZE>
+using std::size_t;
+
+template <size_t SIZE>
 class FixedSizeStringBuffer {
  private:
-  //  we could use std::vector<char> chars_;
-  //  to make char buffer dynamically resizable
+
   std::array<char, SIZE> chars_ = {}; // main container for strings
-                                      //
-  std::deque<size_t> ptr_ = {};       // pointer to start of each string in chars
-  std::deque<size_t> strsizes_ = {};  // sizes of these strings
-  size_t back_ = 0;                   // pointer to last string in chars_
-                                      //
-  const size_t max_size_;             // max num of *chars* in buffer
-  size_t free_space_ = 0;             // free *char* space left in buffer
-                                      //
-  bool debug_ = false;                // print diag messages if true
+                                      
+  struct Pointer {
+    size_t front;
+    size_t len;
+  };
+  std::deque<Pointer> ptr_ = {}; // pointer to start/length of str in chars_
+  size_t back_ = 0;              // pointer to end of last string in chars_
+                                 //
+  const size_t max_size_;        // max num of *chars* in buffer
+  size_t free_space_ = 0;        // free *char* space left in buffer
+                                 //
+  bool debug_ = false;           // print diag messages if true
 
  public:
-//
-// Constructor
-//
-FixedSizeStringBuffer<SIZE>()
-    : max_size_(SIZE) 
-{ 
-      clear(); 
-};
+  //
+  // Constructor
+  //
+  FixedSizeStringBuffer<SIZE>()
+      : max_size_(SIZE) 
+  { 
+        clear(); 
+  };
 
   //
   // Capacity
@@ -53,19 +58,19 @@ FixedSizeStringBuffer<SIZE>()
   void set_debug(bool debug)
   {
     debug_ = debug;
-    std::cout << " debug set to " << std::boolalpha << debug << "\n";
+    std::cout << " debug set to " << std::boolalpha << debug_ << "\n";
   }
 
   void clear()
   {
     chars_ = {};
     ptr_ = {};
-    strsizes_ = {};
     back_ = 0;
     free_space_ = max_size_;
   }
 
   void push(std::string_view str);  // see below
+  void push_memcpy(std::string_view str);  // see below
 
   std::string pop()
   {
@@ -77,10 +82,10 @@ FixedSizeStringBuffer<SIZE>()
   //
   // Element access
   //
-  std::string front() const { return at(0); }
-  std::string back() const { return at(ptr_.size() - 1); }
-  std::string operator[](size_t pos) const { return at(pos); }
-  std::string at(size_t pos) const; // see below
+  inline std::string front() const { return at(0); }
+  inline std::string back() const { return at(ptr_.size() - 1); }
+  inline std::string operator[](size_t pos) const { return at(pos); }
+  inline std::string at(size_t pos) const; // see below
 
   //
   // Helpers
@@ -91,7 +96,63 @@ FixedSizeStringBuffer<SIZE>()
 
 };  // end class
 
-template <std::size_t SIZE>
+template <size_t SIZE>
+void FixedSizeStringBuffer<SIZE>::push_memcpy(std::string_view str)
+{
+  // can str fit in chars?
+  size_t strlen = str.length();
+  if (strlen > max_size_) {
+    std::string msg = "string length : " + std::to_string(strlen) +
+                      " > max size " + std::to_string(max_size_);
+    std::cerr << msg << "\n";
+    return;
+  }
+
+  // clear space for str
+  while (free_space_ < strlen) {
+    free_space_ += ptr_.front().len;
+    ptr_.pop_front();
+  }
+
+  size_t start = back_;
+  size_t end = start + strlen;
+
+  constexpr bool use_memcpy = true; // slightly faster
+
+  if (end < max_size_) {
+    // case1: str is in one segment
+    // |   [start]-->[end]    |
+    if (use_memcpy) {
+      memcpy(&chars_[start], &str[0], strlen); 
+    } else {
+      std::copy(str.begin(), str.end(), &chars_[start]);
+    }
+
+    back_ = end;
+
+  } else {
+    //  case2: wrap around case
+    //             | len1 = (max_size_ - start)
+    // |-->[end]   [start]--->|
+    size_t len1 = max_size_ - start;
+    size_t len2 = strlen - len1;
+    back_ = len2;
+
+    if (use_memcpy) {
+      memcpy(&chars_[start], &str[0], len1); 
+      memcpy(&chars_[0], &str[len1], len2); 
+    } else {
+      std::string_view str1 = str.substr(0, len1);
+      std::string_view str2 = str.substr(len1);
+      std::copy(str1.begin(), str1.end(), &chars_[start]);
+      std::copy(str2.begin(), str2.end(), &chars_[0]);
+    }
+  }
+  ptr_.push_back(Pointer{start, strlen});
+  free_space_ -= strlen;
+}
+
+template <size_t SIZE>
 void FixedSizeStringBuffer<SIZE>::push(std::string_view str)
 {
   // can str fit in chars?
@@ -105,8 +166,7 @@ void FixedSizeStringBuffer<SIZE>::push(std::string_view str)
 
   // clear space for str
   while (free_space_ < strlen) {
-    free_space_ += strsizes_.front();
-    strsizes_.pop_front();
+    free_space_ += ptr_.front().len;
     ptr_.pop_front();
   }
 
@@ -117,11 +177,13 @@ void FixedSizeStringBuffer<SIZE>::push(std::string_view str)
     // case1: str is in one segment
     // |   [start]-->[end]    |
     std::copy(str.begin(), str.end(), &chars_[start]);
+    //memcpy(&chars_[start], &str[0], strlen); 
+
     back_ = end;
 
   } else {
     //  case2: wrap around case
-    //           segment = (max_size_ - start)
+    //             | seg1 = (max_size_ - start)
     // |-->[end]   [start]--->|
     size_t seg1 = max_size_ - start;
     size_t seg2 = strlen - seg1;
@@ -132,13 +194,12 @@ void FixedSizeStringBuffer<SIZE>::push(std::string_view str)
     std::copy(str1.begin(), str1.end(), &chars_[start]);
     std::copy(str2.begin(), str2.end(), &chars_[0]);
   }
-  ptr_.push_back(start);
-  strsizes_.push_back(strlen);
+  ptr_.push_back(Pointer{start, strlen});
   free_space_ -= strlen;
 }
 
 
-template <std::size_t SIZE>
+template <size_t SIZE>
 std::string FixedSizeStringBuffer<SIZE>::at(size_t pos) const
 {
   // reject requests when empty
@@ -156,8 +217,8 @@ std::string FixedSizeStringBuffer<SIZE>::at(size_t pos) const
   }
   // end of string marker is either start of next string
   // or _back for last string in queue
-  size_t start = ptr_[pos];
-  size_t end = (pos + 1 == ptr_.size()) ? back_ : ptr_[pos + 1];
+  size_t start = ptr_[pos].front;
+  size_t end = (pos+1 == ptr_.size()) ? back_ : ptr_[pos+1].front;
 
   // str is in one segment  |   [start]-->[end]    |
   // str wraps around ring  |-->[end]   [start]--->|
@@ -172,16 +233,16 @@ std::string FixedSizeStringBuffer<SIZE>::at(size_t pos) const
 }
 
 
-template <std::size_t SIZE>
+template <size_t SIZE>
 void FixedSizeStringBuffer<SIZE>::dump(std::ostream &os) const
 {
   for (size_t i = 0; i < max_size_; i++) {
     os << " chars[" << std::setw(2) << i << "] = " << chars_[i];
     for (size_t k = 0; k < ptr_.size(); k++) {
-      if (ptr_[k] == i) { os << " <-- ptr_[" << std::setw(2) << k << "]"; }
+      if (ptr_[k].front == i) { os << " <-- ptr_[" << std::setw(2) << k << "]"; }
     }
     if (!empty()) {
-      if (ptr_[0] == i) { os << " <-- front "; }
+      if (ptr_[0].front == i) { os << " <-- front "; }
     }
     if (back_ == i) { os << " <-- back "; }
     os << "\n";
@@ -189,12 +250,12 @@ void FixedSizeStringBuffer<SIZE>::dump(std::ostream &os) const
 
   os << "\n";
   for (size_t k = 0; k < ptr_.size(); k++) {
-    os << "   ptr_[" << std::setw(2) << k << "] = " << ptr_[k]
+    os << "   ptr_[" << std::setw(2) << k << "] = " << ptr_[k].front
        << " str = " << at(k) << "\n";
   }
 }
 
-template <std::size_t SIZE>
+template <size_t SIZE>
 std::ostream &operator<<(std::ostream &os, FixedSizeStringBuffer<SIZE> &rb)
 {
   rb.dump(os);
