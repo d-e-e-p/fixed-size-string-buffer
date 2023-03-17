@@ -294,7 +294,7 @@ install(
 
 install(
   FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME_LOWERCASE}.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME_LOWERCASE}.h
   DESTINATION
   include
 )
