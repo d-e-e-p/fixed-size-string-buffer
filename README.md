@@ -68,7 +68,7 @@ format               format the project sources
 An trivial example looks like:
 
 ```cpp
-#include "fixed_size_string_buffer.hpp"
+#include "fixed_size_string_buffer.h"
 int main() {
   auto rb = FixedSizeStringBuffer<10>();
   rb.push("123");
@@ -117,7 +117,7 @@ only hold two:
 
 ```cpp
 #include <iostream>
-#include "fixed_size_string_buffer.hpp"
+#include "fixed_size_string_buffer.h"
 
 int main() {
   auto foo = FixedSizeStringBuffer<8>();

@@ -1,4 +1,4 @@
-#include "fixed_size_string_buffer.hpp"
+#include "fixed_size_string_buffer.h"
 
 #include <gtest/gtest.h>
 
