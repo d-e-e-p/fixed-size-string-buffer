@@ -8,7 +8,8 @@ set(exe_sources
 )
 
 set(headers
-    include/fixed_size_string_buffer.hpp
+    include/fixed_size_string_buffer.h
+    include/fixed_size_queue.h
 )
 
 set(test_sources

@@ -22,6 +22,7 @@ Checks: "*,
         -readability-container-data-pointer,
         -cppcoreguidelines-narrowing-conversions,
         -bugprone-narrowing-conversions,
+        -bugprone-exception-escape,
 "
 WarningsAsErrors: ''
 HeaderFilterRegex: ''
