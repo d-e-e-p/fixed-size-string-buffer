@@ -357,3 +357,9 @@ if(${PROJECT_NAME}_ENABLE_UNIT_TESTING)
   message(STATUS "Build unit tests for the project. Tests should always be found in the test folder\n")
   add_subdirectory(test)
 endif()
+
+option(ENABLE_BENCH     "Build benchmarks" ON)
+if(ENABLE_BENCH)
+  add_subdirectory(bench)
+endif()
+

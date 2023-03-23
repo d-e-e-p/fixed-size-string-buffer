@@ -31,15 +31,22 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 help: ## this message
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-test: ## run tests quickly with ctest
+clean: ## remove build dir
 	rm -rf build/
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -Dmodern-cpp-template_ENABLE_UNIT_TESTING=1 -DCMAKE_BUILD_TYPE="Release"
+
+debug: ## 
+	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -Dfixed_size_string_buffer_ENABLE_UNIT_TESTING=1 -DCMAKE_BUILD_TYPE="Debug" --fresh
+	cmake --build build --config Debug
+	build/bin/Debug/fixed_size_string_buffer
+
+test: ## run tests
+	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -Dfixed_size_string_buffer_ENABLE_UNIT_TESTING=1 -DCMAKE_BUILD_TYPE="Release"
 	cmake --build build --config Release
 	cd build/ && ctest -C Release -VV
 
 coverage: ## check code coverage quickly GCC
 	rm -rf build/
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -Dmodern-cpp-template_ENABLE_CODE_COVERAGE=1
+	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -Dfixed_size_string_buffer_ENABLE_CODE_COVERAGE=1
 	cmake --build build --config Release
 	cd build/ && ctest -C Release -VV
 	cd .. && (bash -c "find . -type f -name '*.gcno' -exec gcov -pb {} +" || true)
@@ -53,7 +60,6 @@ docs: ## generate Doxygen HTML documentation, including API docs
 	$(BROWSER) docs/html/index.html
 
 install: ## install the package to the INSTALL_LOCATION={INSTALL_LOCATION}
-	rm -rf build/
 	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION)
 	cmake --build build --config Release
 	cmake --build build --target install --config Release
