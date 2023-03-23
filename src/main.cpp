@@ -2,12 +2,15 @@
 #pragma clang diagnostic ignored "-Wold-style-cast"
 #pragma clang diagnostic ignored "-Wnarrowing"
 
+#undef NDEBUG // allow assert
+
 #include <array>
 #include <cassert>
 #include <chrono>
 #include <cstdlib>
 #include <deque>
 #include <iostream>
+#include <sstream>
 #include <iomanip>
 #include <vector>
 
@@ -16,32 +19,48 @@
 
 void example1()
 {
-  std::cout << " fixed_size_string_buffer example1 \n";
+  std::cout << "fixed_size_string_buffer example1 \n\n";
   constexpr size_t max_size = 10;
   auto rb = FixedSizeStringBuffer<max_size>();
   rb.set_debug(true);
-  assert(rb.free_space() == max_size);
-  assert(rb.empty());
-  const std::string_view msg = "0123456789";
-  rb.push(msg);
-  assert(rb.front() == msg);
-  assert(rb.back() == msg);
-  rb.push("0aa");
-  assert(rb.free_space() == 7);
-  rb.pop();
-  assert(rb.size() == 0);
-  rb.clear();
-  rb.push("0aa");
-  rb.push("1bb");
-  rb.push("2cc");
-  rb.push("3dd");
-  rb.push("4ee");
-  rb.push("5ff");
+  std::cout << " created ring buffer of " << max_size << " characters\n";
+
+  // add strings
+  const std::string str = "The Quick Brown Fox Jumped Over The Lazy Dog";
+  std::istringstream ss(str);
+  std::string word;
+  std::cout << "adding to buffer: '" << str << "\n";
+  while (ss >> word) {
+    rb.push(word);
+    std::cout << rb;
+  }
+                        
   std::cout << rb << "\n";
-  assert(rb[0] == "3dd");
-  assert(rb[1] == "4ee");
-  assert(rb[2] == "5ff");
+
+  std::cout << " buffer free space is " << rb.free_space() << " characters\n";
+  std::cout << " pop() removing oldest surviving string: '" << rb.pop() << "'\n";
+  std::cout << " so now buffer looks like:\n\n";
+  std::cout << rb << "\n";
+
+  std::cout << " now buffer free space is " << rb.free_space() << " characters\n";
+
+  // dumping values
+  while (! rb.empty()) {
+    rb.pop();
+  }
+  std::cout << " result of pop() on all entries: \n\n";
+  std::cout << rb << "\n";
+  std::cout << " result of clear(): \n\n";
+  rb.clear();
+  std::cout << rb << "\n";
+
 }
+
+/*
+ * compare template has 3 params:
+ *  LEN: length of test string used for benchmark
+ *  CAPACITY: 
+ */
 
 template <size_t LEN, size_t CAPACITY, size_t EXCESS>
 void compare()
@@ -50,15 +69,6 @@ void compare()
   using std::chrono::nanoseconds;
   using std::chrono::steady_clock;
 
-  constexpr std::string_view long_str = R"(
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-mollit anim id est laborum.
-)";
   auto str_test = std::string(LEN, 'x');
 
   // create buffer just enough size to hold str_capacity_in_buffer values
@@ -97,10 +107,12 @@ mollit anim id est laborum.
 
   auto delta3 = duration_cast<nanoseconds>(t2 - t1).count() / trials;
 
+  // NOLINTBEGIN
   std::cout.precision(1);
-  std::cout << " | " << std::setw(6) << LEN << " | " << std::setw(6) <<  CAPACITY << "." << EXCESS << " | " 
-    << std::setw(6) << delta1 << "ns |" << std::setw(6) << delta2 << "ns |" << std::setw(6) << delta3 << "ns |" 
-   << std::fixed << std::setw(7) << 1.0 << "X |" << std::setw(7) << (long double) delta2 / delta1 << "X |" << std::setw(7) << (long double) delta3 / delta1 << "X |" << "\n";
+  std::cout << " │ " << std::setw(6) << LEN << " │ " << std::setw(6) <<  CAPACITY << "." << EXCESS << " │ " 
+    << std::setw(6) << delta1 << "ns │" << std::setw(6) << delta2 << "ns │" << std::setw(6) << delta3 << "ns │" 
+   << std::fixed << std::setw(7) << 1.0 << "X │" << std::setw(7) << (long double) delta2 / delta1 << "X │" << std::setw(7) << (long double) delta3 / delta1 << "X │" << "\n";
+  // NOLINTEND
 
   auto num = static_cast<size_t>(str_capacity_in_buffer);
   assert(rfb.size() == num);
@@ -112,18 +124,21 @@ mollit anim id est laborum.
 void example2()
 {
   std::cout << R"(
-fixed_size_string_buffer eg2: push time comparison
- +--------------------------------------------------------------------------------+
- | strlen | capacity | FixedSize|FixedSize|std:queue|         |         |         |
- : (chars)| (strings)| stringBuf|stdqueue | no limit|         |         |         |
- +--------------------------------------------------------------------------------+
+  fixed_size_string_buffer example2: wallclock time comparison for push operation
+ ╭────────┬──────────┬──────────┬─────────┬─────────┬─────────┬─────────┬─────────╮
+ │ strlen │ capacity │ FixedSize│FixedSize│no limit │         │         │         │
+ │ (chars)│ (strings)│ stringBuf│std:queue│std:queue│ (1)/(1) │ (2)/(1) │ (3)/(1) │
+ │        │          │    (1)   │   (2)   │  (3)    │         │         │         │
+ ├────────┼──────────┼──────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
 )";
+  // NOLINTBEGIN
   compare<1,10,3>();
   compare<10,10,3>();
   compare<100,10,3>();
   compare<1000,10,3>();
+  // NOLINTEND
   std::cout << 
-    " +--------------------------------------------------------------------------------+\n";
+    " ╰────────┴──────────┴──────────┴─────────┴─────────┴─────────┴─────────┴─────────╯\n";
 }
 
 

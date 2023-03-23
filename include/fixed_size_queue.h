@@ -4,6 +4,7 @@
  Usage:
     FixedQueue<string, 100> cmdHistory;
 */
+#pragma once
 
 #include <queue>
 #include <utility>
@@ -14,7 +15,7 @@ class FixedQueue : public std::queue<std::string> {
 private:
   size_t free_space_ = 0;
   std::queue<size_t> strsize_ = {}; // pointer to start/length of str in chars
-  using std::queue<std::string>::swap; // disallow
+  using std::queue<std::string>::swap; // disallow swap
 
 public:
   explicit FixedQueue(size_t SIZE)

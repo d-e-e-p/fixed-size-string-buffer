@@ -11,8 +11,10 @@
 #pragma clang diagnostic ignored "-Wnarrowing"
 
 #include <array>
+#include <vector>
 #include <deque>
 #include <iomanip>
+#include <codecvt>
 #include <iostream>
 
 using std::size_t;
@@ -52,6 +54,7 @@ class FixedSizeStringBuffer {
   // Capacity
   //
   bool empty() const  { return ptr_.empty(); }
+  bool full() const  { return (free_space_ == 0); }
   size_t size() const { return ptr_.size(); }
   size_t free_space() const { return free_space_; }
 
@@ -74,10 +77,12 @@ class FixedSizeStringBuffer {
 
   void push(std::string_view str);  // see below
 
-  void pop()
+  std::string pop()
   {
+    std::string str = front();
     free_space_ += ptr_.front().len;
     ptr_.pop_front();
+    return str;
   }
 
   //
@@ -93,7 +98,17 @@ class FixedSizeStringBuffer {
   //
 
   // output char buffer with markers for each string
-  void dump(std::ostream &os = std::cout) const;
+  void dump_long_str(std::ostream &os = std::cout) const;
+  void dump_short_str(std::ostream &os = std::cout) const;
+  void dump(std::ostream &os = std::cout) const 
+  {
+    constexpr size_t threshold = 40;
+    if(max_space_ > threshold) {
+      dump_long_str(os);
+    } else {
+      dump_short_str(os);
+    }
+  }
 
 };  // end class
 
@@ -177,26 +192,140 @@ std::string FixedSizeStringBuffer<SPACE>::at(size_t pos) const
 }
 
 
+// from https://stackoverflow.com/questions/4804298/how-to-convert-wstring-into-string
+std::wstring s2ws(const std::string& str)
+{
+    using convert_typeX = std::codecvt_utf8<wchar_t>;
+    std::wstring_convert<convert_typeX, wchar_t> converterX;
+    return converterX.from_bytes(str);
+}
+
+std::string ws2s(const std::wstring& wstr)
+{
+    using convert_typeX = std::codecvt_utf8<wchar_t>;
+    std::wstring_convert<convert_typeX, wchar_t> converterX;
+    return converterX.to_bytes(wstr);
+}
+
+
 template <size_t SPACE>
-void FixedSizeStringBuffer<SPACE>::dump(std::ostream &os) const
+void FixedSizeStringBuffer<SPACE>::dump_short_str(std::ostream &os) const
+{
+
+
+  std::vector<bool> bopen(max_space_, false);
+  std::vector<bool> bclose(max_space_, false);
+  std::vector<bool> bword(max_space_, false);
+
+  // mark open/close spots upfront
+  for (size_t k = 0; k < ptr_.size(); k++) {
+    size_t start = ptr_[k].front;
+    size_t end = (k+1 == ptr_.size()) ? back_ : ptr_[k+1].front;
+    bopen[start] = true;
+    bclose[end] = true;
+    if (end > start) {
+      for (size_t i = start; i < end; i++) {
+        bword[i] = true;
+      }
+    } else {
+      for (size_t i = start; i < max_space_; i++) {
+        bword[i] = true;
+      }
+      for (size_t i = 0; i < end; i++) {
+        bword[i] = true;
+      }
+    }
+  }
+
+  // top line
+  os << "           ⎧ ";
+  for (size_t i = 0; i < max_space_; i++) {
+    wchar_t cclose = L' ';
+    wchar_t copen  = L' ';
+    wchar_t cchar  = L' ';
+
+    // if previous character is part of a word. then continue the line
+    size_t index = ( i==0 )? max_space_ : i-1;
+    if (bword[index]) {
+      cclose = L'─';
+    }
+
+    if (bword[i]) {
+      copen  = L'─';
+      cchar  = L'─';
+    }
+
+    if (bclose[i]) {
+      cclose = L'╮';
+    }
+    if (bopen[i]) {
+      copen  = L'╭';
+    }
+
+    std::wstring wline{cclose, copen, cchar};
+    os << ws2s(wline);
+  }
+  os << " ⎫\n";
+
+  os << " buf[" << std::setw(2) << max_space_ << "] = ⎨ ";
+  for (size_t i = 0; i < max_space_; i++) {
+    // 3 slots for each char: [close][open][letter]
+    // first calculate close
+    
+    wchar_t cclose = bclose[i] ? L'│' : L' ';
+    wchar_t copen  =  bopen[i] ? L'│' : L' ';
+    wchar_t cchar  = (chars_[i] == '\0') ? L'•' : chars_[i];
+    std::wstring wline{cclose, copen, cchar};
+    os << ws2s(wline);
+  }
+  os << " ⎬ \n";
+
+  // bottom line
+  os << "           ⎩ ";
+  for (size_t i = 0; i < max_space_; i++) {
+    wchar_t cclose = L' ';
+    wchar_t copen  = L' ';
+    wchar_t cchar  = L' ';
+
+    size_t index = ( i==0 )? max_space_ : i-1;
+    if (bword[index]) {
+      cclose = L'─';
+    }
+
+    if (bword[i]) {
+      copen  = L'─';
+      cchar  = L'─';
+    }
+
+    if (bclose[i]) {
+      cclose = L'╯';
+    }
+    if (bopen[i]) {
+      copen  = L'╰';
+    }
+
+    std::wstring wline{cclose, copen, cchar};
+    os << ws2s(wline);
+  }
+  os << " ⎭\n";
+
+}
+
+
+template <size_t SPACE>
+void FixedSizeStringBuffer<SPACE>::dump_long_str(std::ostream &os) const
 {
   for (size_t i = 0; i < max_space_; i++) {
-    os << " chars[" << std::setw(2) << i << "] = " << chars_[i];
+    os << "  c[" << std::setw(2) << i << "] = " << chars_[i];
     for (size_t k = 0; k < ptr_.size(); k++) {
-      if (ptr_[k].front == i) { os << " <-- ptr_[" << std::setw(2) << k << "]"; }
-    }
-    if (!empty()) {
-      if (ptr_[0].front == i) { os << " <-- front "; }
+      if (ptr_[k].front == i) { 
+        os << " <-- str[" << std::setw(2) << k << "] = " << at(k) ; 
+      }
     }
     if (back_ == i) { os << " <-- back "; }
     os << "\n";
   }
-
   os << "\n";
-  for (size_t k = 0; k < ptr_.size(); k++) {
-    os << "   ptr_[" << std::setw(2) << k << "] = " << ptr_[k].front
-       << " str = " << at(k) << "\n";
-  }
 }
 
 template <size_t SPACE>
