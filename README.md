@@ -9,6 +9,7 @@ Requires at least -std=c++14 .
 
 - Project template from [modern-cpp-template](https://github.com/filipdutescu/modern-cpp-template)
 - Single file header and other setting from [p-ranav](https://github.com/p-ranav)
+- Google test and benchmark example from [starter project](https://github.com/PhDP/cmake-gtest-gbench-starter)
 - Discussion at stackexchange [Elegant Circular Buffer](https://codereview.stackexchange.com/questions/164130/elegant-circular-buffer)
 
 ## Motivation
