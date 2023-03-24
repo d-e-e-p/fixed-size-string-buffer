@@ -12,6 +12,7 @@
 
 #include <array>
 #include <vector>
+#include <map>
 #include <deque>
 #include <iomanip>
 #include <codecvt>
@@ -39,6 +40,16 @@ class FixedSizeStringBuffer {
   size_t free_space_ = 0;        // free *char* space left in buffer
                                  //
   bool debug_ = false;           // print diag messages if true
+                                 
+  // used for pretty print of buffer
+  struct SlotState {
+    std::vector<bool> bopen;
+    std::vector<bool> bword;
+    std::vector<bool> bclos;
+  } ;
+  SlotState mark_open_close_slots();
+  void print_box_line(std::ostream &os, SlotState& slot, std::string_view top_or_bot);
+  void print_char_line(std::ostream &os, SlotState& slot) const;
 
  public:
   //
@@ -99,8 +110,8 @@ class FixedSizeStringBuffer {
 
   // output char buffer with markers for each string
   void dump_long_str(std::ostream &os = std::cout) const;
-  void dump_short_str(std::ostream &os = std::cout) const;
-  void dump(std::ostream &os = std::cout) const 
+  void dump_short_str(std::ostream &os = std::cout);
+  void dump(std::ostream &os = std::cout) 
   {
     constexpr size_t threshold = 40;
     if(max_space_ > threshold) {
@@ -207,107 +218,135 @@ std::string ws2s(const std::wstring& wstr)
     return converterX.to_bytes(wstr);
 }
 
-
 template <size_t SPACE>
-void FixedSizeStringBuffer<SPACE>::dump_short_str(std::ostream &os) const
+typename FixedSizeStringBuffer<SPACE>::SlotState FixedSizeStringBuffer<SPACE>::mark_open_close_slots() 
 {
+  // define vector (...or use map for longer strings?)
+  SlotState slot;
+  slot.bopen = std::vector<bool>(SPACE, false);
+  slot.bword = std::vector<bool>(SPACE, false);
+  slot.bclos = std::vector<bool>(SPACE, false);
 
-
-  std::vector<bool> bopen(max_space_, false);
-  std::vector<bool> bclose(max_space_, false);
-  std::vector<bool> bword(max_space_, false);
-
-  // mark open/close spots upfront
+  // loop thru string pointer and mark every open close slot
   for (size_t k = 0; k < ptr_.size(); k++) {
     size_t start = ptr_[k].front;
     size_t end = (k+1 == ptr_.size()) ? back_ : ptr_[k+1].front;
-    bopen[start] = true;
-    bclose[end] = true;
+    size_t left_end = (end == 0) ? max_space_ - 1 : end - 1;
+
+    slot.bopen[start] = true;
+    slot.bclos[left_end] = true;
+
     if (end > start) {
       for (size_t i = start; i < end; i++) {
-        bword[i] = true;
+        slot.bword[i] = true;
       }
     } else {
       for (size_t i = start; i < max_space_; i++) {
-        bword[i] = true;
+        slot.bword[i] = true;
       }
       for (size_t i = 0; i < end; i++) {
-        bword[i] = true;
+        slot.bword[i] = true;
       }
     }
   }
 
-  // top line
-  os << "           ⎧ ";
+  return slot;
+}
+
+template <size_t SPACE>
+void FixedSizeStringBuffer<SPACE>::print_box_line(std::ostream &os, SlotState& slot, std::string_view top_or_bot) 
+{
+  enum class CT {left, open, close, dash, space, right};
+  typedef std::map<CT,wchar_t> box_t;
+
+  box_t box_top = {
+      {CT::left,  L'⎧'},
+      {CT::open,  L'╭'},
+      {CT::close, L'╮'},
+      {CT::dash,  L'─'},
+      {CT::space, L' '},
+      {CT::right, L'⎫'},
+   };
+
+  box_t box_bot = {
+      {CT::left,  L'⎩'},
+      {CT::open,  L'╰'},
+      {CT::close, L'╯'},
+      {CT::dash,  L'─'},
+      {CT::space, L' '},
+      {CT::right, L'⎭'},
+   };
+
+
+  box_t box = (top_or_bot == "top") ? box_top : box_bot;
+
+  // space on left
+  std::wstring wstr = (std::wstring) L"           " + box[CT::left] + L' ';
+  os << ws2s(wstr);
+  // characters
   for (size_t i = 0; i < max_space_; i++) {
-    wchar_t cclose = L' ';
-    wchar_t copen  = L' ';
-    wchar_t cchar  = L' ';
+    wchar_t copen  = box[CT::space];
+    wchar_t cchar  = box[CT::space];
+    wchar_t cclos = box[CT::space];
 
-    // if previous character is part of a word. then continue the line
-    size_t index = ( i==0 )? max_space_ : i-1;
-    if (bword[index]) {
-      cclose = L'─';
+    if (slot.bword[i]) {
+      copen  = box[CT::dash];
+      cchar  = box[CT::dash];
+      cclos = box[CT::dash];
     }
 
-    if (bword[i]) {
-      copen  = L'─';
-      cchar  = L'─';
+    if (slot.bopen[i]) {
+      copen  = box[CT::open];
     }
 
-    if (bclose[i]) {
-      cclose = L'╮';
-    }
-    if (bopen[i]) {
-      copen  = L'╭';
+    if (slot.bclos[i]) {
+      cclos  = box[CT::close];
     }
 
-    std::wstring wline{cclose, copen, cchar};
+    std::wstring wline{copen, cchar, cclos};
     os << ws2s(wline);
   }
-  os << " ⎫\n";
+  std::wstring wline{box[CT::right]};
+  os << ws2s(wline) << "\n";
+
+}
+
+template <size_t SPACE>
+void FixedSizeStringBuffer<SPACE>::print_char_line(std::ostream &os, SlotState& slot) const
+{
 
   os << " buf[" << std::setw(2) << max_space_ << "] = ⎨ ";
   for (size_t i = 0; i < max_space_; i++) {
     // 3 slots for each char: [close][open][letter]
-    // first calculate close
+    wchar_t copen = slot.bopen[i] ? L'│' : L' ';
+    wchar_t cchar = (chars_[i] == '\0') ? L'•' : chars_[i];
+    wchar_t cclos = slot.bclos[i] ? L'│' : L' ';
+    // special case for head of train or end of train
+    if (! empty()) {
+      if (i == ptr_[0].front) {
+        copen = L'┤';
+      }
+      size_t back_left = (back_ == 0) ? max_space_ - 1 : back_ - 1;
+      if (i == back_left) {
+        cclos = L'├';
+      }
+    }
+    std::wstring wline{copen, cchar, cclos};
+    os << ws2s(wline);
+  }
+  os << "⎬ \n";
+
+}
+
+template <size_t SPACE>
+void FixedSizeStringBuffer<SPACE>::dump_short_str(std::ostream &os) 
+{
     
-    wchar_t cclose = bclose[i] ? L'│' : L' ';
-    wchar_t copen  =  bopen[i] ? L'│' : L' ';
-    wchar_t cchar  = (chars_[i] == '\0') ? L'•' : chars_[i];
-    std::wstring wline{cclose, copen, cchar};
-    os << ws2s(wline);
-  }
-  os << " ⎬ \n";
+  SlotState slot = mark_open_close_slots();
 
-  // bottom line
-  os << "           ⎩ ";
-  for (size_t i = 0; i < max_space_; i++) {
-    wchar_t cclose = L' ';
-    wchar_t copen  = L' ';
-    wchar_t cchar  = L' ';
-
-    size_t index = ( i==0 )? max_space_ : i-1;
-    if (bword[index]) {
-      cclose = L'─';
-    }
-
-    if (bword[i]) {
-      copen  = L'─';
-      cchar  = L'─';
-    }
-
-    if (bclose[i]) {
-      cclose = L'╯';
-    }
-    if (bopen[i]) {
-      copen  = L'╰';
-    }
-
-    std::wstring wline{cclose, copen, cchar};
-    os << ws2s(wline);
-  }
-  os << " ⎭\n";
+  print_box_line(os, slot, "top");
+  print_char_line(os, slot);
+  print_box_line(os, slot, "bot");
 
 }
 

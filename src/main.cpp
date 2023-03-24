@@ -35,16 +35,14 @@ void example1()
     std::cout << rb;
   }
                         
-  std::cout << rb << "\n";
-
   std::cout << " buffer free space is " << rb.free_space() << " characters\n";
   std::cout << " pop() removing oldest surviving string: '" << rb.pop() << "'\n";
   std::cout << " so now buffer looks like:\n\n";
   std::cout << rb << "\n";
 
-  std::cout << " now buffer free space is " << rb.free_space() << " characters\n";
+  std::cout << " and buffer free space is " << rb.free_space() << " characters\n";
 
-  // dumping values
+  // iterate over all enteries in buffer
   while (! rb.empty()) {
     rb.pop();
   }
@@ -59,7 +57,8 @@ void example1()
 /*
  * compare template has 3 params:
  *  LEN: length of test string used for benchmark
- *  CAPACITY: 
+ *  CAPACITY: how many strings can the buffer hold
+ *  EXCESS: 3 means additional buffer size if 0.3 * stringsize
  */
 
 template <size_t LEN, size_t CAPACITY, size_t EXCESS>
