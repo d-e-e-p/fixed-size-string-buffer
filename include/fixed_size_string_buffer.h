@@ -48,8 +48,8 @@ class FixedSizeStringBuffer {
     std::vector<bool> bclos;
   } ;
   SlotState mark_open_close_slots();
-  void print_box_line(std::ostream &os, SlotState& slot, std::string_view top_or_bot);
-  void print_char_line(std::ostream &os, SlotState& slot) const;
+  void print_box_line(std::ostream &os, const SlotState& slot, std::string_view top_or_bot) const;
+  void print_char_line(std::ostream &os, const SlotState& slot) const;
 
  public:
   //
@@ -93,6 +93,9 @@ class FixedSizeStringBuffer {
     std::string str = front();
     free_space_ += ptr_.front().len;
     ptr_.pop_front();
+    if (empty()) {
+      back_ = 0;
+    }
     return str;
   }
 
@@ -228,13 +231,14 @@ typename FixedSizeStringBuffer<SPACE>::SlotState FixedSizeStringBuffer<SPACE>::m
   slot.bclos = std::vector<bool>(SPACE, false);
 
   // loop thru string pointer and mark every open close slot
+  // last =  end char marker moved left-by-1 to point to actual last char
   for (size_t k = 0; k < ptr_.size(); k++) {
     size_t start = ptr_[k].front;
     size_t end = (k+1 == ptr_.size()) ? back_ : ptr_[k+1].front;
-    size_t left_end = (end == 0) ? max_space_ - 1 : end - 1;
+    size_t last = (end == 0) ? max_space_ - 1 : end - 1;
 
     slot.bopen[start] = true;
-    slot.bclos[left_end] = true;
+    slot.bclos[last] = true;
 
     if (end > start) {
       for (size_t i = start; i < end; i++) {
@@ -254,7 +258,7 @@ typename FixedSizeStringBuffer<SPACE>::SlotState FixedSizeStringBuffer<SPACE>::m
 }
 
 template <size_t SPACE>
-void FixedSizeStringBuffer<SPACE>::print_box_line(std::ostream &os, SlotState& slot, std::string_view top_or_bot) 
+void FixedSizeStringBuffer<SPACE>::print_box_line(std::ostream &os, const SlotState& slot, std::string_view top_or_bot) const
 {
   enum class CT {left, open, close, dash, space, right};
   typedef std::map<CT,wchar_t> box_t;
@@ -312,7 +316,7 @@ void FixedSizeStringBuffer<SPACE>::print_box_line(std::ostream &os, SlotState& s
 }
 
 template <size_t SPACE>
-void FixedSizeStringBuffer<SPACE>::print_char_line(std::ostream &os, SlotState& slot) const
+void FixedSizeStringBuffer<SPACE>::print_char_line(std::ostream &os, const SlotState& slot) const
 {
 
   os << " buf[" << std::setw(2) << max_space_ << "] = ⎨ ";
@@ -321,7 +325,7 @@ void FixedSizeStringBuffer<SPACE>::print_char_line(std::ostream &os, SlotState& 
     wchar_t copen = slot.bopen[i] ? L'│' : L' ';
     wchar_t cchar = (chars_[i] == '\0') ? L'•' : chars_[i];
     wchar_t cclos = slot.bclos[i] ? L'│' : L' ';
-    // special case for head of train or end of train
+    // mark first element and end of last element in queue
     if (! empty()) {
       if (i == ptr_[0].front) {
         copen = L'┤';

@@ -27,9 +27,10 @@ void example1()
 
   // add strings
   const std::string str = "The Quick Brown Fox Jumped Over The Lazy Dog";
+  std::cout << " adding words to buffer from: '" << str << "\n";
   std::istringstream ss(str);
   std::string word;
-  std::cout << "adding to buffer: '" << str << "\n";
+  std::cout << rb;
   while (ss >> word) {
     rb.push(word);
     std::cout << rb;

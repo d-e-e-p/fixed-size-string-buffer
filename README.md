@@ -27,13 +27,12 @@ if (q.size() > target_capacity) {
  q.push_back(new_string);
 ```
 
-Of course, it would be easier to wrap all this into a class that takes care
-of pop-on-push opperation behind the scenes. See this [gist](https://gist.github.com/d-e-e-p/fc2697bdef0faa11678fe034d44772d3) .
-You could extend this to take into account the sizes of strings added, and 
-achieve pretty much the same functionality of this library except the ability to pre-allocate 
+See this [gist](https://gist.github.com/d-e-e-p/fc2697bdef0faa11678fe034d44772d3) .
+You could extend this to take into account the sizes of strings added, eg [fixed_size_queue.h](include/fixed_size_queue.h).
+This achieves pretty much the same functionality of this library except the ability to pre-allocate 
 buffer space on the stack at compile time.
 
-Turns out that's sometimes pretty useful.  For embeded devices for example we need to limit 
+Turns out that feature can be pretty useful.  For embeded devices for example we need to limit 
 dynamic allocation and maintain plenty of ram headroom.  This char buffer array can be 
 allocated statically to make it part of the [.bss section](https://en.wikipedia.org/wiki/.bss), 
 when can be alloted to a dedicated bank (eg CCM Memory). This eliminates the possibility
@@ -43,13 +42,23 @@ Memory](https://www.openstm32.org/Using%2BCCM%2BMemory).
 There is also a speed advantage of using this approach:
 
 ```bash
-make test
-./build/bin/Release/fixed_size_string_buffer
-
-average FixedSizeStringBuffer push time is 23ns
-average std::deque push time is 71ns
-  => speedup is 3.08696 X
+  fixed_size_string_buffer example2: wallclock time comparison for push operation
+ ╭────────┬──────────┬──────────┬─────────┬─────────┬─────────┬─────────┬─────────╮
+ │ strlen │ capacity │ FixedSize│FixedSize│no limit │         │         │         │
+ │ (chars)│ (strings)│ stringBuf│std:queue│std:queue│ (1)/(1) │ (2)/(1) │ (3)/(1) │
+ │        │          │    (1)   │   (2)   │  (3)    │         │         │         │
+ ├────────┼──────────┼──────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
+ │      1 │     10.3 │      5ns │     8ns │     4ns │    1.0X │    1.6X │    0.8X │
+ │     10 │     10.3 │      7ns │     8ns │     5ns │    1.0X │    1.1X │    0.7X │
+ │    100 │     10.3 │      7ns │    28ns │    43ns │    1.0X │    4.0X │    6.1X │
+ │   1000 │     10.3 │     17ns │    71ns │   200ns │    1.0X │    4.2X │   11.8X │
+ ╰────────┴──────────┴──────────┴─────────┴─────────┴─────────┴─────────┴─────────╯
 ```
+
+This shows a 4X speedup compared with a std::queue based ring buffer for strings longer than 100 characters on
+average. As strings become longer, the overhead of using unbounded string std::queue becomes significant:
+more than 10X slower for strings longer than 1000 characters. Ring buffer wins over unbounded queues because of the 
+extra memory allocation time.
 
 ## Getting Started
 
@@ -91,26 +100,6 @@ g++ -std=c++14 -I include test.cpp
 Externally this class looks like a simple queue with infinite space.
 
 ```cpp
-// Constructor
-constexpr size_t max_size = 12;
-auto rb = FixedSizeStringBuffer<max_size>();
-
-// Modifiers
-fsb.push("abc");     // inserts element at the end
-fsb.pop();           // removes the first element
-
-// Element access
-
-fsb.front();        // access the first element
-fsb.back();         // access the last element
-fsb.size();         // number of strings in buffer
-fsb.empty();        // is the underlying container is empty?
-fsb.free_space();   // unused character space in buffer
-fsb.at(0);          // string at location=0 (front)
-
-// Debug
-fsb.set_debug(true); // turns on debug messages
-std::cout << fsb;    // pretty prints the buffer status
 ```
 
 In this example, three messages stuffed into a buffer that can 
@@ -142,17 +131,9 @@ int main() {
 the result of running this should look like:
 
 ```bash
- chars[ 0] = c
- chars[ 1] = a <-- back
- chars[ 2] = a
- chars[ 3] = 1 <-- ptr[ 0] <-- front
- chars[ 4] = b
- chars[ 5] = b
- chars[ 6] = 2 <-- ptr[ 1]
- chars[ 7] = c
-
-   ptr[ 0] = 3 str = 1bb
-   ptr[ 1] = 6 str = 2cc
+           ⎧ ──╮      ╭───────╮╭─────⎫
+ buf[ 8] = ⎨  c├ a  a ┤1  b  b││2  c ⎬
+           ⎩ ──╯      ╰───────╯╰─────⎭
 
 foo.front(): 1bb
 foo.back() : 2cc
