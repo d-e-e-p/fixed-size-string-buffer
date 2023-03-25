@@ -98,12 +98,9 @@ g++ -std=c++14 -I include test.cpp
 ## API
 
 Externally this class looks like a simple queue with infinite space.
-
-```cpp
-```
-
-In this example, three messages stuffed into a buffer that can 
-only hold two:
+In this example, 3 X 3-char messages are stuffed into a buffer that can 
+only hold 8 chars. 0aa gets pushed out to make room for 2cc because foo only 
+has space for 8 chars
 
 ```cpp
 #include <iostream>
@@ -113,16 +110,17 @@ int main() {
   auto foo = FixedSizeStringBuffer<8>();
 
   // push strings into buffer
-  foo.push("0aa");
-  foo.push("1bb");
-  foo.push("2cc");  // 0aa gets pushed out to make room for 2cc
-                    // foo only has space for 8 chars 
+  std::cout << foo;
+  foo.push("0aa"); std::cout << foo;
+  foo.push("1bb"); std::cout << foo;
+  foo.push("2cc"); std::cout << foo;
+
   // inspect  buffer
-  std::cout << foo << "\n";
   std::cout << "foo.front(): " << foo.front()  << "\n";
   std::cout << "foo.back() : " << foo.back()   << "\n";
   std::cout << "foo[0]     : " << foo[0]       << "\n";
   std::cout << "foo.pop()  : " << foo.pop()    << "\n";
+  std::cout << foo << "\n";
   std::cout << "foo[0]     : " << foo[0]       << "\n";
   return 0;
 }
@@ -131,16 +129,30 @@ int main() {
 the result of running this should look like:
 
 ```bash
+           ⎧                         ⎫
+ buf[ 8] = ⎨  •  •  •  •  •  •  •  • ⎬
+           ⎩                         ⎭
+           ⎧ ╭───────╮               ⎫
+ buf[ 8] = ⎨ ┤0  a  a├ •  •  •  •  • ⎬
+           ⎩ ╰───────╯               ⎭
+           ⎧ ╭───────╮╭───────╮      ⎫
+ buf[ 8] = ⎨ ┤0  a  a││1  b  b├ •  • ⎬
+           ⎩ ╰───────╯╰───────╯      ⎭
            ⎧ ──╮      ╭───────╮╭─────⎫
  buf[ 8] = ⎨  c├ a  a ┤1  b  b││2  c ⎬
            ⎩ ──╯      ╰───────╯╰─────⎭
-
 foo.front(): 1bb
 foo.back() : 2cc
 foo[0]     : 1bb
 foo.pop()  : 1bb
+           ⎧ ──╮               ╭─────⎫
+ buf[ 8] = ⎨  c├ a  a  1  b  b ┤2  c ⎬
+           ⎩ ──╯               ╰─────⎭
+
 foo[0]     : 2cc
 ```
+
+See example1 in [main.cpp](src/main.cpp) for a similar demo.
 
 
 ### Coding style
