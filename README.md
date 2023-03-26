@@ -1,9 +1,11 @@
 
 # A pre-allocated ring buffer for std::string messages
 
-A C++ char buffer sized at compile-time that stores string messages in a ring buffer.
-When the buffer is full, oldest strings are deleted to make way for the new entries.
-Requires at least -std=c++14 .
+C++ Header-only library 
+[fixed_size_string_buffer.h](include/fixed_size_string_buffer.h) that instantiates
+a char array sized at compile-time. The queue stores string messages in a char ring buffer.
+When this buffer is full, oldest strings are deleted to make way for the new entries.
+Requires at least -std=c++14 . 
 
 ## Credits
 
@@ -17,7 +19,7 @@ Requires at least -std=c++14 .
 Some applications need a fixed-size [circular buffer](https://en.wikipedia.org/wiki/Circular_buffer)
 with automatic overwrite of tail messages by the head.  
 If the sizes of strings were known, then one way to achive this would be to 
-budget for a target capacity and then pop-on-push like:
+budget for a target capacity and then pop-on-push:
 ```cpp
 std::deque<std::string> q;
 ...
@@ -29,17 +31,17 @@ if (q.size() > target_capacity) {
 
 See this [gist](https://gist.github.com/d-e-e-p/fc2697bdef0faa11678fe034d44772d3) .
 You could extend this to take into account the sizes of strings added, eg [fixed_size_queue.h](include/fixed_size_queue.h).
-This achieves pretty much the same functionality of this library except the ability to pre-allocate 
-buffer space on the stack at compile time.
+This achieves pretty much the same functionality of this library except the ability to 
+pre-allocate buffer space on the stack at compile time.
 
 Turns out that feature can be pretty useful.  For embeded devices for example we need to limit 
 dynamic allocation and maintain plenty of ram headroom.  This char buffer array can be 
-allocated statically to make it part of the [.bss section](https://en.wikipedia.org/wiki/.bss), 
+allocated statically so it ends up in the [.bss section](https://en.wikipedia.org/wiki/.bss), 
 when can be alloted to a dedicated bank (eg CCM Memory). This eliminates the possibility
 of conflict between message buffer and operating heap/stack memory.  See writeup on [Using CCM
 Memory](https://www.openstm32.org/Using%2BCCM%2BMemory).
 
-There is also a speed advantage of using this approach:
+There is also a speed advantage of using this approach for long strings:
 
 ```bash
   fixed_size_string_buffer example2: wallclock time comparison for push operation
@@ -57,8 +59,8 @@ There is also a speed advantage of using this approach:
 
 This shows a 4X speedup compared with a std::queue based ring buffer for strings longer than 100 characters on
 average. As strings become longer, the overhead of using unbounded string std::queue becomes significant:
-more than 10X slower for strings longer than 1000 characters. Ring buffer wins over unbounded queues because of the 
-extra memory allocation time.
+more than 10X slower for strings longer than 1000 characters. Ring buffer wins over unbounded 
+queues because it avoids the extra memory allocation time.
 
 ## Getting Started
 
@@ -66,8 +68,8 @@ extra memory allocation time.
 
 ```bash
 help                 this message
-test                 run tests quickly with ctest
-coverage             check code coverage quickly GCC
+test                 run tests 
+coverage             check code coverage 
 docs                 generate Doxygen HTML documentation, including API docs
 install              install the package to the INSTALL_LOCATION ~/.local
 format               format the project sources
@@ -100,7 +102,7 @@ g++ -std=c++14 -I include test.cpp
 Externally this class looks like a simple queue with infinite space.
 In this example, 3 X 3-char messages are stuffed into a buffer that can 
 only hold 8 chars. 0aa gets pushed out to make room for 2cc because foo only 
-has space for 8 chars
+has space for 8 chars:
 
 ```cpp
 #include <iostream>
