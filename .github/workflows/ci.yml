@@ -38,7 +38,7 @@ jobs:
         with:
           linux: cmake cppcheck clang-tidy
           macos: cmake cppcheck llvm
-        windows: cmake cppcheck clang-tidy
+          windows: cmake cppcheck clang-tidy
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
