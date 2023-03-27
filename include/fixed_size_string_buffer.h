@@ -18,6 +18,8 @@
 #pragma once
 #pragma clang diagnostic ignored "-Wnarrowing"
 
+#include <string_view>
+#include <string>
 #include <array>
 #include <vector>
 #include <map>
