@@ -99,6 +99,12 @@ else()
     ${sources}
   )
 
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
+else(MSVC)
+    target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+endif(MSVC)
+
   if(VERBOSE_OUTPUT)
     verbose_message("Found the following sources:")
     foreach(source IN LISTS sources)
