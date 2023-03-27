@@ -1,10 +1,10 @@
-if(${PROJECT_NAME}_ENABLE_CONAN)
+if(ENABLE_CONAN)
   #
   # Setup Conan requires and options here:
   #
 
-  set(${PROJECT_NAME}_CONAN_REQUIRES "")
-  set(${PROJECT_NAME}_CONAN_OPTIONS "")
+  set(CONAN_REQUIRES "")
+  set(CONAN_OPTIONS "")
 
   #
   # If `conan.cmake` (from https://github.com/conan-io/cmake-conan) does not exist, download it.
@@ -31,9 +31,9 @@ if(${PROJECT_NAME}_ENABLE_CONAN)
 
   conan_cmake_run(
     REQUIRES
-    ${${PROJECT_NAME}_CONAN_REQUIRES}
+    ${CONAN_REQUIRES}
     OPTIONS
-    ${${PROJECT_NAME}_CONAN_OPTIONS}
+    ${CONAN_OPTIONS}
     BASIC_SETUP
     CMAKE_TARGETS # Individual targets to link to
     BUILD

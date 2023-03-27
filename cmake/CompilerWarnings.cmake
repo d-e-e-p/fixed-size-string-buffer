@@ -59,9 +59,10 @@ function(set_project_warnings project_name)
       -Wdouble-promotion # warn if float is implicit promoted to double
       -Wformat=2 # warn on security issues around functions that format output
                  # (ie printf)
+      -Wno-narrowing
   )
 
-  if (${PROJECT_NAME}_WARNINGS_AS_ERRORS)
+  if (WARNINGS_AS_ERRORS)
     set(CLANG_WARNINGS ${CLANG_WARNINGS} -Werror)
     set(MSVC_WARNINGS ${MSVC_WARNINGS} /WX)
   endif()
@@ -87,7 +88,7 @@ function(set_project_warnings project_name)
     message(AUTHOR_WARNING "No compiler warnings set for '${CMAKE_CXX_COMPILER_ID}' compiler.")
   endif()
 
-  if(${PROJECT_NAME}_BUILD_HEADERS_ONLY)
+  if(BUILD_HEADERS_ONLY)
         target_compile_options(${project_name} INTERFACE ${PROJECT_WARNINGS})
   else()
         target_compile_options(${project_name} PUBLIC ${PROJECT_WARNINGS})

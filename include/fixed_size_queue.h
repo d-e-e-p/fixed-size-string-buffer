@@ -24,7 +24,7 @@ public:
   }
 
   void push(const std::string& str);  
-  void pop();
+  std::string pop();
 };
 
 
@@ -43,10 +43,12 @@ inline void FixedQueue::push(const std::string& str)
   free_space_ -= strlen;
 }
 
-inline void FixedQueue::pop() 
+inline std::string FixedQueue::pop() 
 {
   free_space_ += strsize_.front();
+  std::string str = std::queue<std::string>::front();
   strsize_.pop();
   std::queue<std::string>::pop(); 
+  return str;
 }
 

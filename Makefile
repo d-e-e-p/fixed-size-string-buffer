@@ -1,4 +1,4 @@
-.PHONY: install coverage test gen_single_include docs help 
+.PHONY: help clean debug release test bench coverage docs install format
 .DEFAULT_GOAL := help
 INSTALL_LOCATION := ~/.local
 
@@ -34,27 +34,38 @@ help: ## this message
 clean: ## remove build dir
 	rm -rf build/
 
-debug: ## 
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -Dfixed_size_string_buffer_ENABLE_UNIT_TESTING=1 -DCMAKE_BUILD_TYPE="Debug" --fresh
+debug: ## create slow debug version
+	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCMAKE_BUILD_TYPE="Debug" --fresh
 	cmake --build build --config Debug
 	build/bin/Debug/fixed_size_string_buffer
 
-test: ## run tests
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -Dfixed_size_string_buffer_ENABLE_UNIT_TESTING=1 -DCMAKE_BUILD_TYPE="Release"
+release: ## create optimized release version
+	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCMAKE_BUILD_TYPE="Release" --fresh
+	cmake --build build --config Release
+	./build/bin/Release/fixed_size_string_buffer
+
+test: ## run tests under test/ dir
+	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DENABLE_UNIT_TESTING=1 -DCMAKE_BUILD_TYPE="Release" --fresh
 	cmake --build build --config Release
 	cd build/ && ctest -C Release -VV
 
-coverage: ## check code coverage quickly GCC
-	rm -rf build/
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -Dfixed_size_string_buffer_ENABLE_CODE_COVERAGE=1
+bench: ## run benchmark under bench/ dir
+	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DENABLE_BENCH=1 -DCMAKE_BUILD_TYPE="Release" --fresh
 	cmake --build build --config Release
-	cd build/ && ctest -C Release -VV
-	cd .. && (bash -c "find . -type f -name '*.gcno' -exec gcov -pb {} +" || true)
+	./build/bench/unit_bench
+
+coverage: ## check code coverage 
+	rm -rf build/
+	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DENABLE_COVERAGE=1 -DENABLE_UNIT_TESTING=1 -DCMAKE_BUILD_TYPE="Debug" --fresh
+	cmake --build build --config Debug
+	cd build/ && ctest -C Debug -VV
+	cd build/ && make coverage
+	$(BROWSER) build/coverage/index.html
 
 docs: ## generate Doxygen HTML documentation, including API docs
 	rm -rf docs/
 	rm -rf build/
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DProject_ENABLE_DOXYGEN=1
+	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DENABLE_DOXYGEN=1 --fresh
 	cmake --build build --config Release
 	cmake --build build --target doxygen-docs
 	$(BROWSER) docs/html/index.html

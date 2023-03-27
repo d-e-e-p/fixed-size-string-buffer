@@ -18,6 +18,7 @@ project(
 include(cmake/StandardSettings.cmake)
 include(cmake/StaticAnalyzers.cmake)
 include(cmake/Utils.cmake)
+include(cmake/Coverage.cmake)
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
 endif()
@@ -32,7 +33,7 @@ endif (UNIX)
 # Setup alternative names
 #
 
-if(${PROJECT_NAME}_USE_ALT_NAMES)
+if(USE_ALT_NAMES)
   string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWERCASE)
   string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPERCASE)
 else()
@@ -62,30 +63,30 @@ include(cmake/Vcpkg.cmake)
 # Find all headers and implementation files
 include(cmake/SourcesAndHeaders.cmake)
 
-if(${PROJECT_NAME}_BUILD_EXECUTABLE)
+if(BUILD_EXECUTABLE)
   add_executable(${PROJECT_NAME} ${exe_sources})
 
-  if(${PROJECT_NAME}_VERBOSE_OUTPUT)
+  if(VERBOSE_OUTPUT)
     verbose_message("Found the following sources:")
     foreach(source IN LISTS exe_sources)
       verbose_message("* ${source}")
     endforeach()
   endif()
 
-  #  if(${PROJECT_NAME}_ENABLE_UNIT_TESTING)
-  #  add_library(${PROJECT_NAME}_LIB ${headers} ${sources})
+  #  if(ENABLE_UNIT_TESTING)
+  #  add_library(LIB ${headers} ${sources})
   #
-  #  if(${PROJECT_NAME}_VERBOSE_OUTPUT)
+  #  if(VERBOSE_OUTPUT)
   #    verbose_message("Found the following headers:")
   #    foreach(header IN LISTS headers)
   #      verbose_message("* ${header}")
   #    endforeach()
   #  endif()
   #endif()
-elseif(${PROJECT_NAME}_BUILD_HEADERS_ONLY)
+elseif(BUILD_HEADERS_ONLY)
   add_library(${PROJECT_NAME} INTERFACE)
 
-  if(${PROJECT_NAME}_VERBOSE_OUTPUT)
+  if(VERBOSE_OUTPUT)
     verbose_message("Found the following headers:")
     foreach(header IN LIST headers)
       verbose_message("* ${header}")
@@ -98,7 +99,7 @@ else()
     ${sources}
   )
 
-  if(${PROJECT_NAME}_VERBOSE_OUTPUT)
+  if(VERBOSE_OUTPUT)
     verbose_message("Found the following sources:")
     foreach(source IN LISTS sources)
       verbose_message("* ${source}")
@@ -117,9 +118,9 @@ set_target_properties(
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
 )
-if(${PROJECT_NAME}_BUILD_EXECUTABLE AND ${PROJECT_NAME}_ENABLE_UNIT_TESTING)
+if(BUILD_EXECUTABLE AND ENABLE_UNIT_TESTING)
     #  set_target_properties(
-    #${PROJECT_NAME}_LIB
+    #LIB
     #PROPERTIES
     #ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
     #LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
@@ -135,13 +136,13 @@ message(STATUS "Added all header and implementation files.\n")
 # Set the project standard and warnings
 #
 
-if(${PROJECT_NAME}_BUILD_HEADERS_ONLY)
+if(BUILD_HEADERS_ONLY)
   target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 else()
   target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 
-  if(${PROJECT_NAME}_BUILD_EXECUTABLE AND ${PROJECT_NAME}_ENABLE_UNIT_TESTING)
-      #target_compile_features(${PROJECT_NAME}_LIB PUBLIC cxx_std_17)
+  if(BUILD_EXECUTABLE AND ENABLE_UNIT_TESTING)
+      #target_compile_features(LIB PUBLIC cxx_std_17)
   endif()
 endif()
 include(cmake/CompilerWarnings.cmake)
@@ -167,12 +168,12 @@ include(cmake/Doxygen.cmake)
 #    dependency1 ...
 #  PRIVATE
 #    dependency2 ...
-#    ${PROJECT_NAME}_PROJECT_OPTIONS
-#    ${PROJECT_NAME}_PROJECT_WARNINGS
+#    PROJECT_OPTIONS
+#    PROJECT_WARNINGS
 #)
-#if(${PROJECT_NAME}_BUILD_EXECUTABLE AND ${PROJECT_NAME}_ENABLE_UNIT_TESTING)
+#if(BUILD_EXECUTABLE AND ENABLE_UNIT_TESTING)
 #  target_link_libraries(
-#    ${PROJECT_NAME}_LIB
+#    LIB
 #    PUBLIC
 #      dependency1 ...
 #  )
@@ -197,7 +198,7 @@ verbose_message("Successfully added all dependencies and linked against them.")
 #
 
 # Allow usage of header files in the `src` directory, but only for utilities
-if(${PROJECT_NAME}_BUILD_HEADERS_ONLY)
+if(BUILD_HEADERS_ONLY)
   target_include_directories(
     ${PROJECT_NAME}
     INTERFACE
@@ -213,9 +214,9 @@ else()
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
   )
-  if(${PROJECT_NAME}_BUILD_EXECUTABLE AND ${PROJECT_NAME}_ENABLE_UNIT_TESTING)
+  if(BUILD_EXECUTABLE AND ENABLE_UNIT_TESTING)
       #target_include_directories(
-      #${PROJECT_NAME}_LIB
+      #LIB
       #PUBLIC
       #$<INSTALL_INTERFACE:include>
       #$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -228,9 +229,9 @@ endif()
 message(STATUS "Finished setting up include directories.")
 include(CMakePrintHelpers)
 cmake_print_variables(PROJECT_NAME)
-cmake_print_variables(${PROJECT_NAME}_BUILD_EXECUTABLE)
-cmake_print_variables(${PROJECT_NAME}_ENABLE_UNIT_TESTING)
-cmake_print_variables(${PROJECT_NAME}_LIB)
+cmake_print_variables(BUILD_EXECUTABLE)
+cmake_print_variables(ENABLE_UNIT_TESTING)
+cmake_print_variables(LIB)
 cmake_print_variables($<INSTALL_INTERFACE:include>)
 cmake_print_variables($<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 cmake_print_variables(${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -240,7 +241,7 @@ cmake_print_variables(${CMAKE_CURRENT_SOURCE_DIR}/src)
 # Provide alias to library for
 #
 
-if(${PROJECT_NAME}_BUILD_EXECUTABLE)
+if(BUILD_EXECUTABLE)
   add_executable(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 else()
   add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
@@ -307,7 +308,7 @@ verbose_message("Install targets successfully built. Install with `cmake --build
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-  ${PROJECT_NAME}ConfigVersion.cmake
+  ConfigVersion.cmake
   VERSION
   ${PROJECT_VERSION}
   COMPATIBILITY
@@ -315,16 +316,16 @@ write_basic_package_version_file(
 )
 
 configure_package_config_file(
-  ${CMAKE_CURRENT_LIST_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+  ${CMAKE_CURRENT_LIST_DIR}/cmake/Config.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/Config.cmake
   INSTALL_DESTINATION
   ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 
 install(
   FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/Config.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/ConfigVersion.cmake
   DESTINATION
   ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
@@ -333,7 +334,7 @@ install(
 # Generate export header if specified
 #
 
-if(${PROJECT_NAME}_GENERATE_EXPORT_HEADER)
+if(GENERATE_EXPORT_HEADER)
   include(GenerateExportHeader)
   generate_export_header(${PROJECT_NAME})
   install(
@@ -352,13 +353,12 @@ message(STATUS "Finished building requirements for installing the package.\n")
 # Unit testing setup
 #
 
-if(${PROJECT_NAME}_ENABLE_UNIT_TESTING)
+if(ENABLE_UNIT_TESTING)
   enable_testing()
   message(STATUS "Build unit tests for the project. Tests should always be found in the test folder\n")
   add_subdirectory(test)
 endif()
 
-option(ENABLE_BENCH     "Build benchmarks" ON)
 if(ENABLE_BENCH)
   add_subdirectory(bench)
 endif()

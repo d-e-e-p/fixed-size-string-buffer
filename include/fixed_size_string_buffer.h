@@ -1,12 +1,20 @@
-/*
-
- A compile-time allocated ring buffer for std::string messages
- https://github.com/d-e-e-p/fixed-size-string-buffer
-
- MIT License <http://opensource.org/licenses/MIT>
- Copyright (c) 2023 Sandeep <deep@tensorfield.ag>
-
+/**
+ * @file
+ * @author  Sandeep <deep@tensorfield.ag>
+ * @version 1.0
+ *
+ * @section LICENSE
+ *
+ * MIT License <http://opensource.org/licenses/MIT>
+ *
+ * @section DESCRIPTION
+ *
+ * A compile-time allocated ring buffer for std::string messages
+ * https://github.com/d-e-e-p/fixed-size-string-buffer
+ * Copyright (c) 2023 Sandeep <deep@tensorfield.ag>
+ * 
  */
+
 #pragma once
 #pragma clang diagnostic ignored "-Wnarrowing"
 
@@ -52,9 +60,11 @@ class FixedSizeStringBuffer {
   void print_char_line(std::ostream &os, const SlotState& slot) const;
 
  public:
-  //
-  // Constructor
-  //
+  /**
+   * Constructor that creates a string buffer of fixed character size
+   *
+   * @param SPACE is size of char std:array to allocate at compile-time
+   */
   FixedSizeStringBuffer<SPACE>()
       : max_space_(SPACE) 
   { 
@@ -90,6 +100,11 @@ class FixedSizeStringBuffer {
 
   std::string pop()
   {
+    if (empty()) {
+      std::string msg = "buffer is empty\n";
+      std::cerr << msg;
+      return msg;
+    }
     std::string str = front();
     free_space_ += ptr_.front().len;
     ptr_.pop_front();
@@ -205,21 +220,16 @@ std::string FixedSizeStringBuffer<SPACE>::at(size_t pos) const
   return str;
 }
 
-
+// NOLINTBEGIN
+namespace {
 // from https://stackoverflow.com/questions/4804298/how-to-convert-wstring-into-string
-std::wstring s2ws(const std::string& str)
-{
-    using convert_typeX = std::codecvt_utf8<wchar_t>;
-    std::wstring_convert<convert_typeX, wchar_t> converterX;
-    return converterX.from_bytes(str);
-}
-
-std::string ws2s(const std::wstring& wstr)
-{
+std::string ws2s(const std::wstring& wstr) {
     using convert_typeX = std::codecvt_utf8<wchar_t>;
     std::wstring_convert<convert_typeX, wchar_t> converterX;
     return converterX.to_bytes(wstr);
 }
+}
+// NOLINTEND
 
 template <size_t SPACE>
 typename FixedSizeStringBuffer<SPACE>::SlotState FixedSizeStringBuffer<SPACE>::mark_open_close_slots() 
@@ -284,7 +294,8 @@ void FixedSizeStringBuffer<SPACE>::print_box_line(std::ostream &os, const SlotSt
 
   box_t box = (top_or_bot == "top") ? box_top : box_bot;
 
-  // space on left
+  // insert space on left
+  // NOLINTNEXTLINE (-Wold-style-cast)
   std::wstring wstr = (std::wstring) L"           " + box[CT::left] + L' ';
   os << ws2s(wstr);
   // characters

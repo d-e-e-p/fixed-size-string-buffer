@@ -1,4 +1,4 @@
-if(${PROJECT_NAME}_ENABLE_CLANG_TIDY)
+if(ENABLE_CLANG_TIDY)
   find_program(CLANGTIDY clang-tidy)
   if(CLANGTIDY)
     set(CMAKE_CXX_CLANG_TIDY ${CLANGTIDY} -extra-arg=-Wno-unknown-warning-option)
@@ -8,7 +8,7 @@ if(${PROJECT_NAME}_ENABLE_CLANG_TIDY)
   endif()
 endif()
 
-if(${PROJECT_NAME}_ENABLE_CPPCHECK)
+if(ENABLE_CPPCHECK)
   find_program(CPPCHECK cppcheck)
   if(CPPCHECK)
     set(CMAKE_CXX_CPPCHECK ${CPPCHECK} --suppress=missingInclude --enable=all

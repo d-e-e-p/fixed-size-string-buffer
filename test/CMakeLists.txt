@@ -7,19 +7,20 @@ FetchContent_Declare(gtest
 
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
+set(BUILD_GMOCK ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(gtest)
 
 set(test_src
   run_all.cpp
   test_basic.cpp  
-  test_random.cpp
+  test_compare.cpp
 )
 
 add_executable(unit_tests ${test_src})
 
 target_link_libraries(unit_tests
   gtest_main
+  gmock_main
 )
 include_directories("../include")
 set_target_properties( gtest gtest_main unit_tests
