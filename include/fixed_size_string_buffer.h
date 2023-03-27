@@ -58,7 +58,7 @@ class FixedSizeStringBuffer {
     std::vector<bool> bclos;
   } ;
   SlotState mark_open_close_slots();
-  void print_box_line(std::ostream &os, const SlotState& slot, std::string_view top_or_bot) const;
+  void print_box_line(std::ostream &os, const SlotState& slot, bool is_top) const;
   void print_char_line(std::ostream &os, const SlotState& slot) const;
 
  public:
@@ -270,7 +270,7 @@ typename FixedSizeStringBuffer<SPACE>::SlotState FixedSizeStringBuffer<SPACE>::m
 }
 
 template <size_t SPACE>
-void FixedSizeStringBuffer<SPACE>::print_box_line(std::ostream &os, const SlotState& slot, std::string_view top_or_bot) const
+void FixedSizeStringBuffer<SPACE>::print_box_line(std::ostream &os, const SlotState& slot, bool is_top) const
 {
   enum class CT {left, open, close, dash, space, right};
   typedef std::map<CT,wchar_t> box_t;
@@ -294,7 +294,7 @@ void FixedSizeStringBuffer<SPACE>::print_box_line(std::ostream &os, const SlotSt
    };
 
 
-  box_t box = (top_or_bot == "top") ? box_top : box_bot;
+  box_t box = is_top ? box_top : box_bot;
 
   // insert space on left
   // NOLINTNEXTLINE (-Wold-style-cast)
@@ -361,9 +361,9 @@ void FixedSizeStringBuffer<SPACE>::dump_short_str(std::ostream &os)
     
   SlotState slot = mark_open_close_slots();
 
-  print_box_line(os, slot, "top");
+  print_box_line(os, slot, true);
   print_char_line(os, slot);
-  print_box_line(os, slot, "bot");
+  print_box_line(os, slot, false);
 
 }
 

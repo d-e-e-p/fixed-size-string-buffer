@@ -36,7 +36,9 @@ jobs:
       - run: echo "🔎 Branch ${{ github.ref }} repository  ${{ github.repository }}."
       - uses: lyricwulf/abc@v1
         with:
-          all: cmake cppcheck clang-tidy
+          linux: cmake cppcheck clang-tidy
+          macos: cmake cppcheck llvm
+        windows: cmake cppcheck clang-tidy
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
@@ -47,4 +49,6 @@ jobs:
           ls ${{ github.workspace }}
       - run: clang-tidy --version
       - run: make ${{ matrix.configuration }}
+      - run: make test
+      - run: make bench
       - run: echo "🍏 This job's status is ${{ job.status }}."
