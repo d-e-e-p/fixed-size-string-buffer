@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+
+    name: ${{ matrix.toolchain }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        toolchain:
+          - linux-gcc
+          - macos-clang
+          - windows-msvc
+
+        configuration:
+          - release
+
+        include:
+          - toolchain: linux-gcc
+            os: ubuntu-latest
+            compiler: gcc
+
+          - toolchain: macos-clang
+            os: macos-latest
+            compiler: clang
+
+          - toolchain: windows-msvc
+            os: windows-latest
+            compiler: msvc
+
+    steps:
+
+  # from https://stackoverflow.com/questions/57946173/github-actions-run-step-on-specific-os
+  - if: runner.os == 'Windows'
+    run: |
+      git config --global core.autocrlf false
+      git config --global core.eol lf
+
+  - uses: lyricwulf/abc@v1
+    with:
+      all: cmake cppcheck clang-tidy
+
+  - name: Checkout Code
+    uses: actions/checkout@v3
+    with:
+      fetch-depth: 1
+
+  - name: Run (${{ matrix.configuration }})
+    run: make ${{ matrix.configuration }}
