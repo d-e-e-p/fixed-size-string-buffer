@@ -42,10 +42,10 @@ jobs:
               sudo apt install -y cmake cppcheck clang-tidy
               ;;
             Windows)
-              choco install cmake cppcheck clang-tidy
+              echo skip choco install cmake 
               ;;
             macOS)
-              brew install cmake cppcheck
+              echo skip brew install cmake cppcheck
               ;;
             *)
               echo -n "unknown"
