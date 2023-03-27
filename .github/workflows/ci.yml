@@ -45,6 +45,5 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
-      - name: Run (${{ matrix.configuration }})
-         run: make ${{ matrix.configuration }}
+      - run: make ${{ matrix.configuration }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
