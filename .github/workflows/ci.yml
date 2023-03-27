@@ -1,9 +1,6 @@
 name: CI
-
-on:
-  push:
-  pull_request:
-
+run-name: ${{ github.actor }} CI
+on: [push]
 jobs:
   build-and-test:
 
@@ -34,6 +31,17 @@ jobs:
             compiler: msvc
 
     steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 Branch : ${{ github.ref }} repository : ${{ github.repository }}."
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - name: List files in the repository
+        run: |
+          ls ${{ github.workspace }}
 
   # from https://stackoverflow.com/questions/57946173/github-actions-run-step-on-specific-os
   - if: runner.os == 'Windows'
@@ -45,10 +53,6 @@ jobs:
     with:
       all: cmake cppcheck clang-tidy
 
-  - name: Checkout Code
-    uses: actions/checkout@v3
-    with:
-      fetch-depth: 1
-
   - name: Run (${{ matrix.configuration }})
     run: make ${{ matrix.configuration }}
+  - run: echo "🍏 This job's status is ${{ job.status }}."
