@@ -39,7 +39,7 @@ jobs:
         run:  |
           case $RUNNER_OS in
             Linux)
-              apt install cmake cppcheck clang-tidy
+              sudo apt install -y cmake cppcheck clang-tidy
               ;;
             Windows)
               choco install cmake cppcheck clang-tidy
