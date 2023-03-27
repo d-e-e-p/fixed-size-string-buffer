@@ -5,7 +5,7 @@ C++ Header-only library
 [fixed_size_string_buffer.h](include/fixed_size_string_buffer.h) that instantiates
 a char array sized at compile-time. The queue stores string messages in a char ring buffer.
 When this buffer is full, oldest strings are deleted to make way for the new entries.
-Requires at least -std=c++14 . 
+Requires at least -std=c++17 . 
 
 ## Credits
 

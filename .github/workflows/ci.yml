@@ -45,5 +45,6 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
+      - run: clang-tidy --version
       - run: make ${{ matrix.configuration }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
