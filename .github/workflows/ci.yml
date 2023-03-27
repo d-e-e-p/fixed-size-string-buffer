@@ -33,7 +33,10 @@ jobs:
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 Branch : ${{ github.ref }} repository : ${{ github.repository }}."
+      - run: echo "🔎 Branch ${{ github.ref }} repository  ${{ github.repository }}."
+      - uses: lyricwulf/abc@v1
+        with:
+          all: cmake cppcheck clang-tidy
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
@@ -42,17 +45,6 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
-
-  # from https://stackoverflow.com/questions/57946173/github-actions-run-step-on-specific-os
-  - if: runner.os == 'Windows'
-    run: |
-      git config --global core.autocrlf false
-      git config --global core.eol lf
-
-  - uses: lyricwulf/abc@v1
-    with:
-      all: cmake cppcheck clang-tidy
-
-  - name: Run (${{ matrix.configuration }})
-    run: make ${{ matrix.configuration }}
-  - run: echo "🍏 This job's status is ${{ job.status }}."
+      - name: Run (${{ matrix.configuration }})
+         run: make ${{ matrix.configuration }}
+      - run: echo "🍏 This job's status is ${{ job.status }}."
