@@ -34,11 +34,23 @@ jobs:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 Branch ${{ github.ref }} repository  ${{ github.repository }}."
-      - uses: lyricwulf/abc@v1
-        with:
-          linux: cmake cppcheck clang-tidy
-          macos: cmake cppcheck llvm
-          windows: cmake cppcheck clang-tidy
+      - name:  Install
+        shell: bash
+        run:  |
+          case $RUNNER_OS in
+            Linux)
+              apt install cmake cppcheck clang-tidy
+              ;;
+            Windows)
+              choco install cmake cppcheck clang-tidy
+              ;;
+            macOS)
+              brew install cmake cppcheck
+              ;;
+            *)
+              echo -n "unknown"
+              ;;
+          esac
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
@@ -47,7 +59,6 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
-      - run: clang-tidy --version
       - run: make ${{ matrix.configuration }}
       - run: make test
       - run: make bench
