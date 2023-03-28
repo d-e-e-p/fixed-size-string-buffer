@@ -19,6 +19,7 @@
 #pragma clang diagnostic ignored "-Wnarrowing"
 
 #include <string>
+#include <cwchar>
 #include <string_view>
 #include <array>
 #include <vector>
@@ -297,9 +298,9 @@ void FixedSizeStringBuffer<SPACE>::print_box_line(std::ostream &os, const SlotSt
   box_t box = is_top ? box_top : box_bot;
 
   // insert space on left
-  // NOLINTNEXTLINE (-Wold-style-cast)
-  std::wstring wstr = (std::wstring) L"           " + box[CT::left] + L' ';
-  os << ws2s(wstr);
+  wchar_t cleft = box[CT::left];
+  std::wstring wleft{cleft};
+  os << "           " << ws2s(wleft) << ' ';
   // characters
   for (size_t i = 0; i < max_space_; i++) {
     wchar_t copen  = box[CT::space];

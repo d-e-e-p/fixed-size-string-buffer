@@ -107,12 +107,13 @@ void compare()
 
   auto delta3 = duration_cast<nanoseconds>(t2 - t1).count() / trials;
 
-  // NOLINTBEGIN
+  auto ratio2 = static_cast<long double>(delta2) / delta1;
+  auto ratio3 = static_cast<long double>(delta3) / delta1;
+
   std::cout.precision(1);
   std::cout << " │ " << std::setw(6) << LEN << " │ " << std::setw(6) <<  CAPACITY << "." << EXCESS << " │ " 
     << std::setw(6) << delta1 << "ns │" << std::setw(6) << delta2 << "ns │" << std::setw(6) << delta3 << "ns │" 
-   << std::fixed << std::setw(7) << 1.0 << "X │" << std::setw(7) << (long double) delta2 / delta1 << "X │" << std::setw(7) << (long double) delta3 / delta1 << "X │" << "\n";
-  // NOLINTEND
+   << std::fixed << std::setw(7) << 1.0 << "X │" << std::setw(7) << ratio2 << "X │" << std::setw(7) << ratio3 << "X │" << "\n";
 
   auto num = static_cast<size_t>(str_capacity_in_buffer);
   assert(rfb.size() == num);

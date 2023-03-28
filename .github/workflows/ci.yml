@@ -43,6 +43,7 @@ jobs:
               ;;
             Windows)
               echo skip choco install cmake 
+              chcp 65001
               ;;
             macOS)
               echo skip brew install cmake cppcheck
