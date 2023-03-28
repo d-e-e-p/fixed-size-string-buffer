@@ -26,31 +26,35 @@ for line in sys.stdin:
 endef
 export PRINT_HELP_PYSCRIPT
 
-BROWSER := python -c "$$BROWSER_PYSCRIPT"
+BROWSER := python3 -c "$$BROWSER_PYSCRIPT"
 
 help: ## this message
-	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
+	@python3 -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 clean: ## remove build dir
 	rm -rf build/
 
 debug: ## create slow debug version
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCMAKE_BUILD_TYPE="Debug" --fresh
+	rm -rf build/
+	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCMAKE_BUILD_TYPE="Debug"
 	cmake --build build --config Debug
 	build/bin/Debug/fixed_size_string_buffer
 
 release: ## create optimized release version
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCMAKE_BUILD_TYPE="Release" --fresh
+	rm -rf build/
+	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCMAKE_BUILD_TYPE="Release" 
 	cmake --build build --config Release
 	./build/bin/Release/fixed_size_string_buffer
 
 test: ## run tests under test/ dir
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DENABLE_UNIT_TESTING=1 -DCMAKE_BUILD_TYPE="Release" --fresh
+	rm -rf build/
+	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DENABLE_UNIT_TESTING=1 -DCMAKE_BUILD_TYPE="Release" 
 	cmake --build build --config Release
 	cd build/ && ctest -C Release -VV
 
 bench: ## run benchmark under bench/ dir
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DENABLE_BENCH=1 -DCMAKE_BUILD_TYPE="Release" --fresh
+	rm -rf build/
+	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DENABLE_BENCH=1 -DCMAKE_BUILD_TYPE="Release" 
 	cmake --build build --config Release
 	./build/bench/unit_bench
 

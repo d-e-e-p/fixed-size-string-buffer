@@ -1,8 +1,8 @@
 include(FetchContent)
 FetchContent_Declare(gbench
   QUIET
-  URL https://github.com/google/benchmark/archive/refs/tags/v1.7.1.zip
   DOWNLOAD_EXTRACT_TIMESTAMP true
+  URL https://github.com/google/benchmark/archive/refs/tags/v1.7.1.zip
 )
 
 set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Suppressing benchmark's tests" FORCE)

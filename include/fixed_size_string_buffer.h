@@ -16,7 +16,6 @@
  */
 
 #pragma once
-#pragma clang diagnostic ignored "-Wnarrowing"
 
 #include <string>
 #include <cwchar>

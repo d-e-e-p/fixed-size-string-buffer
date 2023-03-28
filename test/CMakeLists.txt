@@ -1,8 +1,8 @@
 include(FetchContent)
 FetchContent_Declare(gtest
   QUIET
-  URL https://github.com/google/googletest/archive/refs/tags/v1.13.0.zip
   DOWNLOAD_EXTRACT_TIMESTAMP true
+  URL https://github.com/google/googletest/archive/refs/tags/v1.13.0.zip
 )
 
 

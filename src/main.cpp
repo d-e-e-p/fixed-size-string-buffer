@@ -1,6 +1,6 @@
-#pragma clang diagnostic ignored "-Wimplicit-int-float-conversion"
-#pragma clang diagnostic ignored "-Wold-style-cast"
-#pragma clang diagnostic ignored "-Wnarrowing"
+//#pragma clang diagnostic ignored "-Wimplicit-int-float-conversion"
+//#pragma clang diagnostic ignored "-Wold-style-cast"
+//#pragma clang diagnostic ignored "-Wnarrowing"
 
 #undef NDEBUG // allow assert
 
