@@ -39,11 +39,12 @@ jobs:
         run:  |
           case $RUNNER_OS in
             Linux)
-              sudo apt install -y cmake cppcheck clang-tidy
+              echo skip sudo apt install -y cmake cppcheck clang-tidy
               ;;
             Windows)
               echo skip choco install cmake 
-              chcp 65001
+              echo chcp 65001
+              echo $PATH
               ;;
             macOS)
               echo skip brew install cmake cppcheck
