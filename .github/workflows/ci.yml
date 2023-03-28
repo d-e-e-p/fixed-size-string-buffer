@@ -29,6 +29,8 @@ jobs:
           - toolchain: windows-msvc
             os: windows-latest
             compiler: msvc
+            shell: wslbash
+
 
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
