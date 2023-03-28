@@ -38,13 +38,11 @@ jobs:
       - run: echo "🎉 job triggered by ${{ github.event_name }} event."
       - run: echo "🐧 running on ${{ runner.os }} server branch ${{ github.ref }} repository  ${{ github.repository }}."
       - name: Set up Windows Environment
+        if: runner.os == 'Windows'
         uses: Vampire/setup-wsl@v2
         with:
-          distro: ubuntu
-          install-wsl: true
-          run-on-windows: true
-          additional-packages:
-            cmake
+          update: 'true'
+          additional-packages: cmake
 
       - name:  Install
         run:  |
