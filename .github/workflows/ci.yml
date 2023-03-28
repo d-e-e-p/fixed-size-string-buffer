@@ -21,23 +21,32 @@ jobs:
           - toolchain: linux-gcc
             os: ubuntu-latest
             compiler: gcc
+            shell: bash
 
           - toolchain: macos-clang
             os: macos-latest
             compiler: clang
+            shell: bash
 
           - toolchain: windows-msvc
             os: windows-latest
             compiler: msvc
-            shell: wslbash
+            shell: wsl-bash {0}
 
 
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 Branch ${{ github.ref }} repository  ${{ github.repository }}."
+      - run: echo "🎉 job triggered by ${{ github.event_name }} event."
+      - run: echo "🐧 running on ${{ runner.os }} server branch ${{ github.ref }} repository  ${{ github.repository }}."
+      - name: Set up Windows Environment
+        uses: Vampire/setup-wsl@v2
+        with:
+          distro: ubuntu
+          install-wsl: true
+          run-on-windows: true
+          additional-packages:
+            cmake
+
       - name:  Install
-        shell: bash
         run:  |
           case $RUNNER_OS in
             Linux)
