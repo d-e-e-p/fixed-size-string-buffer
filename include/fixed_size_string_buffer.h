@@ -179,10 +179,10 @@ void FixedSizeStringBuffer<SPACE>::push(std::string_view str)
     size_t seg2 = strlen - seg1;
     back_ = seg2;
 
-    std::copy(str.begin(), &str[seg1], &chars_[start]);
-    std::copy(&str[seg1], str.end(), &chars_[0]);
+    std::copy(&str[0], &str[seg1], &chars_[start]);
+    std::copy(&str[seg1], &str[strlen], &chars_[0]);
   }
-  //ptr_.push_back(Pointer{start, strlen});
+  // use emplace object creation instead of ptr_.push_back(Pointer{start, strlen});
   ptr_.emplace_back(start, strlen);
   free_space_ -= strlen;
 }
