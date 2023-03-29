@@ -24,7 +24,7 @@ jobs:
         uses: Vampire/setup-wsl@v2
         with:
           update: 'false'
-          additional-packages: cmake
+          additional-packages: build-essential make cmake clang clang-tidy python3
       - run: echo "🎉 job triggered by ${{ github.event_name }} event."
       - run: echo "🐧 running on ${{ runner.os }} server branch ${{ github.ref }} repository  ${{ github.repository }}."
       - name: Checkout Code
