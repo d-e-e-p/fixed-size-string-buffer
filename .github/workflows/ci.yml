@@ -27,30 +27,11 @@ jobs:
           additional-packages: cmake
       - run: echo "🎉 job triggered by ${{ github.event_name }} event."
       - run: echo "🐧 running on ${{ runner.os }} server branch ${{ github.ref }} repository  ${{ github.repository }}."
-
-      - name:  Install
-        run:  |
-          case $RUNNER_OS in
-            Linux)
-              echo skip sudo apt install -y cmake cppcheck clang-tidy
-              ;;
-            Windows)
-              echo skip choco install cmake 
-              echo chcp 65001
-              echo $PATH
-              ;;
-            macOS)
-              echo skip brew install cmake cppcheck
-              ;;
-            *)
-              echo -n "unknown"
-              ;;
-          esac
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - run: echo "💡 ${{ github.repository }} has been cloned to ${{ runner.os }}"
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
