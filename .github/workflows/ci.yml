@@ -34,7 +34,7 @@ jobs:
       - run: echo "💡 ${{ github.repository }} has been cloned to ${{ runner.os }}"
       - name: List files in the repository
         run: |
-          ls ${{ github.workspace }}
+          echo ls ${{ github.workspace }}
       - run: make ${{ matrix.configuration }}
       - run: make test
       - run: make bench
