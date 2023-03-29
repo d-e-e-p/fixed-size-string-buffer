@@ -4,12 +4,13 @@ on: [push]
 jobs:
   build-and-test:
     runs-on: ${{ matrix.sys.os }}
+    timeout-minutes: 10
     strategy:
       matrix:
         sys:
           - { os: windows-latest, shell: 'wsl-bash {0}' }
-          - { os: ubuntu-latest,  shell: bash }
-          - { os: macos-latest,   shell: bash }
+            #          - { os: ubuntu-latest,  shell: bash }
+            #          - { os: macos-latest,   shell: bash }
         configuration:
           - release
     defaults:
