@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         sys:
-          - { os: windows-latest, shell: bash }
+          - { os: windows-latest, shell: 'wsl-bash {0}' }
           - { os: ubuntu-latest,  shell: bash }
           - { os: macos-latest,   shell: bash }
         configuration:
@@ -23,7 +23,7 @@ jobs:
         if: runner.os == 'Windows'
         uses: Vampire/setup-wsl@v2
         with:
-          update: 'true'
+          update: 'false'
           additional-packages: cmake
       - run: echo "🎉 job triggered by ${{ github.event_name }} event."
       - run: echo "🐧 running on ${{ runner.os }} server branch ${{ github.ref }} repository  ${{ github.repository }}."
