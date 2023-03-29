@@ -33,6 +33,9 @@ jobs:
             compiler: msvc
             shell: wsl-bash {0}
 
+        defaults:
+          run:
+            shell: ${{ matrix.include.shell }}
 
     steps:
       - run: echo "🎉 job triggered by ${{ github.event_name }} event."
