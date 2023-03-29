@@ -19,14 +19,14 @@ jobs:
       OS: ${{ matrix.sys.os }}
 
     steps:
-      - run: echo "🎉 job triggered by ${{ github.event_name }} event."
-      - run: echo "🐧 running on ${{ runner.os }} server branch ${{ github.ref }} repository  ${{ github.repository }}."
       - name: Set up Windows Environment
         if: runner.os == 'Windows'
         uses: Vampire/setup-wsl@v2
         with:
           update: 'true'
           additional-packages: cmake
+      - run: echo "🎉 job triggered by ${{ github.event_name }} event."
+      - run: echo "🐧 running on ${{ runner.os }} server branch ${{ github.ref }} repository  ${{ github.repository }}."
 
       - name:  Install
         run:  |
