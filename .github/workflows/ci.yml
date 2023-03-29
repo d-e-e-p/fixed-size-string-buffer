@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         sys:
-          - { os: windows-latest, shell: 'wsl-bash {0}' }
+          - { os: windows-latest, shell: wsl }
           - { os: ubuntu-latest,  shell: bash  }
           - { os: macos-latest,   shell: bash  }
         configuration:
