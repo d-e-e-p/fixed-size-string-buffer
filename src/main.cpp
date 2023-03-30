@@ -3,6 +3,9 @@
 //#pragma clang diagnostic ignored "-Wnarrowing"
 
 #undef NDEBUG // allow assert
+#ifdef MSVC
+#pragma execution_character_set("utf-8")
+#endif
 
 #include <array>
 #include <cassert>

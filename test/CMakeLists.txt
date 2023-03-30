@@ -1,5 +1,5 @@
 include(FetchContent)
-FetchContent_Declare(gtest
+FetchContent_Declare(googletest-src 
   QUIET
   DOWNLOAD_EXTRACT_TIMESTAMP true
   URL https://github.com/google/googletest/archive/refs/tags/v1.13.0.zip
@@ -8,7 +8,7 @@ FetchContent_Declare(gtest
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 set(BUILD_GMOCK ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(gtest)
+FetchContent_MakeAvailable(googletest-src)
 
 set(test_src
   run_all.cpp
