@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         sys:
-          - { os: windows-latest, shell: 'wsl-bash {0}' }
+          - { os: windows-latest, shell: bash }
             #          - { os: ubuntu-latest,  shell: bash }
             #          - { os: macos-latest,   shell: bash }
         configuration:
@@ -20,12 +20,6 @@ jobs:
       OS: ${{ matrix.sys.os }}
 
     steps:
-      - name: Set up Windows Environment
-        if: runner.os == 'Windows'
-        uses: Vampire/setup-wsl@v2
-        with:
-          update: 'false'
-          additional-packages: build-essential make cmake clang clang-tidy python3
       - run: echo "🎉 job triggered by ${{ github.event_name }} event."
       - run: echo "🐧 running on ${{ runner.os }} server branch ${{ github.ref }} repository  ${{ github.repository }}."
       - name: Checkout Code
@@ -36,7 +30,7 @@ jobs:
       - name: List files in the repository
         run: |
           echo ls ${{ github.workspace }}
-          #    - run: make ${{ matrix.configuration }}
       - run: make test
       - run: make bench
+      - run: make ${{ matrix.configuration }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
