@@ -28,7 +28,7 @@ jobs:
           fetch-depth: 1
       - run: echo "💡 ${{ github.repository }} has been cloned to ${{ runner.os }}"
       - if: runner.os == 'Windows'
-        run: [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
+        run: $OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
       - name: List files in the repository
         run: |
           ls '${{ github.workspace }}'
