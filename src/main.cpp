@@ -107,8 +107,8 @@ void compare()
 
   auto delta3 = duration_cast<nanoseconds>(t2 - t1).count() / trials;
 
-  auto ratio2 = static_cast<long double>(delta2) / delta1;
-  auto ratio3 = static_cast<long double>(delta3) / delta1;
+  auto ratio2 = static_cast<long double>(delta2) / static_cast<long double>(delta1);
+  auto ratio3 = static_cast<long double>(delta3) / static_cast<long double>(delta1);
 
   std::cout.precision(1);
   std::cout << " │ " << std::setw(6) << LEN << " │ " << std::setw(6) <<  CAPACITY << "." << EXCESS << " │ " 

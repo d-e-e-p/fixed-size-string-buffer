@@ -17,6 +17,10 @@
 
 #pragma once
 
+#ifdef MSVC
+#pragma execution_character_set("utf-8")
+#endif
+
 #include <string>
 #include <cwchar>
 #include <string_view>
