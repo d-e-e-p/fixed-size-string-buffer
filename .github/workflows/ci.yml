@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         sys:
-          - { os: windows-latest, shell: bash }
+          - { os: windows-latest, shell: pwsh }
             #          - { os: ubuntu-latest,  shell: bash }
             #          - { os: macos-latest,   shell: bash }
         configuration:
@@ -28,7 +28,7 @@ jobs:
           fetch-depth: 1
       - run: echo "💡 ${{ github.repository }} has been cloned to ${{ runner.os }}"
       - if: runner.os == 'Windows'
-        run: . "$(code --locate-shell-integration-path bash)"
+        run: [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
       - name: List files in the repository
         run: |
           ls '${{ github.workspace }}'
