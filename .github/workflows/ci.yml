@@ -32,9 +32,9 @@ jobs:
       - name: List files in the repository
         run: |
           ls '${{ github.workspace }}'
-      - run: make test
-      - run: make bench
       - run: make ${{ matrix.configuration }}
+      - run: make bench
+      - run: make test
       - name: Show content of workspace at its completion
         run: find $RUNNER_WORKSPACE
       - run: echo "🍏 This job's status is ${{ job.status }}."
