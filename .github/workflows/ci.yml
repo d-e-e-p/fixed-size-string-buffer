@@ -27,10 +27,14 @@ jobs:
         with:
           fetch-depth: 1
       - run: echo "💡 ${{ github.repository }} has been cloned to ${{ runner.os }}"
+      - if: runner.os == 'Windows'
+        run: . "$(code --locate-shell-integration-path bash)"
       - name: List files in the repository
         run: |
-          echo ls ${{ github.workspace }}
+          ls '${{ github.workspace }}'
       - run: make test
       - run: make bench
       - run: make ${{ matrix.configuration }}
+      - name: Show content of workspace at its completion
+        run: find $RUNNER_WORKSPACE
       - run: echo "🍏 This job's status is ${{ job.status }}."
