@@ -124,6 +124,15 @@ set_target_properties(
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
 )
+
+
+# https://stackoverflow.com/questions/543203/cmake-runtime-output-directory-on-windows
+# hack to get around the "Debug" and "Release" directories cmake tries to add on Windows
+if (MSVC)
+    set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+endif()
+
+
 if(BUILD_EXECUTABLE AND ENABLE_UNIT_TESTING)
     #  set_target_properties(
     #LIB
