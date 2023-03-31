@@ -154,10 +154,17 @@ void example2()
 #include <Windows.h>
 #include <cstdio>
 
+#include <io.h>    // for _setmode()
+#include <fcntl.h> // for _O_U16TEXT
+
+
 void example3()
 {
+	  //_setmode(_fileno(stdout), _O_U16TEXT);
+
     // Set console code page to UTF-8 so console known how to interpret string data
     SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
 
     // Enable buffering to prevent VS from chopping up UTF-8 byte sequences
     setvbuf(stdout, nullptr, _IOFBF, 1000);
