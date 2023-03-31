@@ -160,7 +160,6 @@ void example2()
 
 void example3()
 {
-	  //_setmode(_fileno(stdout), _O_U16TEXT);
 
     // Set console code page to UTF-8 so console known how to interpret string data
     SetConsoleOutputCP(CP_UTF8);
@@ -168,6 +167,7 @@ void example3()
 
     // Enable buffering to prevent VS from chopping up UTF-8 byte sequences
     setvbuf(stdout, nullptr, _IOFBF, 1000);
+	  _setmode(_fileno(stdout), _O_U16TEXT);
 
     std::string test = u8"Greek: αβγδ; German: Übergrößenträger";
     std::cout << test << std::endl;
