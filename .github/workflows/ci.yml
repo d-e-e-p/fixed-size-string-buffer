@@ -33,15 +33,16 @@ jobs:
           $OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
           Get-ChildItem -Path "." -Recurse | ForEach-Object {
             if ($_.Extension -eq ".h" -or $_.Extension -eq ".cpp") {
-                echo "converting filename : $_.FullName"
+                echo "converting filename : $_"
                 $content = Get-Content $_.FullName -Encoding UTF8
                 Set-Content $_.FullName $content -Encoding UTF8 -Force
             }
           }
           Get-ChildItem -Path "." -Recurse | ForEach-Object {
             if ($_.Extension -eq ".h" -or $_.Extension -eq ".cpp") {
-                echo "filename : $_.FullName"
-                Get-Content $_.FullName
+                $content = Get-Content $_.FullName
+                echo "filename : $_"
+                echo "content : $content"
             }
           }
       - name: List files in the repository

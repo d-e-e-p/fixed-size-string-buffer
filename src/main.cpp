@@ -2,6 +2,10 @@
 //#pragma clang diagnostic ignored "-Wold-style-cast"
 //#pragma clang diagnostic ignored "-Wnarrowing"
 
+#define UNICODE 
+#define _UNICODE 
+#pragma execution_character_set("utf-8")
+
 #undef NDEBUG // allow assert
 #ifdef _MSC_VER
 #pragma execution_character_set("utf-8")
