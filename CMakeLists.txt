@@ -66,6 +66,11 @@ include(cmake/SourcesAndHeaders.cmake)
 if(BUILD_EXECUTABLE)
   add_executable(${PROJECT_NAME} ${exe_sources})
 
+  # execute after build
+  add_custom_command(TARGET  ${PROJECT_NAME} POST_BUILD
+    COMMAND $<TARGET_FILE:${PROJECT_NAME}>
+  )
+
   if(VERBOSE_OUTPUT)
     verbose_message("Found the following sources:")
     foreach(source IN LISTS exe_sources)

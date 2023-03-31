@@ -14,6 +14,10 @@ set(bench_src
 
 add_executable(unit_bench ${bench_src})
 target_compile_features(unit_bench PRIVATE cxx_std_17)
+# execute after build
+add_custom_command(TARGET unit_bench POST_BUILD
+    COMMAND $<TARGET_FILE:unit_bench>
+)
 
 
 target_link_libraries(unit_bench

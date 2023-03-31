@@ -38,13 +38,11 @@ debug: ## create slow debug version
 	rm -rf build/
 	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCMAKE_BUILD_TYPE="Debug"
 	cmake --build build --config Debug
-	build/bin/Debug/fixed_size_string_buffer
 
 release: ## create optimized release version
 	rm -rf build/
 	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCMAKE_BUILD_TYPE="Release" 
 	cmake --build build --config Release
-	./build/bin/Release/fixed_size_string_buffer
 
 test: ## run tests under test/ dir
 	rm -rf build/
@@ -56,7 +54,6 @@ bench: ## run benchmark under bench/ dir
 	rm -rf build/
 	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DENABLE_BENCH=1 -DCMAKE_BUILD_TYPE="Release" 
 	cmake --build build --config Release
-	./build/bench/unit_bench
 
 coverage: ## check code coverage 
 	rm -rf build/
