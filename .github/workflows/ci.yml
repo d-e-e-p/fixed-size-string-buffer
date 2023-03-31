@@ -53,6 +53,22 @@ jobs:
           file */*.cpp */*.h
           #- run: make ${{ matrix.configuration }}
           #- run: make bench
+      - name: change encoding to utf8
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          for file in *.cpp *.h; do
+            iconv -f ISO-8859-1 -t UTF-8 "$file" > "${file%.cpp}.utf8"
+            echo -ne '\xEF\xBB\xBF' > "$file"
+            cat "${file%.cpp}.utf8" >> "$file"
+          done
+      - name: List files in the repository
+        run: |
+          ls '${{ github.workspace }}'
+          chcp.com 65001
+          file */*.cpp */*.h
+          #- run: make ${{ matrix.configuration }}
+          #- run: make bench
       - run: make test
       - name: Show content of workspace at its completion
         run: ls $RUNNER_WORKSPACE
