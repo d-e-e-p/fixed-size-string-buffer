@@ -49,8 +49,10 @@ jobs:
       - name: List files in the repository
         run: |
           ls '${{ github.workspace }}'
-      - run: make ${{ matrix.configuration }}
-      - run: make bench
+          chcp.com 65001
+          file */*.cpp */*.h
+          #- run: make ${{ matrix.configuration }}
+          #- run: make bench
       - run: make test
       - name: Show content of workspace at its completion
         run: ls $RUNNER_WORKSPACE
