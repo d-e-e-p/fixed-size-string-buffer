@@ -173,8 +173,21 @@ void example3()
     std::cout << test << std::endl;
 }
 
+#include <clocale>
+#include <iostream>
+
+using namespace std;
+
+void example4() {
+  std::setlocale(LC_ALL, "");
+  std::wcout << L'\u2780';
+  std::wstring test = u8"Greek: αβγδ; German: Übergrößenträger";
+  std::wcout << test << std::endl;
+}
+
 int main()
 {
+  example4();
   example3();
   example1();
   example2();
