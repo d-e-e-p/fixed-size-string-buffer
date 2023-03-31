@@ -27,8 +27,16 @@ jobs:
         with:
           fetch-depth: 1
       - run: echo "💡 ${{ github.repository }} has been cloned to ${{ runner.os }}"
-      - if: runner.os == 'Windows'
-        run: $OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+      - name: change encoding to utf8
+        if: runner.os == 'Windows'
+        run: |
+          $OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+          Get-ChildItem -Path "." -Recurse | ForEach-Object {
+            if ($_.Extension -eq ".h" -or $_.Extension -eq ".cpp") {
+                $content = Get-Content $_.FullName -Encoding UTF8
+                Set-Content $_.FullName $content -Encoding UTF8 -Force
+            }
+          }
       - name: List files in the repository
         run: |
           ls '${{ github.workspace }}'
