@@ -188,7 +188,7 @@ void example4() {
   system("chcp.com 65001");
   system("echo Ιλιάδα");
   SetConsoleOutputCP(CP_UTF8);
-  SetConsoleCP(P_UTF8);
+  SetConsoleCP(CP_UTF8);
   printf( "Testing unicode -- English -- Ελληνικά -- Español -- Русский. aäbcdefghijklmnoöpqrsßtuüvwxyz\n" );
 
 
