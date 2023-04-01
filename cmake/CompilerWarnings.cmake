@@ -1,7 +1,6 @@
 # from here:
 #
-# https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Avai
-# lable.md
+# https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md
 # Courtesy of Jason Turner
 
 function(set_project_warnings project_name)
@@ -38,7 +37,6 @@ function(set_project_warnings project_name)
               # conversion has been implicitly applied
       /permissive- # standards conformance mode for MSVC compiler.
       /D _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
-      /utf-8
   )
 
   set(CLANG_WARNINGS

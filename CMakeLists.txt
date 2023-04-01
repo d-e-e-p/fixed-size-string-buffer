@@ -365,6 +365,13 @@ endif()
 message(STATUS "Finished building requirements for installing the package.\n")
 
 #
+# add /utf8 handling on ms visual code
+#
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PUBLIC /utf-8)
+endif()
+
+#
 # Unit testing setup
 #
 

@@ -1,11 +1,9 @@
 //#pragma clang diagnostic ignored "-Wimplicit-int-float-conversion"
 //#pragma clang diagnostic ignored "-Wold-style-cast"
 //#pragma clang diagnostic ignored "-Wnarrowing"
+//#pragma execution_character_set("utf-8")
 
 #undef NDEBUG // allow assert
-//#ifdef _MSC_VER
-//#pragma execution_character_set("utf-8")
-//#endif
 
 #include <array>
 #include <cassert>
