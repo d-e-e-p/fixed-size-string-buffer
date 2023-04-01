@@ -76,9 +76,9 @@ jobs:
           ls '${{ github.workspace }}'
           chcp.com 65001
           file */*.cpp */*.h
-          #- run: make ${{ matrix.configuration }}
+      - run: make ${{ matrix.configuration }}
           #- run: make bench
-      - run: make test
+          #- run: make test
       - name:  encoding to utf8
         if: runner.os == 'Windows'
         shell: bash
