@@ -1,6 +1,11 @@
+---
 name: CI
 run-name: ${{ github.actor }} CI
-on: [push]
+on:
+  push:
+    paths-ignore:
+      - 'README.md'
+      - 'docs/**'
 jobs:
   build-and-test:
     runs-on: ${{ matrix.sys.os }}

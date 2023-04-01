@@ -17,13 +17,9 @@
 
 #pragma once
 
-#define UNICODE 
-#define _UNICODE 
-#pragma execution_character_set("utf-8")
-
-#ifdef _MSC_VER
-#pragma execution_character_set("utf-8")
-#endif
+//#ifdef _MSC_VER
+//#pragma execution_character_set("utf-8")
+//#endif
 
 #include <string>
 #include <cwchar>
