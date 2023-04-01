@@ -9,8 +9,8 @@ jobs:
       matrix:
         sys:
           - { os: windows-latest, shell: bash }
-            #          - { os: ubuntu-latest,  shell: bash }
-            #          - { os: macos-latest,   shell: bash }
+          - { os: ubuntu-latest,  shell: bash }
+          - { os: macos-latest,   shell: bash }
         configuration:
           - release
     defaults:
@@ -20,41 +20,19 @@ jobs:
       OS: ${{ matrix.sys.os }}
 
     steps:
-      - run: echo "🎉 job triggered by ${{ github.event_name }} event."
-      - run: echo "🐧 running on ${{ runner.os }} server branch ${{ github.ref }} repository  ${{ github.repository }}."
+      - run: |
+          echo "🎉 job triggered by ${{ github.event_name }} event."
+          echo "🐧 running on ${{ runner.os }} server branch ${{ github.ref }} repository  ${{ github.repository }}."
+          echo "💡 cloning ${{ github.repository }} to ${{ runner.os }}"
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
-      - run: echo "💡 ${{ github.repository }} has been cloned to ${{ runner.os }}"
-      - name: change encoding to utf8
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
-          Get-ChildItem -Path "." -Recurse | ForEach-Object {
-            if ($_.Extension -eq ".h" -or $_.Extension -eq ".cpp") {
-                echo "converting filename : $_"
-                $content = Get-Content $_.FullName -Encoding UTF8
-                Set-Content $_.FullName $content -Encoding UTF8 -Force
-            }
-          }
-          Get-ChildItem -Path "." -Recurse | ForEach-Object {
-            if ($_.Extension -eq ".h" -or $_.Extension -eq ".cpp") {
-                $content = Get-Content $_.FullName
-                echo "filename : $_"
-                echo "content : $content"
-            }
-          }
-      - name: List files in the repository
-        run: |
-          ls '${{ github.workspace }}'
-          chcp.com 65001
-          file */*.cpp */*.h
       - name: change encoding to utf8 with BOM
         if: runner.os == 'Windows'
         shell: bash
         run: |
+          chcp.com 65001
           for file in */*.cpp */*.h; do
             iconv -f UTF-8 -t UTF-8 "$file" > "${file%.cpp}.utf8"
             echo -ne '\xEF\xBB\xBF' > "$file"
