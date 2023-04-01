@@ -181,9 +181,9 @@ using namespace std;
 void example4() {
   std::cout << " example 4 ...........................\n";
   std::setlocale(LC_ALL, "");
-  std::wcout << L'\u2780';
-  std::wstring test = "Greek: αβγδ; German: Übergrößenträger";
-  std::wcout << test << std::endl;
+  std::wcout << L'\u2780' << std::endl;
+  std::string test = "Greek: αβγδ; German: Übergrößenträger";
+  std::cout << test << std::endl;
 }
 
 int main()
