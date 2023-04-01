@@ -2,10 +2,6 @@
 //#pragma clang diagnostic ignored "-Wold-style-cast"
 //#pragma clang diagnostic ignored "-Wnarrowing"
 
-#define UNICODE 
-#define _UNICODE 
-#pragma execution_character_set("utf-8")
-
 #undef NDEBUG // allow assert
 #ifdef _MSC_VER
 #pragma execution_character_set("utf-8")
@@ -149,60 +145,8 @@ void example2()
     " ╰────────┴──────────┴──────────┴─────────┴─────────┴─────────┴─────────┴─────────╯\n";
 }
 
-/*
-#include <string>
-#include <iostream>
-#include <Windows.h>
-#include <cstdio>
-
-#include <io.h>    // for _setmode()
-#include <fcntl.h> // for _O_U16TEXT
-
-
-void example3()
-{
-
-    // Set console code page to UTF-8 so console known how to interpret string data
-    SetConsoleOutputCP(CP_UTF8);
-    SetConsoleCP(CP_UTF8);
-
-    // Enable buffering to prevent VS from chopping up UTF-8 byte sequences
-    setvbuf(stdout, nullptr, _IOFBF, 1000);
-	  _setmode(_fileno(stdout), _O_U16TEXT);
-
-    std::string test = u8"Greek: αβγδ; German: Übergrößenträger";
-    std::cout << test << std::endl;
-}
-*/
-
-#include <clocale>
-#include <iostream>
-#include <cstdio>
-#include <locale>
-#include <windows.h>
-
-
-void example4() {
-  std::setlocale(LC_ALL, ".UTF8");
-  SetConsoleOutputCP(CP_UTF8);
-  system("chcp.com 65001");
-  system("echo Ιλιάδα");
-  SetConsoleOutputCP(CP_UTF8);
-  SetConsoleCP(CP_UTF8);
-  printf( "Testing unicode -- English -- Ελληνικά -- Español -- Русский. aäbcdefghijklmnoöpqrsßtuüvwxyz\n" );
-
-
-  std::cout << " example 4 ...........................\n";
-  std::wcout << L'\u2780' << std::endl;
-  std::string test = "Greek: αβγδ; German: Übergrößenträger";
-  std::cout << test << std::endl;
-}
-
-
 int main()
 {
-  //example4();
-  //example3();
   example1();
   example2();
  

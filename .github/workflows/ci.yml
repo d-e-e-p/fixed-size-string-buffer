@@ -51,9 +51,7 @@ jobs:
           ls '${{ github.workspace }}'
           chcp.com 65001
           file */*.cpp */*.h
-          #- run: make ${{ matrix.configuration }}
-          #- run: make bench
-      - name: change encoding to utf8
+      - name: change encoding to utf8 with BOM
         if: runner.os == 'Windows'
         shell: bash
         run: |
@@ -63,30 +61,7 @@ jobs:
             cat "${file%.cpp}.utf8" >> "$file"
             file "$file"
           done
-      - name:  encoding to utf8
-        if: runner.os == 'Windows'
-        shell: bash
-        run: |
-          for file in */*.cpp */*.h; do
-            echo "file = $file"
-            cat "$file"
-          done
-      - name: List files in the repository
-        run: |
-          ls '${{ github.workspace }}'
-          chcp.com 65001
-          file */*.cpp */*.h
       - run: make ${{ matrix.configuration }}
-          #- run: make bench
-          #- run: make test
-      - name:  encoding to utf8
-        if: runner.os == 'Windows'
-        shell: bash
-        run: |
-          for file in */*.cpp */*.h; do
-            echo "file = $file"
-            cat "$file"
-          done
-      - name: Show content of workspace at its completion
-        run: ls -l $RUNNER_WORKSPACE
+      - run: make test
+      - run: make bench
       - run: echo "🍏 This job's status is ${{ job.status }}."
