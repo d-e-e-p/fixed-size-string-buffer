@@ -203,8 +203,8 @@ int main()
 {
   example4();
   //example3();
-  //example1();
-  //example2();
+  example1();
+  example2();
  
   return 0;
 }
