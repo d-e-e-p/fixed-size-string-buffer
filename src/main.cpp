@@ -177,41 +177,30 @@ void example3()
 
 #include <clocale>
 #include <iostream>
+#include <cstdio>
+#include <locale>
+#include <windows.h>
 
-using namespace std;
 
 void example4() {
-  std::cout << " example 4 ...........................\n";
   std::setlocale(LC_ALL, ".UTF8");
+  SetConsoleOutputCP(CP_UTF8);
+  system("chcp.com 65001");
+  system("echo Ιλιάδα");
+  SetConsoleOutputCP(CP_UTF8);
+  SetConsoleCP(P_UTF8);
+  printf( "Testing unicode -- English -- Ελληνικά -- Español -- Русский. aäbcdefghijklmnoöpqrsßtuüvwxyz\n" );
+
+
+  std::cout << " example 4 ...........................\n";
   std::wcout << L'\u2780' << std::endl;
   std::string test = "Greek: αβγδ; German: Übergrößenträger";
   std::cout << test << std::endl;
 }
 
-#include <io.h>
-#include <fcntl.h>
-#define specimen L"кошка 日本"
- 
-void test_crash_console_output( void )
-{
-    // 2022-12-13 latest is: Visual Studio 2022 version 17.3.4
-     printf("n_MSC_FULL_VER: %dn", _MSC_FULL_VER);
- 
-        fflush(stdout);
-        _setmode(_fileno(stdout), _O_U16TEXT);
-        // use here printf(); and you will het what you
-        // asked for, use wprinth and wide char 
-        // and all just works (dont forget the appropriate font)
-        wprintf(L"%s", specimen);
-        // back to the ANSI
-        fflush(stdout);
-        //_setmode(_fileno(stdout), _O_TEXT);
-}
- 
 
 int main()
 {
-  test_crash_console_output();
   example4();
   //example3();
   //example1();

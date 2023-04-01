@@ -43,6 +43,8 @@ release: ## create optimized release version
 	rm -rf build/
 	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCMAKE_BUILD_TYPE="Release" 
 	cmake --build build --config Release
+	build/bin/Release/fixed_size_string_buffer
+
 
 test: ## run tests under test/ dir
 	rm -rf build/
