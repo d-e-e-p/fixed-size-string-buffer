@@ -149,6 +149,7 @@ void example2()
     " ╰────────┴──────────┴──────────┴─────────┴─────────┴─────────┴─────────┴─────────╯\n";
 }
 
+/*
 #include <string>
 #include <iostream>
 #include <Windows.h>
@@ -172,6 +173,7 @@ void example3()
     std::string test = u8"Greek: αβγδ; German: Übergrößenträger";
     std::cout << test << std::endl;
 }
+*/
 
 #include <clocale>
 #include <iostream>
@@ -180,18 +182,40 @@ using namespace std;
 
 void example4() {
   std::cout << " example 4 ...........................\n";
-  std::setlocale(LC_ALL, "");
+  std::setlocale(LC_ALL, ".UTF8");
   std::wcout << L'\u2780' << std::endl;
   std::string test = "Greek: αβγδ; German: Übergrößenträger";
   std::cout << test << std::endl;
 }
 
+#include <io.h>
+#include <fcntl.h>
+#define specimen L"кошка 日本"
+ 
+void test_crash_console_output( void )
+{
+    // 2022-12-13 latest is: Visual Studio 2022 version 17.3.4
+     printf("n_MSC_FULL_VER: %dn", _MSC_FULL_VER);
+ 
+        fflush(stdout);
+        _setmode(_fileno(stdout), _O_U16TEXT);
+        // use here printf(); and you will het what you
+        // asked for, use wprinth and wide char 
+        // and all just works (dont forget the appropriate font)
+        wprintf(L"%s", specimen);
+        // back to the ANSI
+        fflush(stdout);
+        //_setmode(_fileno(stdout), _O_TEXT);
+}
+ 
+
 int main()
 {
+  test_crash_console_output();
   example4();
-  example3();
-  example1();
-  example2();
+  //example3();
+  //example1();
+  //example2();
  
   return 0;
 }
