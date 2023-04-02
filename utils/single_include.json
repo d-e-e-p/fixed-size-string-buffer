@@ -1,9 +1,0 @@
-{
-    "project": "Fixed size ring buffer for std::string messages",
-    "target": "single_include/fixed_size_string_buffer.h",
-    "sources": [
-      "include/FixedSizeStringBuffer.h",
-      "src/FixedSizeStringBuffer.cpp"
-    ],
-    "include_paths": ["src", "include"]
-}
