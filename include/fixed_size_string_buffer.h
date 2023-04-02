@@ -242,30 +242,56 @@ std::string ws2s(const std::wstring& wstr) {
 // NOLINTEND
 //
 namespace {
+
+  // from https://en.wikipedia.org/wiki/ASCII#Control_code_chart
+  static std::unordered_map<wchar_t, wchar_t> const k_escapes =
+    {
+      { 000, L'␀' },  //      NULL        ^@  \0     Null
+      { 001, L'␁' },  //      SOM SOH     ^A         Start of Heading
+      { 002, L'␂' },  //      EOA STX     ^B         Start of Text
+      { 003, L'␃' },  //      EOM ETX     ^C         End of Text
+      { 004, L'␄' },  //      EOT         ^D         End of Transmission
+      { 005, L'␅' },  //      WRU ENQ     ^E         Enquiry
+      { 006, L'␆' },  //      RU  ACK     ^F         Acknowledgement
+      { 007, L'␇' },  //      BELL        ^G  \a     Bell
+      { 010, L'␈' },  //      FE0 BS      ^H  \b     Backspace
+      { 011, L'␉' },  //      HT/SK       ^I  \t     Horizontal Tab
+      { 012, L'␊' },  //      LF          ^J  \n     Line Feed
+      { 013, L'␋' },  //      VTAB        ^K  \v     Vertical Tab
+      { 014, L'␌' },  //      FF          ^L  \f     Form Feed
+      { 015, L'␍' },  //      CR          ^M  \r     Carriage Return
+      { 016, L'␎' },  //      SO          ^N         Shift Out
+      { 017, L'␏' },  //      SI          ^O         Shift In
+      { 020, L'␐' },  //      DC0 DLE     ^P         Data Link Escape
+      { 021, L'␑' },  //      DC1         ^Q         Device Control 1 (often XON)
+      { 022, L'␒' },  //      DC2         ^R         Device Control 2
+      { 023, L'␓' },  //      DC3         ^S         Device Control 3 (often XOFF)
+      { 024, L'␔' },  //      DC4         ^T         Device Control 4
+      { 025, L'␕' },  //      ERR NAK     ^U         Negative Acknowledgement
+      { 026, L'␖' },  //      SYNC        ^V         Synchronous Idle
+      { 027, L'␗' },  //      LEM ETB     ^W         End of Transmission Block
+      { 030, L'␘' },  //      S0  CAN     ^X         Cancel
+      { 031, L'␙' },  //      S1  EM      ^Y         End of Medium
+      { 032, L'␚' },  //      S2  SS      ^Z         Substitute
+      { 033, L'␛' },  //      S3  ESC     ^[  \e     Escape
+      { 034, L'␜' },  //      S4  FS      ^\         File Separator
+      { 035, L'␝' },  //      S5  GS      ^]         Group Separator
+      { 036, L'␞' },  //      S6  RS      ^^         Record Separator
+      { 037, L'␟' },  //      S7  US      ^_         Unit Separator
+      { 177, L'␡' },  //      DEL         ^?         Delete
+      { ' ', L'␠' },  //      Space       
+    };
+
 // https://stackoverflow.com/questions/39262323/print-a-string-variable-with-its-special-characters
 wchar_t escaped(wchar_t const ch) {
 
-  static std::unordered_map<wchar_t, wchar_t> const escapes =
-    {
-       { ' ',  L'·' },        //  space
-       { '\a', L'⍾' },        //  7, ^G, alert (bell)
-       { '\b', L'⇦' },        //  8, ^H, backspace
-       { '\t', L'→' },        //  9, ^I, tab
-       { '\n', L'¶' },        // 10, ^J, newline / linefeed
-       { '\v', L'ⓚ' },        // 11, ^K, vertical tab
-       { '\f', L'ⓛ' },        // 12, ^L, formfeed
-       { '\r', L'↵' },        // 13, ^M, carriage return
-       { 27  , L'⒠' },        // 27, ^[, escape (NON-STANDARD)
-       { '1'  , L'␈' },        // 27, ^[, escape (NON-STANDARD)
-    };
-
-  if (escapes.find(ch) != escapes.end()) {
+  if (k_escapes.find(ch) != k_escapes.end()) {
     // found
-    return escapes.at(ch);
+    return k_escapes.at(ch);
   } else {
-    // not found
+    // not found..is it printable?
     if (! isprint(ch)) {
-      return L'￭';
+      return L'⍰';
     } else {
       return ch;
     }
@@ -377,7 +403,7 @@ void FixedSizeStringBuffer<SPACE>::print_char_line(std::ostream &os, const SlotS
   for (size_t i = 0; i < max_space_; i++) {
     // 3 slots for each char: [close][open][letter]
     wchar_t copen = slot.bopen[i] ? L'│' : L' ';
-    wchar_t cchar = (chars_[i] == '\0') ? L'•' : chars_[i];
+    wchar_t cchar = chars_[i];
     wchar_t cclos = slot.bclos[i] ? L'│' : L' ';
     // mark first element and end of last element in queue
     if (! empty()) {
