@@ -253,19 +253,18 @@ Using ring buffer with this large string length drops the push time to 16.1 ns.
 
 ### Porting
 
-Linux and MacOS build fine, see [https://github.com/d-e-e-p/fixed-size-string-buffer/actions] (https://github.com/d-e-e-p/fixed-size-string-buffer/actions)
+Linux and MacOS build fine, see [https://github.com/d-e-e-p/fixed-size-string-buffer/actions](https://github.com/d-e-e-p/fixed-size-string-buffer/actions)
 
-On windows, unicode in the source files make build a bit fragile.
-For MS Visual Code to handle unicode correctly on Windows, we need 4 steps:
+On windows, compiling wth unicode in the source files is a bit fragile.
+For MS Visual Code to handle unicode correctly on windows, we need 4 steps:
 
 1. Terminal output to support UTF8 (with `chcp.com 65001`)
-2. Source files encoded UTF-8 with BOM
+2. Source files encoded as UTF-8 *with* BOM
 3. `#pragma execution_character_set("utf-8")` in include files
 4. Compile with `/utf-8` option
 
 See section on `if: runner.os == 'Windows'` in the action config 
 [.github/workflows/ci.yml](.github/workflows/ci.yml). 
-
 
 
 
