@@ -15,16 +15,14 @@ void print(T buf) {
 }
 
 int main() {
-  std::cout << foo << "\n";
 
   // push strings into buffer
   print(foo);
   foo.push("1\t✊\n"); print(foo);
-  foo.push("2✋\t"); print(foo);
-  foo.push("3✌️\r\n"); 
+  foo.push("2 ✋\t"); print(foo);
+  foo.push("3 ✌️\r\n"); print(foo);
   // inspect them
   foo.dump_long_str(std::cout);
-  std::cout << foo << "\n";
   std::cout << "foo.front(): " << foo.front()  << "\n";
   std::cout << "foo.back() : " << foo.back()   << "\n"; 
   std::cout << "foo[0]     : " << foo[0]       << "\n";     
