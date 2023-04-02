@@ -27,10 +27,14 @@
 #include <array>
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <deque>
 #include <iomanip>
 #include <codecvt>
 #include <iostream>
+
+#include <ctype.h>
+
 
 using std::size_t;
 
@@ -236,6 +240,39 @@ std::string ws2s(const std::wstring& wstr) {
 }
 }
 // NOLINTEND
+//
+namespace {
+// https://stackoverflow.com/questions/39262323/print-a-string-variable-with-its-special-characters
+wchar_t escaped(wchar_t const ch) {
+
+  static std::unordered_map<wchar_t, wchar_t> const escapes =
+    {
+       { ' ',  L'·' },        //  space
+       { '\a', L'⍾' },        //  7, ^G, alert (bell)
+       { '\b', L'⇦' },        //  8, ^H, backspace
+       { '\t', L'→' },        //  9, ^I, tab
+       { '\n', L'¶' },        // 10, ^J, newline / linefeed
+       { '\v', L'ⓚ' },        // 11, ^K, vertical tab
+       { '\f', L'ⓛ' },        // 12, ^L, formfeed
+       { '\r', L'↵' },        // 13, ^M, carriage return
+       { 27  , L'⒠' },        // 27, ^[, escape (NON-STANDARD)
+       { '1'  , L'␈' },        // 27, ^[, escape (NON-STANDARD)
+    };
+
+  if (escapes.find(ch) != escapes.end()) {
+    // found
+    return escapes.at(ch);
+  } else {
+    // not found
+    if (! isprint(ch)) {
+      return L'￭';
+    } else {
+      return ch;
+    }
+  }
+
+}
+}
 
 template <size_t SPACE>
 typename FixedSizeStringBuffer<SPACE>::SlotState FixedSizeStringBuffer<SPACE>::mark_open_close_slots() 
@@ -352,7 +389,9 @@ void FixedSizeStringBuffer<SPACE>::print_char_line(std::ostream &os, const SlotS
         cclos = L'├';
       }
     }
-    std::wstring wline{copen, cchar, cclos};
+
+    cchar = escaped(cchar);
+    auto wline = std::wstring{copen, cchar, cclos};
     os << ws2s(wline);
   }
   os << "⎬ \n";
@@ -376,7 +415,8 @@ template <size_t SPACE>
 void FixedSizeStringBuffer<SPACE>::dump_long_str(std::ostream &os) const
 {
   for (size_t i = 0; i < max_space_; i++) {
-    os << "  c[" << std::setw(2) << i << "] = " << chars_[i];
+    std::string cstr = ws2s(std::wstring{escaped(chars_[i])});
+    os << "  c[" << std::setw(2) << i << "] = " << cstr;
     for (size_t k = 0; k < ptr_.size(); k++) {
       if (ptr_[k].front == i) { 
         os << " <-- str[" << std::setw(2) << k << "] = " << at(k) ; 

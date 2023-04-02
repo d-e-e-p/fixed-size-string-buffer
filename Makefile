@@ -75,7 +75,7 @@ docs: ## generate Doxygen HTML documentation, including API docs
 	$(BROWSER) docs/html/index.html
 
 install: ## install the package to the INSTALL_LOCATION={INSTALL_LOCATION}
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION)
+	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) --fresh
 	cmake --build build --config Release
 	cmake --build build --target install --config Release
 

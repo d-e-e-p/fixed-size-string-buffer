@@ -14,7 +14,7 @@ This is a small enough example to clone and use as a template to setup a new C++
 [coverage](https://github.com/linux-test-project/lcov), 
 [doxygen](https://www.doxygen.nl/), 
 [github action](https://github.com/d-e-e-p/fixed-size-string-buffer/actions), 
-[unicode on windows](### Porting),
+[unicode on windows](#Porting),
 [clang-tidy](https://clang.llvm.org/extra/clang-tidy/), 
 [cppcheck](https://cppcheck.sourceforge.io/) etc.
 
@@ -68,7 +68,7 @@ There is also a speed advantage of using this approach for long strings:
  ╰────────┴──────────┴──────────┴─────────┴─────────┴─────────┴─────────┴─────────╯
 ```
 
-This shows a 4X speedup compared with a std::queue based ring buffer for strings longer than 100 characters on
+This run shows a 4X speedup compared with a std::queue based ring buffer for strings longer than 100 characters on
 average. As strings become longer, the overhead of using unbounded string std::queue becomes significant:
 more than 10X slower for strings longer than 1000 characters. Ring buffer wins over unbounded 
 queues because it avoids the extra memory allocation time.
@@ -115,9 +115,9 @@ g++ -std=c++17 -I include test.cpp
 ## API
 
 Externally this class looks like a simple queue with infinite space.
-In this example, 3 X 3-char messages are stuffed into a buffer that can 
-only hold 8 chars. 0aa gets pushed out to make room for 2cc because foo only 
-has space for 8 chars:
+In this example, three sets of 3-char messages are stuffed into a buffer 
+that can only hold 8 chars. `0aa` gets pushed out to make room for `2cc` 
+because buffer doesn't have enough space for 9 chars.
 
 ```cpp
 #include <iostream>
