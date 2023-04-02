@@ -8,6 +8,8 @@ project(
   "fixed_size_string_buffer"
   VERSION 1.1.0
   LANGUAGES CXX
+  DESCRIPTION "A C++ pre-allocated ring buffer for std::string messages"
+  HOMEPAGE_URL "https://github.com/d-e-e-p/fixed-size-string-buffer/wiki"
 )
 
 
@@ -24,9 +26,11 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 message(STATUS "Started CMake for ${PROJECT_NAME} v${PROJECT_VERSION}...\n")
 
+#this will allow to use same _DEBUG macro available in both Linux as well as Windows - MSCV environment.
 if (UNIX)
-    add_compile_options("$<$<CONFIG:DEBUG>:-D_DEBUG>")    #this will allow to use same _DEBUG macro available in both Linux as well as Windows - MSCV environment. Easy to put Debug specific code.
+    add_compile_options("$<$<CONFIG:DEBUG>:-D_DEBUG>")
 endif (UNIX)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 
 #
@@ -385,3 +389,27 @@ if(ENABLE_BENCH)
   add_subdirectory(bench)
 endif()
 
+##################################################
+# show build configuration overview
+
+message("")
+
+message("
+          project : ${PROJECT_NAME} ${PROJECT_VERSION}
+         compiler : ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}
+       build type : ${CMAKE_BUILD_TYPE}
+        build dir : ${CMAKE_BINARY_DIR}
+   install prefix : ${CMAKE_INSTALL_PREFIX}
+")
+
+
+if(VERBOSE_OUTPUT)
+    get_cmake_property(_varNames VARIABLES)
+    list (REMOVE_DUPLICATES _varNames)
+    list (SORT _varNames)
+    foreach (_varName ${_varNames})
+        cmake_print_variables(${_varName})
+    endforeach()
+endif()
+
+##################################################

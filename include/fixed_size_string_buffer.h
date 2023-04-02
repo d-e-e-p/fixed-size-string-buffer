@@ -243,40 +243,40 @@ std::string ws2s(const std::wstring& wstr) {
   // from https://en.wikipedia.org/wiki/ASCII#Control_code_chart
 static std::unordered_map<wchar_t, wchar_t> const k_escapes =
   {
-    { 000, L'•' },  //      NULL        ^@  \0     Null
-    { 001, L'␁' },  //      SOM SOH     ^A         Start of Heading
-    { 002, L'␂' },  //      EOA STX     ^B         Start of Text
-    { 003, L'␃' },  //      EOM ETX     ^C         End of Text
-    { 004, L'␄' },  //      EOT         ^D         End of Transmission
-    { 005, L'␅' },  //      WRU ENQ     ^E         Enquiry
-    { 006, L'␆' },  //      RU  ACK     ^F         Acknowledgement
-    { 007, L'␇' },  //      BELL        ^G  \a     Bell
-    { 010, L'␈' },  //      FE0 BS      ^H  \b     Backspace
-    { 011, L'␉' },  //      HT/SK       ^I  \t     Horizontal Tab
-    { 012, L'␊' },  //      LF          ^J  \n     Line Feed
-    { 013, L'␋' },  //      VTAB        ^K  \v     Vertical Tab
-    { 014, L'␌' },  //      FF          ^L  \f     Form Feed
-    { 015, L'␍' },  //      CR          ^M  \r     Carriage Return
-    { 016, L'␎' },  //      SO          ^N         Shift Out
-    { 017, L'␏' },  //      SI          ^O         Shift In
-    { 020, L'␐' },  //      DC0 DLE     ^P         Data Link Escape
-    { 021, L'␑' },  //      DC1         ^Q         Device Control 1 (often XON)
-    { 022, L'␒' },  //      DC2         ^R         Device Control 2
-    { 023, L'␓' },  //      DC3         ^S         Device Control 3 (often XOFF)
-    { 024, L'␔' },  //      DC4         ^T         Device Control 4
-    { 025, L'␕' },  //      ERR NAK     ^U         Negative Acknowledgement
-    { 026, L'␖' },  //      SYNC        ^V         Synchronous Idle
-    { 027, L'␗' },  //      LEM ETB     ^W         End of Transmission Block
-    { 030, L'␘' },  //      S0  CAN     ^X         Cancel
-    { 031, L'␙' },  //      S1  EM      ^Y         End of Medium
-    { 032, L'␚' },  //      S2  SS      ^Z         Substitute
-    { 033, L'␛' },  //      S3  ESC     ^[  \e     Escape
-    { 034, L'␜' },  //      S4  FS      ^\         File Separator
-    { 035, L'␝' },  //      S5  GS      ^]         Group Separator
-    { 036, L'␞' },  //      S6  RS      ^^         Record Separator
-    { 037, L'␟' },  //      S7  US      ^_         Unit Separator
-    { 177, L'␡' },  //      DEL         ^?         Delete
-    { ' ', L'␠' },  //      Space       
+    {  0,   L'•' },  //     ^@      \0      Null
+    {  1,   L'␁' },  //     ^A              Start of Heading
+    {  2,   L'␂' },  //     ^B              Start of Text
+    {  3,   L'␃' },  //     ^C              End of Text
+    {  4,   L'␄' },  //     ^D              End of Transmission
+    {  5,   L'␅' },  //     ^E              Enquiry
+    {  6,   L'␆' },  //     ^F              Acknowledgement
+    {  7,   L'␇' },  //     ^G      \a      Bell
+    {  8,   L'␈' },  //     ^H      \b      Backspace
+    {  9,   L'␉' },  //     ^I      \t      Horizontal Tab
+    { 10,   L'␊' },  //     ^J      \n      Line Feed
+    { 11,   L'␋' },  //     ^K      \v      Vertical Tab
+    { 12,   L'␌' },  //     ^L      \f      Form Feed
+    { 13,   L'␍' },  //     ^M      \r      Carriage Return
+    { 14,   L'␎' },  //     ^N              Shift Out
+    { 15,   L'␏' },  //     ^O              Shift In
+    { 16,   L'␐' },  //     ^P              Data Link Escape
+    { 17,   L'␑' },  //     ^Q              Device Control 1 (often XON)
+    { 18,   L'␒' },  //     ^R              Device Control 2
+    { 19,   L'␓' },  //     ^S              Device Control 3 (often XOFF)
+    { 20,   L'␔' },  //     ^T              Device Control 4
+    { 21,   L'␕' },  //     ^U              Negative Acknowledgement
+    { 22,   L'␖' },  //     ^V              Synchronous Idle
+    { 23,   L'␗' },  //     ^W              End of Transmission Block
+    { 24,   L'␘' },  //     ^X              Cancel
+    { 25,   L'␙' },  //     ^Y              End of Medium
+    { 26,   L'␚' },  //     ^Z              Substitute
+    { 27,   L'␛' },  //     ^[      \e      Escape
+    { 28,   L'␜' },  //     ^\              File Separator
+    { 29,   L'␝' },  //     ^]              Group Separator
+    { 30,   L'␞' },  //     ^^              Record Separator
+    { 31,   L'␟' },  //     ^_              Unit Separator
+    { 32,   L'␠' },  //     Space (invisible but not unprintable !)
+    {127,   L'␡' },  //     ^?              Delete
   };
 
 // https://stackoverflow.com/questions/39262323/print-a-string-variable-with-its-special-characters
@@ -289,7 +289,7 @@ wchar_t escaped(wchar_t const ch) {
   } else {
     // not found..is it printable?
     if (! isprint(ch)) {
-      return L'⍰';
+      return L'�';
     } else {
       return ch;
     }
