@@ -74,22 +74,31 @@ void example1()
 
 
 template <class T> 
-auto time_queue(T& q, std::string& str_test) 
+auto time_queue(T& q_empty, std::string& str_test) 
 {
 
   using std::chrono::duration_cast;
   using std::chrono::nanoseconds;
   using std::chrono::steady_clock;
 
-  constexpr int trials = 1000;
+  constexpr int n_outer = 1000;
+  constexpr int n_inner = 1000;
 
-  auto t1 = steady_clock::now();
-  for (auto i = 0; i < trials; ++i) { 
-    q.push(str_test); 
+  long long total_delta = 0;
+
+  for (auto i = 0; i < n_outer; ++i) { 
+    auto q_test = q_empty;
+
+    auto t1 = steady_clock::now();
+    for (auto j = 0; j < n_inner; ++j) { 
+      q_test.push(str_test); 
+    }
+    auto t2 = steady_clock::now();
+    auto delta = duration_cast<nanoseconds>(t2 - t1).count() / n_inner;
+    total_delta += delta;
   }
-  auto t2 = steady_clock::now();
-  auto delta = duration_cast<nanoseconds>(t2 - t1).count() / trials;
-  return delta;
+
+  return total_delta / n_outer;
 }
 
 
@@ -109,9 +118,7 @@ void compare()
   auto buf1 = FixedSizeStringBuffer<max_size>(); // opt1: FixedString
   auto buf2 = FixedQueue(max_size);              // opt2: FixedQueue
   auto buf3 = std::queue<std::string>();         // opt3: std::queue
-                                                 //
 
-                                    
   // time options
   auto delta1 = time_queue(buf1, str_test);
   auto delta2 = time_queue(buf2, str_test);
