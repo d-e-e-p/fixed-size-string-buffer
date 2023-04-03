@@ -90,7 +90,7 @@ TEST(QueueTest, Small) {
   // unicode test
   buffer.clear();
   std::string  s1 = "🏴☠️";
-  std::string  s2 = "\a\b\t\n\v\f\r\e";
+  std::string  s2 = "\a\b\t\n\v\f\re";
 
   buffer.push(s1);
   ASSERT_EQ(buffer.free_space(), ring_buffer_char_size - s1.length());
@@ -102,7 +102,7 @@ TEST(QueueTest, Small) {
   output = "\n" + ss.str();
   expect = R"(
             ⎧ ╭──────────────────────╮      ⎫
-  buf[10] = ⎨ ┤␇  ␈  ␉  ␊  ␋  ␌  ␍  ␛├ �  � ⎬
+  buf[10] = ⎨ ┤␇  ␈  ␉  ␊  ␋  ␌  ␍  e├ �  � ⎬
             ⎩ ╰──────────────────────╯      ⎭
 )";
   expect = std::regex_replace(expect, whitespace, "");
