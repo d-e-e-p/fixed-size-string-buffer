@@ -1,6 +1,7 @@
 .PHONY: help clean debug release test bench coverage docs install format
 .DEFAULT_GOAL := help
 INSTALL_LOCATION := ~/.local
+#export CCMAKE_COLORS='s=39:p=220:c=207:n=196:y=46'
 
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys

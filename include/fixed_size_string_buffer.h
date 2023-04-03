@@ -241,7 +241,7 @@ std::string ws2s(const std::wstring& wstr) {
 //
 
   // from https://en.wikipedia.org/wiki/ASCII#Control_code_chart
-static std::unordered_map<wchar_t, wchar_t> const k_escapes =
+static std::unordered_map<int, wchar_t> const k_escapes =
   {
     {  0,   L'•' },  //     ^@      \0      Null
     {  1,   L'␁' },  //     ^A              Start of Heading
@@ -280,7 +280,7 @@ static std::unordered_map<wchar_t, wchar_t> const k_escapes =
   };
 
 // https://stackoverflow.com/questions/39262323/print-a-string-variable-with-its-special-characters
-wchar_t escaped(wchar_t const ch) {
+wchar_t escaped(char const ch) {
 
   auto it = k_escapes.find(ch);
   if (it != k_escapes.end()) {
@@ -402,7 +402,7 @@ void FixedSizeStringBuffer<SPACE>::print_char_line(std::ostream &os, const SlotS
   for (size_t i = 0; i < max_space_; i++) {
     // 3 slots for each char: [close][open][letter]
     wchar_t copen = slot.bopen[i] ? L'│' : L' ';
-    wchar_t cchar = chars_[i];
+    wchar_t cchar = escaped(chars_[i]);
     wchar_t cclos = slot.bclos[i] ? L'│' : L' ';
     // mark first element and end of last element in queue
     if (! empty()) {
@@ -415,7 +415,6 @@ void FixedSizeStringBuffer<SPACE>::print_char_line(std::ostream &os, const SlotS
       }
     }
 
-    cchar = escaped(cchar);
     auto wline = std::wstring{copen, cchar, cclos};
     os << ws2s(wline);
   }

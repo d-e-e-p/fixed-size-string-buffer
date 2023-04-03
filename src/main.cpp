@@ -5,7 +5,6 @@
 
 #undef NDEBUG // allow assert
 
-#include <array>
 #include <cassert>
 #include <chrono>
 #include <cstdlib>
@@ -13,7 +12,6 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
-#include <vector>
 
 #include "fixed_size_string_buffer.h"
 #include "fixed_size_queue.h"
@@ -28,7 +26,7 @@ void example1()
 
   // add strings
   const std::string str = "The Quick Brown Fox Jumped Over The Lazy Dog";
-  std::cout << " adding words to buffer from: '" << str << "\n";
+  std::cout << " adding words to buffer from: '" << str << "'\n";
   std::istringstream ss(str);
   std::string word;
   std::cout << rb;
@@ -127,10 +125,10 @@ void example2()
 {
   std::cout << R"(
   fixed_size_string_buffer example2: wallclock time comparison for push operation
- ╭────────┬──────────┬──────────┬─────────┬─────────┬─────────┬─────────┬─────────╮
- │ strlen │ capacity │ FixedSize│FixedSize│no limit │         │         │         │
- │ (chars)│ (strings)│ stringBuf│std:queue│std:queue│ (1)/(1) │ (2)/(1) │ (3)/(1) │
- │        │          │    (1)   │   (2)   │  (3)    │         │         │         │
+ ╭────────┬──────────┬──────────┬─────────┬─────────┬─────────────────────────────╮
+ │ strlen │ capacity │ FixedSize│FixedSize│no limit │         R A T I O S         │
+ │ (chars)│ (strings)│ stringBuf│std:queue│std:queue┼─────────┬─────────┬─────────┤
+ │        │          │    (1)   │   (2)   │  (3)    │ (1)/(1) │ (2)/(1) │ (3)/(1) │
  ├────────┼──────────┼──────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
 )";
   // NOLINTBEGIN
@@ -140,7 +138,12 @@ void example2()
   compare<1000,10,3>();
   // NOLINTEND
   std::cout << 
-    " ╰────────┴──────────┴──────────┴─────────┴─────────┴─────────┴─────────┴─────────╯\n";
+R"( ╰────────┴──────────┴──────────┴─────────┴─────────┴─────────┴─────────┴─────────╯
+     (1)  FixedSizeStringBuffer<max_size>()
+     (2)  FixedQueue(max_size)
+     (3)  std::queue<std::string>
+   max_size = strlen * capacity, eg 10300 char for last line
+)";
 }
 
 int main()
