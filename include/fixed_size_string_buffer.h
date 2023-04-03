@@ -22,11 +22,9 @@
 #endif
 
 #include <string>
-#include <cwchar>
 #include <string_view>
 #include <array>
 #include <vector>
-#include <map>
 #include <unordered_map>
 #include <deque>
 #include <iomanip>
@@ -34,7 +32,6 @@
 #include <iostream>
 
 #include <ctype.h>
-
 
 using std::size_t;
 
@@ -45,8 +42,8 @@ class FixedSizeStringBuffer {
   std::array<char, SPACE> chars_ = {}; // main container for strings
                                       
   struct Pointer {
-    size_t front;
-    size_t len;
+    size_t front;  // position in char_ of start of string
+    size_t len;    // str length cache
     Pointer(size_t p_front, size_t p_len)
         : front(p_front), len(p_len)
     { }
@@ -60,6 +57,8 @@ class FixedSizeStringBuffer {
   bool debug_ = false;           // print diag messages if true
                                  
   // used for pretty print of buffer
+  void dump_long_str(std::ostream &os = std::cout) const;
+  void dump_short_str(std::ostream &os = std::cout);
   struct SlotState {
     std::vector<bool> bopen;
     std::vector<bool> bword;
@@ -128,7 +127,6 @@ class FixedSizeStringBuffer {
   }
 
   void push(std::string_view str);  // see below
-  //friend void swap(FixedSizeStringBuffer<SPACE> &other);
   void swap(FixedSizeStringBuffer<SPACE> &other);
 
   //
@@ -144,16 +142,9 @@ class FixedSizeStringBuffer {
   //
 
   // output char buffer with markers for each string
-  void dump_long_str(std::ostream &os = std::cout) const;
-  void dump_short_str(std::ostream &os = std::cout);
-  void dump(std::ostream &os = std::cout) 
+  void dump(std::ostream &os = std::cout, size_t threshold = 40) 
   {
-    constexpr size_t threshold = 40;
-    if(max_space_ > threshold) {
-      dump_long_str(os);
-    } else {
-      dump_short_str(os);
-    }
+    (max_space_ > threshold) ? dump_long_str(os) : dump_short_str(os);
   }
 
 };  // end class
@@ -358,7 +349,7 @@ template <size_t SPACE>
 void FixedSizeStringBuffer<SPACE>::print_box_line(std::ostream &os, const SlotState& slot, bool is_top) const
 {
   enum class CT {left, open, close, dash, space, right};
-  typedef std::map<CT,wchar_t> box_t;
+  typedef std::unordered_map<CT,wchar_t> box_t;
 
   box_t box_top = {
       {CT::left,  L'⎧'},

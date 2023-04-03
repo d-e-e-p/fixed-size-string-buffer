@@ -81,7 +81,7 @@ auto time_queue(T& q, std::string& str_test)
   using std::chrono::nanoseconds;
   using std::chrono::steady_clock;
 
-  constexpr int trials = 1000 * 1000;
+  constexpr int trials = 1000;
 
   auto t1 = steady_clock::now();
   for (auto i = 0; i < trials; ++i) { 
@@ -117,17 +117,6 @@ void compare()
   auto delta2 = time_queue(buf2, str_test);
   auto delta3 = time_queue(buf3, str_test);
 
-  auto foo = FixedSizeStringBuffer<max_size>();
-  auto bar = FixedSizeStringBuffer<max_size>();
-                                                //
-  foo.push("10"); foo.push("20"); foo.push("30");
-  bar.push("111"); bar.push("222");
-
-  std::cout << "Before size of foo: " << foo.size() << '\n';
-  std::cout << "Before size of bar: " << bar.size() << '\n';
-  foo.swap(bar);
-  std::cout << "After size of foo: " << foo.size() << '\n';
-  std::cout << "After size of bar: " << bar.size() << '\n';
 
   auto ratio1 = static_cast<long double>(delta1) / static_cast<long double>(delta1);
   auto ratio2 = static_cast<long double>(delta2) / static_cast<long double>(delta1);

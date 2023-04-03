@@ -215,14 +215,14 @@ c[0]=a<--str[0]=aaaaaaaaaaaaaaaaa
   EXPECT_THAT(output, testing::StartsWith(expect));
 
   ss.str(""); // clear
-  buffer.dump_long_str(ss);
+  buffer.dump(ss, ring_buffer_char_size - 1); // trigger dump_long_str
   output = ss.str();
   output = std::regex_replace(output, whitespace, "");
 
   EXPECT_THAT(output, testing::StartsWith(expect));
 
   ss.str(""); 
-  buffer.dump_short_str(ss);
+  buffer.dump(ss, ring_buffer_char_size + 1); // trigger dump_short_str
   output = ss.str();
   expect = "⎧╭────────────────────────────────";
   output = std::regex_replace(output, whitespace, "");

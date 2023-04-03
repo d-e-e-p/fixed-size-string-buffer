@@ -35,9 +35,10 @@ public:
   void push(const std::string& str);  
   std::string pop();
 
-  template <class T>
-  void emplace (T str) {
-    push(std::string(str));
+  // allow any std::string constructor as args to emplace
+  template <typename... Args>
+  void emplace(Args&&... args) {
+    push(std::string(std::forward<Args>(args)...));
   }
 
   std::string front() {
