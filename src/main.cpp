@@ -14,7 +14,8 @@
 #include <iomanip>
 
 #include "fixed_size_string_buffer.h"
-#include "fixed_size_queue.h"
+#include "fixed_elem_size_queue.h"
+#include "fixed_char_size_queue.h"
 
 void example1();
 void example2();
@@ -74,31 +75,23 @@ void example1()
 
 
 template <class T> 
-auto time_queue(T& q_empty, std::string& str_test) 
+auto time_queue(T& q, std::string& str_test) 
 {
 
   using std::chrono::duration_cast;
   using std::chrono::nanoseconds;
   using std::chrono::steady_clock;
 
-  constexpr int n_outer = 1000;
-  constexpr int n_inner = 1000;
+  constexpr int num_iter = 1000 * 1000;
 
-  long long total_delta = 0;
-
-  for (auto i = 0; i < n_outer; ++i) { 
-    auto q_test = q_empty;
-
-    auto t1 = steady_clock::now();
-    for (auto j = 0; j < n_inner; ++j) { 
-      q_test.push(str_test); 
-    }
-    auto t2 = steady_clock::now();
-    auto delta = duration_cast<nanoseconds>(t2 - t1).count() / n_inner;
-    total_delta += delta;
+  auto t1 = steady_clock::now();
+  for (auto i = 0; i < num_iter; ++i) { 
+    q.push(str_test); 
   }
+  auto t2 = steady_clock::now();
+  auto delta = duration_cast<nanoseconds>(t2 - t1).count() / num_iter;
 
-  return total_delta / n_outer;
+  return delta;
 }
 
 
@@ -116,8 +109,8 @@ void compare()
   constexpr auto max_size = static_cast<size_t>(LEN * str_capacity_in_buffer);
 
   auto buf1 = FixedSizeStringBuffer<max_size>(); // opt1: FixedString
-  auto buf2 = FixedQueue(max_size);              // opt2: FixedQueue
-  auto buf3 = std::queue<std::string>();         // opt3: std::queue
+  auto buf2 = FixedCharSizeQueue(max_size);      // opt2: FixedQueue
+  auto buf3 = FixedElemSizeQueue<std::string>(CAPACITY);      // opt3: std::queue
 
   // time options
   auto delta1 = time_queue(buf1, str_test);
@@ -129,10 +122,14 @@ void compare()
   auto ratio2 = static_cast<long double>(delta2) / static_cast<long double>(delta1);
   auto ratio3 = static_cast<long double>(delta3) / static_cast<long double>(delta1);
 
+  using std::setw;
+
   std::cout.precision(1);
-  std::cout << " │ " << std::setw(6) << LEN << " │ " << std::setw(8) <<  max_size << " │ " 
-    << std::setw(6) << delta1 << "ns │" << std::setw(6) << delta2 << "ns │" << std::setw(6) << delta3 << "ns │" 
-   << std::fixed << std::setw(7) << ratio1 << "X │" << std::setw(7) << ratio2 << "X │" << std::setw(7) << ratio3 << "X │" << "\n";
+  std::cout << " │ " << setw(6) << LEN << " │ " << setw(8) <<  max_size << " │ " 
+    << setw(6) << delta1 << "ns │" << setw(6) << delta2 << "ns │" << setw(6) << delta3 << "ns │" 
+    << std::fixed 
+    << setw(5) << ratio1 << "X │" << setw(5) << ratio2 << "X │" << setw(5) << ratio3 << "X │" 
+    << "\n";
 
 }
 
@@ -140,11 +137,11 @@ void example2()
 {
   std::cout << R"(
   fixed_size_string_buffer example2: wallclock time comparison for push operation
- ╭────────┬──────────┬──────────┬─────────┬─────────┬─────────────────────────────╮
- │ strlen │ max_size │ FixedSize│FixedSize│no limit │         R A T I O S         │
- │ (chars)│  (chars) │ stringBuf│std:queue│std:queue┼─────────┬─────────┬─────────┤
- │        │          │    (1)   │   (2)   │  (3)    │ (1)/(1) │ (2)/(1) │ (3)/(1) │
- ├────────┼──────────┼──────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
+ ╭────────┬──────────┬──────────┬─────────┬─────────┬───────────────────────╮
+ │ strlen │ max_size │ FixedSize│FixedChar│FixedStr │      R A T I O S      │
+ │ (chars)│  (chars) │ stringBuf│std:queue│std:queue┼───────┬───────┬───────┤
+ │        │          │    (1)   │   (2)   │  (3)    │(1)/(1)│(2)/(1)│(3)/(1)│
+ ├────────┼──────────┼──────────┼─────────┼─────────┼───────┼───────┼───────┤
 )";
   // NOLINTBEGIN
   compare<10,10,3>();
@@ -152,12 +149,12 @@ void example2()
   compare<1000,10,3>();
   // NOLINTEND
   std::cout << 
-R"( ╰────────┴──────────┴──────────┴─────────┴─────────┴─────────┴─────────┴─────────╯
+R"( ╰────────┴──────────┴──────────┴─────────┴─────────┴───────┴───────┴───────╯
      (1)  FixedSizeStringBuffer<max_size>()
-     (2)  FixedQueue(max_size)
-     (3)  std::queue<std::string>
+     (2)  FixedCharSizeQueue(max_size)
+     (3)  FixedElemSizeQueue<std::string>(10)
 
-          max_size = strlen * 10.3
+          max_size = strlen * 10.3 chars
 
 )";
 }

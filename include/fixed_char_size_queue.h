@@ -2,7 +2,7 @@
 /*
  from https://stackoverflow.com/questions/56334492/c-create-fixed-size-queue
  Usage:
-    FixedQueue<string, 100> cmdHistory;
+    FixedCharSizeQueue<string> cmdHistory(100);
 */
 #pragma once
 
@@ -20,14 +20,14 @@ struct Element {
 };
 }
 
-class FixedQueue : public std::queue<Element> {
+class FixedCharSizeQueue : public std::queue<Element> {
 
 private:
   size_t free_space_ = 0;
   //using std::queue<Element>::push_range; // disallow push_range
 
 public:
-  explicit FixedQueue(size_t SIZE)
+  explicit FixedCharSizeQueue(size_t SIZE)
       : free_space_(SIZE)
   {
   }
@@ -50,7 +50,7 @@ public:
 };
 
 
-inline void FixedQueue::push(const std::string& str) 
+inline void FixedCharSizeQueue::push(const std::string& str) 
 {
   // clear space for str
   size_t strlen = str.length();
@@ -63,7 +63,7 @@ inline void FixedQueue::push(const std::string& str)
   free_space_ -= strlen;
 }
 
-inline std::string FixedQueue::pop() 
+inline std::string FixedCharSizeQueue::pop() 
 {
   auto elem = std::queue<Element>::front();
   std::queue<Element>::pop(); 

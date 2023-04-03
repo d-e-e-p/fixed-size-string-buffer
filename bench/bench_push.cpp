@@ -4,12 +4,13 @@
 #include <benchmark/benchmark.h>
 
 #include "fixed_size_string_buffer.h"
-#include "fixed_size_queue.h"
+#include "fixed_elem_size_queue.h"
+#include "fixed_char_size_queue.h"
 
-enum class QueueType {FixedBuffer, FixedQueue, StdQueue};
+enum class QType {FixedSizeStringBuffer, FixedCharSizeQueue, FixedElemSizeQueue, StdQueue};
 
 
-template <QueueType qtype, size_t LEN, size_t CAPACITY, size_t EXCESS>
+template <QType qtype, size_t LEN, size_t CAPACITY, size_t EXCESS>
 void BM_queue(benchmark::State& state)
 {
 
@@ -20,18 +21,23 @@ void BM_queue(benchmark::State& state)
 
 
   switch (qtype) {
-    case QueueType::FixedBuffer: {
+    case QType::FixedSizeStringBuffer: {
       auto queue = FixedSizeStringBuffer<LEN>();
       for (auto _ : state) { queue.push(str_test); }
       break;
     }
-    case QueueType::FixedQueue: { 
-        auto queue = FixedQueue(max_size);
+    case QType::FixedCharSizeQueue: { 
+        auto queue = FixedCharSizeQueue(max_size);
         for (auto _ : state) { queue.push(str_test); }
         break;
     }
-    case QueueType::StdQueue: {
-        std::queue<std::string> queue = {};
+    case QType::FixedElemSizeQueue: {
+        auto queue = FixedElemSizeQueue<std::string>(CAPACITY);
+        for (auto _ : state) { queue.push(str_test); }
+        break;
+    }
+    case QType::StdQueue: {
+        auto queue = std::queue<std::string>();
         for (auto _ : state) { queue.push(str_test); }
         break;
     }
@@ -46,12 +52,12 @@ constexpr size_t kExcess = 3;
 */
 
 #define gen(len, capacity, excess) \
-BENCHMARK_TEMPLATE(BM_queue, QueueType::FixedBuffer,  len, capacity, excess); \
-BENCHMARK_TEMPLATE(BM_queue, QueueType::FixedQueue,   len, capacity, excess); \
-BENCHMARK_TEMPLATE(BM_queue, QueueType::StdQueue,     len, capacity, excess);
+BENCHMARK_TEMPLATE(BM_queue, QType::FixedSizeStringBuffer , len, capacity, excess); \
+BENCHMARK_TEMPLATE(BM_queue, QType::FixedCharSizeQueue,     len, capacity, excess); \
+BENCHMARK_TEMPLATE(BM_queue, QType::FixedElemSizeQueue,     len, capacity, excess); \
+BENCHMARK_TEMPLATE(BM_queue, QType::StdQueue,               len, capacity, excess);
 
 // Len Capacity Excess
-gen(    1, 10, 3)
 gen(   10, 10, 3)
 gen(  100, 10, 3)
 gen( 1000, 10, 3)

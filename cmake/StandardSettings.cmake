@@ -68,7 +68,7 @@ option(ENABLE_DOXYGEN "Enable Doxygen documentation builds of source." OFF)
 # Generate compile_commands.json for clang based tools
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-option(VERBOSE_OUTPUT "Enable verbose output, allowing for a better understanding of each step taken." ON)
+option(VERBOSE_OUTPUT "Enable verbose output, allowing for a better understanding of each step taken." OFF)
 option(GENERATE_EXPORT_HEADER "Create a `project_export.h` file containing all exported symbols." OFF)
 
 # Export all symbols when building a shared library
