@@ -16,6 +16,17 @@
 #include "fixed_size_string_buffer.h"
 #include "fixed_size_queue.h"
 
+void example1();
+void example2();
+
+int main()
+{
+  example1();
+  example2();
+ 
+  return 0;
+}
+
 void example1()
 {
   std::cout << "fixed_size_string_buffer example1 \n\n";
@@ -61,6 +72,27 @@ void example1()
  *  EXCESS: 3 means additional buffer size if 0.3 * stringsize
  */
 
+
+template <class T> 
+auto time_queue(T& q, std::string& str_test) 
+{
+
+  using std::chrono::duration_cast;
+  using std::chrono::nanoseconds;
+  using std::chrono::steady_clock;
+
+  constexpr int trials = 1000 * 1000;
+
+  auto t1 = steady_clock::now();
+  for (auto i = 0; i < trials; ++i) { 
+    q.push(str_test); 
+  }
+  auto t2 = steady_clock::now();
+  auto delta = duration_cast<nanoseconds>(t2 - t1).count() / trials;
+  return delta;
+}
+
+
 template <size_t LEN, size_t CAPACITY, size_t EXCESS>
 void compare()
 {
@@ -73,52 +105,25 @@ void compare()
   // create buffer just enough size to hold str_capacity_in_buffer values
   constexpr double str_capacity_in_buffer = CAPACITY + 0.1 * EXCESS;
   constexpr auto max_size = static_cast<size_t>(LEN * str_capacity_in_buffer);
-  auto rfb = FixedSizeStringBuffer<max_size>();
 
-  constexpr int trials = 1000 * 1000;
-  auto t1 = steady_clock::now();
+  auto buf1 = FixedSizeStringBuffer<max_size>(); // opt1: FixedString
+  auto buf2 = FixedQueue(max_size);              // opt2: FixedQueue
+  auto buf3 = std::queue<std::string>();         // opt3: std::queue
+                                    
+  // time options
+  auto delta1 = time_queue(buf1, str_test);
+  auto delta2 = time_queue(buf2, str_test);
+  auto delta3 = time_queue(buf3, str_test);
 
-  for (auto i = 0; i < trials; ++i) { 
-    rfb.push(str_test); 
-  }
-  auto t2 = steady_clock::now();
-
-  auto delta1 = duration_cast<nanoseconds>(t2 - t1).count() / trials;
-
-  auto rfq = FixedQueue(max_size);
-  const auto str_test2 = std::string(str_test);
-
-  t1 = steady_clock::now();
-  for (auto i = 0; i < trials; ++i) { 
-    rfq.push(str_test2); 
-  }
-  t2 = steady_clock::now();
-
-  auto delta2 = duration_cast<nanoseconds>(t2 - t1).count() / trials;
-
-  std::queue<std::string> rq = {};
-
-  t1 = steady_clock::now();
-  for (auto i = 0; i < trials; ++i) { 
-    rq.push(str_test2); 
-  }
-  t2 = steady_clock::now();
-
-  auto delta3 = duration_cast<nanoseconds>(t2 - t1).count() / trials;
-
+  auto ratio1 = static_cast<long double>(delta1) / static_cast<long double>(delta1);
   auto ratio2 = static_cast<long double>(delta2) / static_cast<long double>(delta1);
   auto ratio3 = static_cast<long double>(delta3) / static_cast<long double>(delta1);
 
   std::cout.precision(1);
-  std::cout << " │ " << std::setw(6) << LEN << " │ " << std::setw(6) <<  CAPACITY << "." << EXCESS << " │ " 
+  std::cout << " │ " << std::setw(6) << LEN << " │ " << std::setw(8) <<  max_size << " │ " 
     << std::setw(6) << delta1 << "ns │" << std::setw(6) << delta2 << "ns │" << std::setw(6) << delta3 << "ns │" 
-   << std::fixed << std::setw(7) << 1.0 << "X │" << std::setw(7) << ratio2 << "X │" << std::setw(7) << ratio3 << "X │" << "\n";
+   << std::fixed << std::setw(7) << ratio1 << "X │" << std::setw(7) << ratio2 << "X │" << std::setw(7) << ratio3 << "X │" << "\n";
 
-  auto num = static_cast<size_t>(str_capacity_in_buffer);
-  assert(rfb.size() == num);
-  for (size_t i = 0; i < num; ++i) { 
-    assert(rfb[i] == str_test); 
-  }
 }
 
 void example2()
@@ -126,13 +131,12 @@ void example2()
   std::cout << R"(
   fixed_size_string_buffer example2: wallclock time comparison for push operation
  ╭────────┬──────────┬──────────┬─────────┬─────────┬─────────────────────────────╮
- │ strlen │ capacity │ FixedSize│FixedSize│no limit │         R A T I O S         │
- │ (chars)│ (strings)│ stringBuf│std:queue│std:queue┼─────────┬─────────┬─────────┤
+ │ strlen │ max_size │ FixedSize│FixedSize│no limit │         R A T I O S         │
+ │ (chars)│  (chars) │ stringBuf│std:queue│std:queue┼─────────┬─────────┬─────────┤
  │        │          │    (1)   │   (2)   │  (3)    │ (1)/(1) │ (2)/(1) │ (3)/(1) │
  ├────────┼──────────┼──────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
 )";
   // NOLINTBEGIN
-  compare<1,10,3>();
   compare<10,10,3>();
   compare<100,10,3>();
   compare<1000,10,3>();
@@ -142,14 +146,9 @@ R"( ╰────────┴──────────┴────�
      (1)  FixedSizeStringBuffer<max_size>()
      (2)  FixedQueue(max_size)
      (3)  std::queue<std::string>
-   max_size = strlen * capacity, eg 10300 char for last line
+
+          max_size = strlen * 10.3
+
 )";
 }
 
-int main()
-{
-  example1();
-  example2();
- 
-  return 0;
-}
