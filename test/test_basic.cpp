@@ -89,19 +89,25 @@ TEST(QueueTest, Small) {
 
   // unicode test
   buffer.clear();
-  std::string  str4 = "缓冲";
-  buffer.push(str4);
-  buffer.push(str4);
-  buffer.push(str4);
-  buffer.push(str4);
+  std::string  s1 = "🏴☠️";
+  std::string  s2 = "\a\b\t\n\v\f\r\e";
 
-  EXPECT_THAT(buffer.front(), testing::StrEq(str4));
-  EXPECT_THAT(buffer.back(),  testing::StrEq(str4));
-  EXPECT_THAT(buffer.at(0),   testing::StrEq(str4));
-  EXPECT_THAT(buffer[0],      testing::StrEq(str4));
+  buffer.push(s1);
+  ASSERT_EQ(buffer.free_space(), ring_buffer_char_size - s1.length());
 
-  ASSERT_EQ(buffer.size(), 1);
-  ASSERT_EQ(buffer.free_space(), ring_buffer_char_size - str4.length());
+  buffer.push(s2);
+
+  ss.str(""); // clear
+  ss << buffer;
+  output = "\n" + ss.str();
+  expect = R"(
+            ⎧ ╭──────────────────────╮      ⎫
+  buf[10] = ⎨ ┤␇  ␈  ␉  ␊  ␋  ␌  ␍  ␛├ �  � ⎬
+            ⎩ ╰──────────────────────╯      ⎭
+)";
+  expect = std::regex_replace(expect, whitespace, "");
+  output = std::regex_replace(output, whitespace, "");
+  EXPECT_THAT(output, testing::StrEq(expect));
 
 }
 
@@ -234,6 +240,58 @@ c[0]=a<--str[0]=aaaaaaaaaaaaaaaaa
   output = ss.str();
   EXPECT_THAT(output, testing::StartsWith(" debug set to true"));
 
+}
 
+TEST(QueueTest, Swap) {
+
+  constexpr size_t size = 30;
+
+  auto buf1 = FixedSizeStringBuffer<size>();
+  auto buf2 = FixedSizeStringBuffer<size>();
+
+  const std::string str1 = "something\n";
+  const std::string str2 = "completely different thing\n";
+
+  buf1.swap(buf2);
+  ASSERT_EQ(buf1.size(), 0);
+  ASSERT_EQ(buf2.size(), 0);
+
+  buf1.emplace(str1);
+  buf2.emplace(str2);
+
+  EXPECT_THAT(buf1[0], testing::StrEq(str1));
+  EXPECT_THAT(buf2[0], testing::StrEq(str2));
+
+  buf1.swap(buf2);
+
+  EXPECT_THAT(buf1.pop(), testing::StrEq(str2));
+  EXPECT_THAT(buf2.pop(), testing::StrEq(str1));
+
+  ASSERT_EQ(buf1.free_space(), size);
+  ASSERT_EQ(buf2.free_space(), size);
+}
+
+// test various methods of string creation...
+// from https://cplusplus.com/reference/string/string/string/
+TEST(QueueTest, Emplace) {
+
+  constexpr size_t size = 100;
+  auto buf = FixedSizeStringBuffer<size>();
+
+  // constructors used in the same order as described above:
+  std::string s0 ("Initial string", 8, 3);
+  std::string s1 ("Another character sequence", 12);
+  std::string s2 (10, 'x');
+  std::string s3 (10, 42);      // 42 is the ASCII code for '*'
+
+  buf.emplace("Initial string", 8, 3);
+  buf.emplace("Another character sequence", 12);
+  buf.emplace(10, 'x');
+  buf.emplace(10, 42);      // 42 is the ASCII code for '*'
+                                
+  EXPECT_THAT(buf[0], testing::StrEq(s0));
+  EXPECT_THAT(buf[1], testing::StrEq(s1));
+  EXPECT_THAT(buf[2], testing::StrEq(s2));
+  EXPECT_THAT(buf[3], testing::StrEq(s3));
 
 }

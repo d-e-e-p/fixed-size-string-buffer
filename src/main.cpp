@@ -109,11 +109,25 @@ void compare()
   auto buf1 = FixedSizeStringBuffer<max_size>(); // opt1: FixedString
   auto buf2 = FixedQueue(max_size);              // opt2: FixedQueue
   auto buf3 = std::queue<std::string>();         // opt3: std::queue
+                                                 //
+
                                     
   // time options
   auto delta1 = time_queue(buf1, str_test);
   auto delta2 = time_queue(buf2, str_test);
   auto delta3 = time_queue(buf3, str_test);
+
+  auto foo = FixedSizeStringBuffer<max_size>();
+  auto bar = FixedSizeStringBuffer<max_size>();
+                                                //
+  foo.push("10"); foo.push("20"); foo.push("30");
+  bar.push("111"); bar.push("222");
+
+  std::cout << "Before size of foo: " << foo.size() << '\n';
+  std::cout << "Before size of bar: " << bar.size() << '\n';
+  foo.swap(bar);
+  std::cout << "After size of foo: " << foo.size() << '\n';
+  std::cout << "After size of bar: " << bar.size() << '\n';
 
   auto ratio1 = static_cast<long double>(delta1) / static_cast<long double>(delta1);
   auto ratio2 = static_cast<long double>(delta2) / static_cast<long double>(delta1);

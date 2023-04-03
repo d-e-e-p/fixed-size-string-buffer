@@ -54,7 +54,7 @@ class FixedSizeStringBuffer {
   std::deque<Pointer> ptr_ = {}; // pointer to start/length of str in chars_
   size_t back_ = 0;              // pointer to end of last string in chars_
                                  //
-  const size_t max_space_;        // max num of *chars* in buffer
+  size_t max_space_;             // max num of *chars* in buffer
   size_t free_space_ = 0;        // free *char* space left in buffer
                                  //
   bool debug_ = false;           // print diag messages if true
@@ -106,8 +106,6 @@ class FixedSizeStringBuffer {
     free_space_ = max_space_;
   }
 
-  void push(std::string_view str);  // see below
-
   std::string pop()
   {
     if (empty()) {
@@ -123,6 +121,15 @@ class FixedSizeStringBuffer {
     }
     return str;
   }
+
+  template <typename... Args>
+  void emplace(Args&&... args) {
+    push(std::string(std::forward<Args>(args)...));
+  }
+
+  void push(std::string_view str);  // see below
+  //friend void swap(FixedSizeStringBuffer<SPACE> &other);
+  void swap(FixedSizeStringBuffer<SPACE> &other);
 
   //
   // Element access
@@ -228,6 +235,18 @@ std::string FixedSizeStringBuffer<SPACE>::at(size_t pos) const
     str.append(&chars_[0], &chars_[end]);
   }
   return str;
+}
+
+template <size_t SPACE>
+void FixedSizeStringBuffer<SPACE>::swap(FixedSizeStringBuffer<SPACE> &other)
+{
+  using std::swap;
+  swap(chars_, other.chars_);
+  swap(ptr_, other.ptr_);
+  swap(back_, other.back_);
+  swap(max_space_, other.max_space_);
+  swap(free_space_, other.free_space_);
+  swap(debug_, other.debug_);
 }
 
 // NOLINTBEGIN
