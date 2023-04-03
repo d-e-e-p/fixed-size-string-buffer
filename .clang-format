@@ -3,5 +3,5 @@ Language:        Cpp
 BasedOnStyle:  Google
 AllowShortBlocksOnASingleLine: true
 AllowShortIfStatementsOnASingleLine: true
-ColumnLimit:     80
+ColumnLimit:     84
 BreakBeforeBraces: Stroustrup
