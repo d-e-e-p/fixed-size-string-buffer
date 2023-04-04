@@ -1,9 +1,22 @@
+/**
+ * @file  fixed_char_size_queue.h
+ * @author  Sandeep <deep@tensorfield.ag>
+ * @version 1.0
+ *
+ * @section LICENSE
+ *
+ * MIT License <http://opensource.org/licenses/MIT>
+ *
+ * @section DESCRIPTION
+ *
+ * A string queue with upper limit on number of characters:
+ *    auto buf = FixedCharSizeQueue(max_size);
+ *
+ * https://github.com/d-e-e-p/fixed-size-string-buffer
+ * Copyright (c) 2023 Sandeep <deep@tensorfield.ag>
+ *
+ */
 
-/*
- from https://stackoverflow.com/questions/56334492/c-create-fixed-size-queue
- Usage:
-    FixedCharSizeQueue<string> cmdHistory(100);
-*/
 #pragma once
 
 #include <queue>

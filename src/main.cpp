@@ -3,12 +3,7 @@
 //#pragma clang diagnostic ignored "-Wnarrowing"
 //#pragma execution_character_set("utf-8")
 
-#undef NDEBUG // allow assert
-
-#include <cassert>
 #include <chrono>
-#include <cstdlib>
-#include <deque>
 #include <iostream>
 #include <sstream>
 #include <iomanip>
@@ -108,9 +103,9 @@ void compare()
   constexpr double str_capacity_in_buffer = CAPACITY + 0.1 * EXCESS;
   constexpr auto max_size = static_cast<size_t>(LEN * str_capacity_in_buffer);
 
-  auto buf1 = FixedSizeStringBuffer<max_size>(); // opt1: FixedString
-  auto buf2 = FixedCharSizeQueue(max_size);      // opt2: FixedQueue
-  auto buf3 = FixedElemSizeQueue<std::string>(CAPACITY);      // opt3: std::queue
+  auto buf1 = FixedSizeStringBuffer<max_size>();        // opt1: ring buffer
+  auto buf2 = FixedCharSizeQueue(max_size);             // opt2: char limit
+  auto buf3 = FixedElemSizeQueue<std::string>(CAPACITY);// opt3: string limit
 
   // time options
   auto delta1 = time_queue(buf1, str_test);
@@ -118,14 +113,16 @@ void compare()
   auto delta3 = time_queue(buf3, str_test);
 
 
-  auto ratio1 = static_cast<long double>(delta1) / static_cast<long double>(delta1);
-  auto ratio2 = static_cast<long double>(delta2) / static_cast<long double>(delta1);
-  auto ratio3 = static_cast<long double>(delta3) / static_cast<long double>(delta1);
+  auto baseline = static_cast<long double>(delta1);
+
+  auto ratio1 = static_cast<long double>(delta1) / baseline;
+  auto ratio2 = static_cast<long double>(delta2) / baseline;
+  auto ratio3 = static_cast<long double>(delta3) / baseline;
 
   using std::setw;
 
   std::cout.precision(1);
-  std::cout << " │ " << setw(6) << LEN << " │ " << setw(8) <<  max_size << " │ " 
+  std::cout << " │ " << setw(6) << LEN << " │ " << setw(8) <<  max_size << " │ "
     << setw(6) << delta1 << "ns │" << setw(6) << delta2 << "ns │" << setw(6) << delta3 << "ns │" 
     << std::fixed 
     << setw(5) << ratio1 << "X │" << setw(5) << ratio2 << "X │" << setw(5) << ratio3 << "X │" 
@@ -136,11 +133,11 @@ void compare()
 void example2()
 {
   std::cout << R"(
-  fixed_size_string_buffer example2: wallclock time comparison for push operation
+   fixed_size_string_buffer : wallclock time comparison for push operation
  ╭────────┬──────────┬──────────┬─────────┬─────────┬───────────────────────╮
  │ strlen │ max_size │ FixedSize│FixedChar│FixedStr │      R A T I O S      │
  │ (chars)│  (chars) │ stringBuf│std:queue│std:queue┼───────┬───────┬───────┤
- │        │          │    (1)   │   (2)   │  (3)    │(1)/(1)│(2)/(1)│(3)/(1)│
+ │        │          │    (1)   │   (2)   │   (3)   │(1)/(1)│(2)/(1)│(3)/(1)│
  ├────────┼──────────┼──────────┼─────────┼─────────┼───────┼───────┼───────┤
 )";
   // NOLINTBEGIN
