@@ -1,31 +1,13 @@
-.PHONY: help clean debug release test bench coverage docs install format
+.PHONY: help clean standalone test bench docs bench2 bench3 debug release test2
 .DEFAULT_GOAL := help
 INSTALL_LOCATION := ~/.local
+# SHELL=/bin/bash -vx # for debug
 #export CCMAKE_COLORS='s=39:p=220:c=207:n=196:y=46'
 
-define BROWSER_PYSCRIPT
-import os, webbrowser, sys
+include cmake/utils.mk
 
-try:
-	from urllib import pathname2url
-except:
-	from urllib.request import pathname2url
-
-webbrowser.open("file://" + pathname2url(os.path.abspath(sys.argv[1])))
-endef
-export BROWSER_PYSCRIPT
-
-define PRINT_HELP_PYSCRIPT
-import re, sys
-
-for line in sys.stdin:
-	match = re.match(r'^([a-zA-Z_-]+):.*?## (.*)$$', line)
-	if match:
-		target, help = match.groups()
-		help = help.replace("{INSTALL_LOCATION}","$(INSTALL_LOCATION)")
-		print("%-20s %s" % (target, help))
-endef
-export PRINT_HELP_PYSCRIPT
+# Use the COMPARE_VERSIONS function to set the CMAKE_FRESH variable
+# CMAKE_FRESH := $(shell python3 -c "$(COMPARE_VERSIONS_PY)")
 
 BROWSER := python3 -c "$$BROWSER_PYSCRIPT"
 
@@ -35,55 +17,41 @@ help: ## this message
 clean: ## remove build dir
 	rm -rf build/
 
-debug: ## create slow debug version
-	rm -rf build/
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCMAKE_BUILD_TYPE="Debug"
-	cmake --build build --config Debug
-	build/bin/Debug/fixed_size_string_buffer
+debug: ## create slow debug version of standalone example
+	rm -rf ./build/debug/CMakeCache.txt
+	cmake -S standalone -B build/debug -DCMAKE_BUILD_TYPE=Debug 
+	cmake --build build/debug --config Debug 
+	which -s build/debug/fixed_size_string_buffer && build/debug/fixed_size_string_buffer
 
-release: ## create optimized release version
-	rm -rf build/
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCMAKE_BUILD_TYPE="Release" 
-	cmake --build build --config Release
-	build/bin/Release/fixed_size_string_buffer
+release: ## create optimized release version of example
+	rm -rf ./build/release/CMakeCache.txt
+	cmake -S standalone -B build/release -DCMAKE_BUILD_TYPE=Release 
+	cmake --build build/release --config release 
+	which -s build/release/fixed_size_string_buffer && build/release/fixed_size_string_buffer
 
+bench: ## run benchmark on push operation under bench/sources
+	rm -rf ./build/bench/CMakeCache.txt
+	 cmake -S bench -B build/bench 
+	 cmake --build build/bench
+	 which -s ./build/bench/unit_bench && ./build/bench/unit_bench
 
-test: ## run tests under test/ dir
-	rm -rf build/
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DENABLE_UNIT_TESTING=1 -DCMAKE_BUILD_TYPE="Release" 
-	cmake --build build --config Release
-	cd build/ && ctest -C Release -VV
-
-bench: ## run benchmark under bench/ dir
-	rm -rf build/
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DENABLE_BENCH=1 -DCMAKE_BUILD_TYPE="Release" 
-	cmake --build build --config Release
+test: ## exercise all queue operations under test/sources
+	rm -rf ./build/test/CMakeCache.txt
+	cmake -S test -B build/test
+	cmake --build build/test --config Debug
+	cd build/test && ctest -C Debug -VV
 
 coverage: ## check code coverage 
-	rm -rf build/
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DENABLE_COVERAGE=1 -DENABLE_UNIT_TESTING=1 -DCMAKE_BUILD_TYPE="Debug" --fresh
-	cmake --build build --config Debug
-	cd build/ && ctest -C Debug -VV
-	cd build/ && make coverage
-	$(BROWSER) build/coverage/index.html
+	rm -rf build/coverage/CMakeCache.txt
+	cmake -S test -B build/coverage -DENABLE_COVERAGE=1
+	cmake --build build/coverage --config Debug
+	cd build/coverage && ctest -C Debug -VV
+	cd build/coverage && make coverage
+	$(BROWSER) build/coverage/coverage/index.html
 
 docs: ## generate Doxygen HTML documentation, including API docs
-	rm -rf docs/
-	rm -rf build/
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DENABLE_DOXYGEN=1 --fresh
-	cmake --build build --config Release
-	cmake --build build --target doxygen-docs
-	$(BROWSER) docs/html/index.html
+	rm -rf ./build/doc/CMakeCache.txt
+	cmake -S documentation -B build/doc 
+	cmake --build build/doc --target GenerateDocs
+	open build/doc/doxygen/html/index.html
 
-install: ## install the package to the INSTALL_LOCATION={INSTALL_LOCATION}
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) --fresh
-	cmake --build build --config Release
-	cmake --build build --target install --config Release
-
-format: ## format the project sources
-	rm -rf build/
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION)
-	cmake --build build --target clang-format
-
-#gen_single_include: ## generate an include file combining definition and implementation
-#	@python utils/amalgamate/amalgamate.py -c utils/single_include.json -s .

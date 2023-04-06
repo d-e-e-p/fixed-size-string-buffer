@@ -8,9 +8,9 @@
 #include <sstream>
 #include <iomanip>
 
-#include "fixed_size_string_buffer.h"
-#include "fixed_elem_size_queue.h"
-#include "fixed_char_size_queue.h"
+#include "fssb/fixed_size_string_buffer.h"
+#include "fssb/fixed_elem_size_queue.h"
+#include "fssb/fixed_char_size_queue.h"
 
 void example1();
 void example2();
@@ -122,11 +122,13 @@ void compare()
   using std::setw;
 
   std::cout.precision(1);
+  // NOLINTBEGIN
   std::cout << " │ " << setw(6) << LEN << " │ " << setw(8) <<  max_size << " │ "
     << setw(6) << delta1 << "ns │" << setw(6) << delta2 << "ns │" << setw(6) << delta3 << "ns │" 
     << std::fixed 
     << setw(5) << ratio1 << "X │" << setw(5) << ratio2 << "X │" << setw(5) << ratio3 << "X │" 
     << "\n";
+  // NOLINTEND
 
 }
 

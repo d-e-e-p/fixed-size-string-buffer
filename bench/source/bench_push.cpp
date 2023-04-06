@@ -3,9 +3,9 @@
 #include <queue>
 #include <benchmark/benchmark.h>
 
-#include "fixed_size_string_buffer.h"
-#include "fixed_elem_size_queue.h"
-#include "fixed_char_size_queue.h"
+#include "fssb/fixed_size_string_buffer.h"
+#include "fssb/fixed_elem_size_queue.h"
+#include "fssb/fixed_char_size_queue.h"
 
 enum class QType {FixedSizeStringBuffer, FixedCharSizeQueue, FixedElemSizeQueue, StdQueue};
 

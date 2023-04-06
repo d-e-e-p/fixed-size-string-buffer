@@ -1,10 +1,28 @@
+/**
+ * @file  test_basic.cpp
+ * @author  Sandeep <deep@tensorfield.ag>
+ * @version 1.0
+ *
+ * @section LICENSE
+ *
+ * MIT License <http://opensource.org/licenses/MIT>
+ *
+ * @section DESCRIPTION
+ *
+ * Test ring buffer implementation by adding elements and looking
+ * at expected values 
+ *
+ * https://github.com/d-e-e-p/fixed-size-string-buffer
+ * Copyright (c) 2023 Sandeep <deep@tensorfield.ag>
+ *
+ */
 #include <iostream>
 #include <sstream>
 #include <regex>
 #include <gtest/gtest.h>
 #include "gmock/gmock.h"
 
-#include "fixed_size_string_buffer.h"
+#include "fssb/fixed_size_string_buffer.h"
 
 
 TEST(QueueTest, Small) {

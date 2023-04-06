@@ -20,7 +20,8 @@ This is a small enough example to clone and use as a template to setup a new C++
 
 ## Credits
 
-- Original project template from [modern-cpp-template](https://github.com/filipdutescu/modern-cpp-template)
+- Cmake and other setup from [ModernCppStarter](https://github.com/TheLartians/ModernCppStarter)
+- Compiler/Analyzer template from [modern-cpp-template](https://github.com/filipdutescu/modern-cpp-template)
 - Setting and conventions from [p-ranav](https://github.com/p-ranav)
 - Google test and benchmark example from [starter project](https://github.com/PhDP/cmake-gtest-gbench-starter)
 - Discussion at stackexchange [Elegant Circular Buffer](https://codereview.stackexchange.com/questions/164130/elegant-circular-buffer)
@@ -40,38 +41,42 @@ if (q.size() > target_capacity) {
  q.push_back(new_string);
 ```
 
-See this [gist](https://gist.github.com/d-e-e-p/fc2697bdef0faa11678fe034d44772d3) .
-You could extend this to take into account the sizes of strings added, eg [fixed_size_queue.h](include/fixed_size_queue.h).
-This achieves pretty much the same functionality of this library except the ability to 
-pre-allocate buffer space on the stack at compile time.
+See [fixed_elem_size_queue.h](include/fssb/fixed_elem_size_queue.h)
+You could extend this to take into account the sizes of strings added, eg
+[fixed_char_size_queue.h](include/fssb/fixed_char_size_queue.h)
+This achieves pretty much the same functionality of this library except the requirement to 
+pre-allocate buffer space at compile time.
 
 Turns out that feature can be pretty useful.  For example, in embeded devices we need very predictable
-dynamic allocation limits to maintain sufficient ram headroom.  This char buffer array can be 
+dynamic allocation limits to maintain sufficient memory headroom.  This ring buffer array can be 
 allocated statically so it ends up in the [.bss section](https://en.wikipedia.org/wiki/.bss), 
 when can be alloted to a dedicated bank (eg CCM Memory on a STM32). This eliminates the possibility
 of conflict between message buffer and operating heap/stack memory.  See writeup on [Using CCM
-Memory](https://www.openstm32.org/Using%2BCCM%2BMemory).
+Memory](https://www.openstm32.org/Using%2BCCM%2BMemory). 
 
-There is also a speed advantage of using this approach for long strings:
+There is also a significant speed advantage of using this approach for long strings, eg on macos:
 
 ```bash
-  fixed_size_string_buffer example2: wallclock time comparison for push operation
- ╭────────┬──────────┬──────────┬─────────┬─────────┬─────────┬─────────┬─────────╮
- │ strlen │ capacity │ FixedSize│FixedSize│no limit │         │         │         │
- │ (chars)│ (strings)│ stringBuf│std:queue│std:queue│ (1)/(1) │ (2)/(1) │ (3)/(1) │
- │        │          │    (1)   │   (2)   │  (3)    │         │         │         │
- ├────────┼──────────┼──────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
- │      1 │     10.3 │      5ns │     8ns │     4ns │    1.0X │    1.6X │    0.8X │
- │     10 │     10.3 │      7ns │     8ns │     5ns │    1.0X │    1.1X │    0.7X │
- │    100 │     10.3 │      7ns │    28ns │    43ns │    1.0X │    4.0X │    6.1X │
- │   1000 │     10.3 │     17ns │    71ns │   200ns │    1.0X │    4.2X │   11.8X │
- ╰────────┴──────────┴──────────┴─────────┴─────────┴─────────┴─────────┴─────────╯
+   fixed_size_string_buffer : wallclock time comparison for push operation
+ ╭────────┬──────────┬──────────┬─────────┬─────────┬───────────────────────╮
+ │ strlen │ max_size │ FixedSize│FixedChar│FixedStr │      R A T I O S      │
+ │ (chars)│  (chars) │ stringBuf│std:queue│std:queue┼───────┬───────┬───────┤
+ │        │          │    (1)   │   (2)   │   (3)   │(1)/(1)│(2)/(1)│(3)/(1)│
+ ├────────┼──────────┼──────────┼─────────┼─────────┼───────┼───────┼───────┤
+ │     10 │      103 │      7ns │     6ns │     7ns │  1.0X │  0.9X │  1.0X │
+ │    100 │     1030 │      7ns │    24ns │    48ns │  1.0X │  3.4X │  6.9X │
+ │   1000 │    10300 │     18ns │    67ns │   141ns │  1.0X │  3.7X │  7.8X │
+ ╰────────┴──────────┴──────────┴─────────┴─────────┴───────┴───────┴───────╯
+     (1)  FixedSizeStringBuffer<max_size>()
+     (2)  FixedCharSizeQueue(max_size)
+     (3)  FixedElemSizeQueue<std::string>(10)
+
+          max_size = strlen * 10.3 chars
 ```
 
-This run shows a 4X speedup compared with a std::queue based ring buffer for strings longer than 100 characters on
-average. As strings become longer, the overhead of using unbounded string std::queue becomes significant:
-more than 10X slower for strings longer than 1000 characters. Ring buffer wins over unbounded 
-queues because it avoids the extra memory allocation time.
+This run shows a 3.4X speedup for strings longer than 100 characters, compared with a std::queue<string> based approach.
+As strings become longer, the overhead of using bounded or unbounded string std::queue becomes even more pronounced.
+Ring buffer wins over unbounded queues because it avoids the extra memory allocation time..
 
 ## Getting Started
 
@@ -80,22 +85,22 @@ queues because it avoids the extra memory allocation time.
 ```bash
 help                 this message
 clean                remove build dir
-debug                create slow debug version
-release              create optimized release version
-test                 run tests under test/ dir
-bench                run benchmark under bench/ dir
+debug                create slow debug version of standalone example
+release              create optimized release version of example
+bench                run benchmark on push operation under bench/sources
+test                 exercise all queue operations under test/sources
 coverage             check code coverage
 docs                 generate Doxygen HTML documentation, including API docs
 install              install the package to the INSTALL_LOCATION=~/.local
 format               format the project sources
 ```
 
-`make release` builds the example [src/main.c](src/main.c) .
+`make release` builds the example [main.cpp](standalone/source/main.cpp)
 
-An trivial example looks like:
+A trivial example looks like:
 
 ```cpp
-#include "fixed_size_string_buffer.h"
+#include "fssb/fixed_size_string_buffer.h"
 int main() {
   auto rb = FixedSizeStringBuffer<10>();
   rb.push("123");
@@ -121,7 +126,7 @@ because buffer doesn't have enough space for 9 chars.
 
 ```cpp
 #include <iostream>
-#include "fixed_size_string_buffer.h"
+#include "fssb/fixed_size_string_buffer.h"
 
 int main() {
   auto foo = FixedSizeStringBuffer<8>();
@@ -169,7 +174,7 @@ foo.pop()  : 1bb
 foo[0]     : 2cc
 ```
 
-See example1 in [src/main.cpp](src/main.cpp) for a similar demo.
+See example1 in [basic_example.cpp](standalone/source/basic_example.cpp) for a similar demo.
 Run `make docs` to see doxygen version of class descriptions.
 
 ### Coverage
@@ -177,16 +182,10 @@ Run `make docs` to see doxygen version of class descriptions.
 `make coverage` generates coverage information that should sometime like:
 
 ```bash
-LCOV - code coverage report
-
-Current view: top level                       Hit     Total   Coverage
-Test: coverage.info           Lines:          403     403     100.0 %
-Date: 2023-04-01 17:36:13     Functions:      117     118     99.2 %
-
-Filename                           Line Coverage            Function
-fixed_size_queue.h	           100.0%   100.0 %	 22 /  22	100.0 %	 6 /  6
-fixed_size_string_buffer.h	   100.0%   100.0 %	196 / 196	 98.7 %	75 / 76
-
+Filename Sort by name	Line Coverage Sort by line coverage	Functions Sort by function coverage
+fixed_char_size_queue.h	    100.0% 100.0 %	  21 /  21	100.0 %	12 / 12
+fixed_elem_size_queue.h	    100.0% 100.0 %	  16 /  16	100.0 %	 6 /  6
+fixed_size_string_buffer.h	100.0% 100.0 %	 199 / 199	 99.0 %	95 / 96
 Generated by: LCOV version 1.16
 ```
 
@@ -195,61 +194,74 @@ Generated by: LCOV version 1.16
 `make test` invokes google test on [test/test_basic.cpp](test/test_basic.cpp) and [test/test_compare.cpp](test/test_compare.cpp)
 Expected results look something like:
 ```bash
-1: [==========] Running 5 tests from 2 test suites.
+1: Test command: /Users/deep/build/tf/command_line/fixed-size-string-buffer/build/test/unit_tests
+1: Working Directory: /Users/deep/build/tf/command_line/fixed-size-string-buffer/build/test
+1: Test timeout computed to be: 10000000
+1: [==========] Running 8 tests from 2 test suites.
 1: [----------] Global test environment set-up.
-1: [----------] 3 tests from QueueTest
+1: [----------] 5 tests from QueueTest
 1: [ RUN      ] QueueTest.Small
 1: [       OK ] QueueTest.Small (0 ms)
 1: [ RUN      ] QueueTest.Warnings
 1: [       OK ] QueueTest.Warnings (0 ms)
 1: [ RUN      ] QueueTest.Large
 1: [       OK ] QueueTest.Large (0 ms)
-1: [----------] 3 tests from QueueTest (0 ms total)
+1: [ RUN      ] QueueTest.Swap
+1: [       OK ] QueueTest.Swap (0 ms)
+1: [ RUN      ] QueueTest.Emplace
+1: [       OK ] QueueTest.Emplace (0 ms)
+1: [----------] 5 tests from QueueTest (0 ms total)
 1:
-1: [----------] 2 tests from Compare
-1: [ RUN      ] Compare.WithFixedQueue
-1: [       OK ] Compare.WithFixedQueue (0 ms)
+1: [----------] 3 tests from Compare
+1: [ RUN      ] Compare.WithFixedCharSizeQueue
+1: [       OK ] Compare.WithFixedCharSizeQueue (0 ms)
+1: [ RUN      ] Compare.WithFixedStrSizeQueue
+1: [       OK ] Compare.WithFixedStrSizeQueue (0 ms)
 1: [ RUN      ] Compare.WithUnlimitedQueue
 1: [       OK ] Compare.WithUnlimitedQueue (0 ms)
-1: [----------] 2 tests from Compare (0 ms total)
+1: [----------] 3 tests from Compare (0 ms total)
 1:
 1: [----------] Global test environment tear-down
-1: [==========] 5 tests from 2 test suites ran. (1 ms total)
-1: [  PASSED  ] 5 tests.
+1: [==========] 8 tests from 2 test suites ran. (0 ms total)
+1: [  PASSED  ] 8 tests.
 ```
 
 `make bench` runs trials on push operation under varying conditions of string length, eg:
 
 ```bash
-Running ./unit_bench
-Run on (10 X 24.1205 MHz CPU s)
+./build/bench/unit_bench
+Unable to determine clock rate from sysctl: hw.cpufrequency: No such file or directory
+This does not affect benchmark measurements, only the metadata output.
+2023-04-06T08:29:53-04:00
+Running ./build/bench/unit_bench
+Run on (10 X 24.0735 MHz CPU s)
 CPU Caches:
   L1 Data 64 KiB
   L1 Instruction 128 KiB
   L2 Unified 4096 KiB (x10)
-Load Average: 4.59, 4.82, 5.12
-----------------------------------------------------------------------------------------
-Benchmark                                              Time             CPU   Iterations
-----------------------------------------------------------------------------------------
-BM_queue<QueueType::FixedBuffer, 1, 10, 3>          4.76 ns         4.75 ns    135930248
-BM_queue<QueueType::FixedQueue, 1, 10, 3>           7.34 ns         7.33 ns     94723880
-BM_queue<QueueType::StdQueue, 1, 10, 3>             5.86 ns         4.70 ns    144807613
-BM_queue<QueueType::FixedBuffer, 10, 10, 3>         5.40 ns         5.40 ns    128158184
-BM_queue<QueueType::FixedQueue, 10, 10, 3>          7.31 ns         7.30 ns     96702447
-BM_queue<QueueType::StdQueue, 10, 10, 3>            6.44 ns         4.66 ns    152621159
-BM_queue<QueueType::FixedBuffer, 100, 10, 3>        5.56 ns         5.56 ns    125362656
-BM_queue<QueueType::FixedQueue, 100, 10, 3>         27.4 ns         27.4 ns     25891883
-BM_queue<QueueType::StdQueue, 100, 10, 3>           40.6 ns         37.8 ns     23485913
-BM_queue<QueueType::FixedBuffer, 1000, 10, 3>       16.1 ns         16.1 ns     43470701
-BM_queue<QueueType::FixedQueue, 1000, 10, 3>        71.0 ns         70.9 ns      9662102
-BM_queue<QueueType::StdQueue, 1000, 10, 3>           181 ns          132 ns      5148308
+Load Average: 3.86, 7.40, 7.12
+-----------------------------------------------------------------------------------------------
+Benchmark                                                     Time             CPU   Iterations
+-----------------------------------------------------------------------------------------------
+BM_queue<QType::FixedSizeStringBuffer , 10, 10, 3>         5.46 ns         5.45 ns    125279642
+BM_queue<QType::FixedCharSizeQueue, 10, 10, 3>             6.76 ns         6.75 ns    104608763
+BM_queue<QType::FixedElemSizeQueue, 10, 10, 3>             6.98 ns         6.97 ns    100048595
+BM_queue<QType::StdQueue, 10, 10, 3>                       5.68 ns         5.01 ns    139472793
+BM_queue<QType::FixedSizeStringBuffer , 100, 10, 3>        5.65 ns         5.64 ns    123504711
+BM_queue<QType::FixedCharSizeQueue, 100, 10, 3>            26.1 ns         24.4 ns     28585196
+BM_queue<QType::FixedElemSizeQueue, 100, 10, 3>            48.7 ns         48.6 ns     14253745
+BM_queue<QType::StdQueue, 100, 10, 3>                      46.2 ns         38.2 ns     21016035
+BM_queue<QType::FixedSizeStringBuffer , 1000, 10, 3>       16.4 ns         16.4 ns     42636131
+BM_queue<QType::FixedCharSizeQueue, 1000, 10, 3>           68.2 ns         68.1 ns     10158472
+BM_queue<QType::FixedElemSizeQueue, 1000, 10, 3>            139 ns          139 ns      4973039
+BM_queue<QType::StdQueue, 1000, 10, 3>                      395 ns          160 ns      5182728
 ``` 
 
 The last line for example is running a case where the string added to queue is 1000 chars, 
 while the queue size is 10.3 * string length = 10300 chars.  
-It takes 132ns per push using an unbounded `std::queue<std::string>`, which reduces to
-70.9 ns with the `std::queue` of fixed char length from [fixed_size_queue.h](include/fixed_size_queue.h).
-Using ring buffer with this large string length drops the push time to 16.1 ns.
+It takes 160ns per push using an unbounded `std::queue<std::string>`, which reduces to
+68ns with the `std::queue` of fixed char length from [fixed_char_size_queue.h](include/fssb/fixed_char_size_queue.h).
+Using ring buffer with this large string length drops the push time to 16ns.
 
 ### Porting
 
@@ -258,14 +270,13 @@ Linux and MacOS build fine, see [https://github.com/d-e-e-p/fixed-size-string-bu
 On windows, compiling wth unicode in the source files is a bit fragile.
 For MS Visual Code to handle unicode correctly on windows, we need 4 steps:
 
-1. Terminal output to support UTF8 (with `chcp.com 65001`)
-2. Source files encoded as UTF-8 *with* BOM
+1. Update terminal codepage for output to support UTF8 (with `chcp.com 65001`)
+2. Encode source files as UTF-8 *with* BOM
 3. `#pragma execution_character_set("utf-8")` in include files
 4. Compile with `/utf-8` option
 
 See section on `if: runner.os == 'Windows'` in the action config 
 [.github/workflows/ci.yml](.github/workflows/ci.yml). 
-
 
 
 ### Coding style
@@ -308,7 +319,6 @@ void set_count(int count);
 
 
 ```
-
 
 
 ## Versioning

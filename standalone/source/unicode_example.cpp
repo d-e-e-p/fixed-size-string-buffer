@@ -1,5 +1,5 @@
 #include <iostream>
-#include "fixed_size_string_buffer.h"
+#include "fssb/fixed_size_string_buffer.h"
 
 /*
  * test out printing of queues with special characters

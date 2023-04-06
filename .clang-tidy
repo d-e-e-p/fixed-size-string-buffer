@@ -14,7 +14,7 @@ Checks: "*,
         -google-global-names-in-headers,
         -modernize-use-nodiscard,
 "
-IgnoreClassesWithAllMemberVariablesBeingPublic: 1
+#IgnoreClassesWithAllMemberVariablesBeingPublic: 1
 WarningsAsErrors: ''
 HeaderFilterRegex: ''
 FormatStyle:     none

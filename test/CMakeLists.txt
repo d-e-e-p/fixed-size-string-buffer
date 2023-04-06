@@ -1,36 +1,37 @@
-include(FetchContent)
-FetchContent_Declare(googletest-src 
-  QUIET
-  DOWNLOAD_EXTRACT_TIMESTAMP true
-  URL https://github.com/google/googletest/archive/refs/tags/v1.13.0.zip
-)
+cmake_minimum_required(VERSION 3.15...3.22)
 
+project(unit_tests LANGUAGES CXX)
+enable_testing()
+
+# --- Import tools ----
+include(../cmake/common.cmake)
+
+# ---Setup GoogleTest --
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 set(BUILD_GMOCK ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest-src)
+set(CMAKE_BUILD_TYPE "Release")
+set(CMAKE_CONFIGURATION_TYPES ${CMAKE_BUILD_TYPE})
 
-set(test_src
-  run_all.cpp
-  test_basic.cpp  
-  test_compare.cpp
-)
+#FetchContent_MakeAvailable(googletest-src)
+CPMAddPackage("gh:google/googletest@1.13.0")
 
-add_executable(unit_tests ${test_src})
-target_compile_features(unit_tests PRIVATE cxx_std_17)
+# ---Config Src --------
 
-target_link_libraries(unit_tests
+file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp)
+
+message(STATUS "sources = ${sources} dir=${CMAKE_CURRENT_SOURCE_DIR}")
+
+add_executable(${PROJECT_NAME} ${sources})
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+
+target_link_libraries(${PROJECT_NAME}
   gtest_main
   gmock_main
 )
 include_directories("../include")
-set_target_properties( gtest gtest_main unit_tests
-    PROPERTIES
-    CXX_CPPCHECK ""
-    CXX_CLANG_TIDY ""
-)
 
 add_test(
   NAME tests
-  COMMAND unit_tests
+  COMMAND ${PROJECT_NAME}
 )

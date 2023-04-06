@@ -24,9 +24,9 @@
 #include <gtest/gtest.h>
 #include "gmock/gmock.h"
 
-#include "fixed_size_string_buffer.h"
-#include "fixed_char_size_queue.h"
-#include "fixed_elem_size_queue.h"
+#include "fssb/fixed_size_string_buffer.h"
+#include "fssb/fixed_char_size_queue.h"
+#include "fssb/fixed_elem_size_queue.h"
 
 
 TEST(Compare, WithFixedCharSizeQueue) {
