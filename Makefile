@@ -1,8 +1,14 @@
-.PHONY: help clean standalone test bench docs bench2 bench3 debug release test2
+#
+# Makefile to drive cmake operations
+# https://github.com/d-e-e-p/fixed-size-string-buffer
+# Copyright (c) 2023 Sandeep <deep@tensorfield.ag>
+# 
+
+.PHONY: *
 .DEFAULT_GOAL := help
 INSTALL_LOCATION := ~/.local
 # SHELL=/bin/bash -vx # for debug
-#export CCMAKE_COLORS='s=39:p=220:c=207:n=196:y=46'
+#CCMAKE_COLORS='s=39:p=220:c=207:n=196:y=46'
 
 include cmake/utils.mk
 
@@ -49,9 +55,15 @@ coverage: ## check code coverage
 	cd build/coverage && make coverage
 	$(BROWSER) build/coverage/coverage/index.html
 
+install: ## move libs to install location
+	rm -rf ./build/release/CMakeCache.txt
+	cmake -S install -B build/install -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION)
+	cmake --build build/install --config Release --target install
+
 docs: ## generate Doxygen HTML documentation, including API docs
-	rm -rf ./build/doc/CMakeCache.txt
-	cmake -S documentation -B build/doc 
-	cmake --build build/doc --target GenerateDocs
-	open build/doc/doxygen/html/index.html
+	rm -rf ./build/docs/CMakeCache.txt
+	cmake -S docs -B build/docs
+	cmake --build build/docs --target GenerateDocs -v
+	open build/docs/doxygen/html/index.html
+
 

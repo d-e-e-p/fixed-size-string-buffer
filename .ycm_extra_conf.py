@@ -39,6 +39,7 @@ flags = [
     '-I', '../../include',
     '-I', '../../single_include',
     '-I', '../src',
+    '-I', '/opt/homebrew/Cellar/boost/1.81.0_1/include',
     '-I', '.',
 ]
 
