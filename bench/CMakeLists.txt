@@ -11,6 +11,7 @@ set (BENCHMARK_ENABLE_TESTING OFF)
 set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_CONFIGURATION_TYPES ${CMAKE_BUILD_TYPE})
 
+find_package(Boost REQUIRED)
 
 #  URL https://github.com/google/benchmark/archive/refs/tags/v1.7.1.zip
 CPMAddPackage("gh:google/benchmark@1.7.1")
@@ -20,8 +21,8 @@ file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp)
 add_executable(${PROJECT_NAME} ${sources})
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 
-target_link_libraries(${PROJECT_NAME}
-  benchmark
-)
+target_link_libraries(${PROJECT_NAME} benchmark)
+target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 
-include_directories("../include")
+target_include_directories(${PROJECT_NAME} PRIVATE "../include")
+target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIRS})

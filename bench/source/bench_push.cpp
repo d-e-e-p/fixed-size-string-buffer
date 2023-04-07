@@ -1,13 +1,31 @@
 
+/**
+ * @file  bench_push.cpp
+ *
+ * @section DESCRIPTION
+ * benchmark speed of push operations on various fixed size queue options
+ *
+ * https://github.com/d-e-e-p/fixed-size-string-buffer
+ * Copyright (c) 2023 Sandeep <deep@tensorfield.ag>
+ *
+ * @section LICENSE
+ *
+ * MIT License <http://opensource.org/licenses/MIT>
+ *
+ */
+
+#include <string>
 #include <array>
 #include <queue>
+
 #include <benchmark/benchmark.h>
+#include <boost/circular_buffer.hpp>
 
 #include "fssb/fixed_size_string_buffer.h"
 #include "fssb/fixed_elem_size_queue.h"
 #include "fssb/fixed_char_size_queue.h"
 
-enum class QType {FixedSizeStringBuffer, FixedCharSizeQueue, FixedElemSizeQueue, StdQueue};
+enum class QType {FixedSizeStringBuffer, FixedCharSizeQueue, FixedElemSizeQueue, BoostCircularBuffer, StdQueue};
 
 
 template <QType qtype, size_t LEN, size_t CAPACITY, size_t EXCESS>
@@ -36,6 +54,11 @@ void BM_queue(benchmark::State& state)
         for (auto _ : state) { queue.push(str_test); }
         break;
     }
+    case QType::BoostCircularBuffer: {
+        auto queue = boost::circular_buffer<std::string>(CAPACITY);
+        for (auto _ : state) { queue.push_back(str_test); }
+        break;
+    }
     case QType::StdQueue: {
         auto queue = std::queue<std::string>();
         for (auto _ : state) { queue.push(str_test); }
@@ -52,10 +75,12 @@ constexpr size_t kExcess = 3;
 */
 
 #define gen(len, capacity, excess) \
+BENCHMARK_TEMPLATE(BM_queue, QType::BoostCircularBuffer,    len, capacity, excess); \
 BENCHMARK_TEMPLATE(BM_queue, QType::FixedSizeStringBuffer , len, capacity, excess); \
 BENCHMARK_TEMPLATE(BM_queue, QType::FixedCharSizeQueue,     len, capacity, excess); \
 BENCHMARK_TEMPLATE(BM_queue, QType::FixedElemSizeQueue,     len, capacity, excess); \
-BENCHMARK_TEMPLATE(BM_queue, QType::StdQueue,               len, capacity, excess);
+BENCHMARK_TEMPLATE(BM_queue, QType::StdQueue,               len, capacity, excess); \
+
 
 // Len Capacity Excess
 gen(   10, 10, 3)

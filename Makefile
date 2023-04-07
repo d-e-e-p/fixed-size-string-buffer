@@ -38,7 +38,7 @@ release: ## create optimized release version of example
 bench: ## run benchmark on push operation under bench/sources
 	rm -rf ./build/bench/CMakeCache.txt
 	 cmake -S bench -B build/bench 
-	 cmake --build build/bench
+	 cmake --build build/bench 
 	 which -s ./build/bench/unit_bench && ./build/bench/unit_bench
 
 test: ## exercise all queue operations under test/sources
