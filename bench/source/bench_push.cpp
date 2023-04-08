@@ -17,6 +17,7 @@
 #include <string>
 #include <array>
 #include <queue>
+#include <any>
 
 #include <benchmark/benchmark.h>
 #include <boost/circular_buffer.hpp>
@@ -28,41 +29,72 @@
 enum class QType {FixedSizeStringBuffer, FixedCharSizeQueue, FixedElemSizeQueue, BoostCircularBuffer, StdQueue};
 
 
+// wraper to alias push -> push_back
+class WrapperBoostCircularBuffer : public boost::circular_buffer<std::string>
+{
+public:
+  explicit WrapperBoostCircularBuffer(size_t max): boost::circular_buffer<std::string>(max) 
+  {
+  }
+  void push(const std::string& value) 
+  {
+    this->push_back(value);
+  }
+};
+
+
+#define QUEUE_TEST \
+      for (auto _ : state) { \
+        for (size_t i = 0; i < num_iter; ++i) { \
+          queue.push(str_long); \
+          queue.push(str_med); \
+          queue.push(str_short); \
+        } \
+      } \
+
+
+
+
 template <QType qtype, size_t LEN, size_t CAPACITY, size_t EXCESS>
 void BM_queue(benchmark::State& state)
 {
 
-  // create buffer just enough size to hold str_capacity_in_buffer values
-  auto str_test = std::string(LEN, 'x');
+  // create str of 3 different sizes
+  constexpr double scaling_factor = 1.2;
+
+  auto str_long   = std::string(LEN * scaling_factor  , 'x');
+  auto str_med    = std::string(LEN, 'y');
+  auto str_short  = std::string(LEN / scaling_factor, 'z');
+
   constexpr double str_capacity_in_buffer = CAPACITY + 0.1 * EXCESS;
   constexpr auto max_size = static_cast<size_t>(LEN * str_capacity_in_buffer);
-
+  constexpr size_t num_iter = 100;
 
   switch (qtype) {
     case QType::FixedSizeStringBuffer: {
-      auto queue = FixedSizeStringBuffer<LEN>();
-      for (auto _ : state) { queue.push(str_test); }
+      auto queue = FixedSizeStringBuffer<max_size>();
+      QUEUE_TEST
       break;
     }
     case QType::FixedCharSizeQueue: { 
-        auto queue = FixedCharSizeQueue(max_size);
-        for (auto _ : state) { queue.push(str_test); }
-        break;
+      auto queue = FixedCharSizeQueue(max_size);
+      QUEUE_TEST
+      break;
     }
     case QType::FixedElemSizeQueue: {
-        auto queue = FixedElemSizeQueue<std::string>(CAPACITY);
-        for (auto _ : state) { queue.push(str_test); }
-        break;
+      auto queue = FixedElemSizeQueue<std::string>(CAPACITY);
+      QUEUE_TEST
+      break;
     }
     case QType::BoostCircularBuffer: {
-        auto queue = boost::circular_buffer<std::string>(CAPACITY);
-        for (auto _ : state) { queue.push_back(str_test); }
-        break;
+      auto queue = WrapperBoostCircularBuffer(CAPACITY);
+      QUEUE_TEST
+      break;
     }
     case QType::StdQueue: {
-        auto queue = std::queue<std::string>();
-        for (auto _ : state) { queue.push(str_test); }
-        break;
+      auto queue = std::queue<std::string>();
+      QUEUE_TEST
+      break;
     }
   }
 
