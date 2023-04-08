@@ -27,13 +27,13 @@ debug: ## create slow debug version of standalone example
 	rm -rf ./build/debug/CMakeCache.txt
 	cmake -S standalone -B build/debug -DCMAKE_BUILD_TYPE=Debug 
 	cmake --build build/debug --config Debug 
-	which -s build/debug/fixed_size_string_buffer && build/debug/fixed_size_string_buffer
+	which -s build/debug/demo && build/debug/demo
 
 release: ## create optimized release version of example
 	rm -rf ./build/release/CMakeCache.txt
 	cmake -S standalone -B build/release -DCMAKE_BUILD_TYPE=Release 
 	cmake --build build/release --config release 
-	which -s build/release/fixed_size_string_buffer && build/release/fixed_size_string_buffer
+	which -s build/release/demo && build/release/demo
 
 bench: ## run benchmark on push operation under bench/sources
 	rm -rf ./build/bench/CMakeCache.txt

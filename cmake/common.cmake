@@ -4,14 +4,17 @@
 
 
 # --- Import tools ----
-include(../cmake/tools.cmake)
-include(../cmake/utils.cmake)
+# prefer actual filenames over CMAKE_MODULE_PATH
+include(../cmake/Utils.cmake)
 include(../cmake/CompilerWarnings.cmake)
 include(../cmake/StaticAnalyzers.cmake)
 include(../cmake/Coverage.cmake)
 
-download_CPM_dot_cmake()
+download_CPM_cmake()
 include(../cmake/CPM.cmake)
+
+download_Sanitizers_cmake()
+include(../cmake/Sanitizers.cmake)
 
 # --- Import tools ----
 # CPMAddPackage("gh:TheLartians/Ccache.cmake@1.2.3")

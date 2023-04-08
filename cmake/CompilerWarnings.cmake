@@ -3,7 +3,7 @@
 # https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md
 # Courtesy of Jason Turner
 
-function(set_project_warnings project_name)
+function(set_target_warnings target_name)
   set(MSVC_WARNINGS
       /W4     # Baseline reasonable warnings
       /w14242 # 'identifier': conversion from 'type1' to 'type1', possible loss
@@ -89,12 +89,12 @@ function(set_project_warnings project_name)
   endif()
 
   if(BUILD_HEADERS_ONLY)
-        target_compile_options(${project_name} INTERFACE ${PROJECT_WARNINGS})
+        target_compile_options(${target_name} INTERFACE ${PROJECT_WARNINGS})
   else()
-        target_compile_options(${project_name} PUBLIC ${PROJECT_WARNINGS})
+        target_compile_options(${target_name} PUBLIC ${PROJECT_WARNINGS})
   endif()
 
-  if(NOT TARGET ${project_name})
-    message(AUTHOR_WARNING "${project_name} is not a target, thus no compiler warning were added.")
+  if(NOT TARGET ${target_name})
+    message(AUTHOR_WARNING "${target_name} is not a target, thus no compiler warning were added.")
   endif()
 endfunction()
