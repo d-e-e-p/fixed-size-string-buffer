@@ -27,19 +27,19 @@ debug: ## create slow debug version of standalone example
 	rm -rf ./build/debug/CMakeCache.txt
 	cmake -S standalone -B build/debug -DCMAKE_BUILD_TYPE=Debug 
 	cmake --build build/debug --config Debug 
-	which -s build/debug/demo && build/debug/demo
+	./build/debug/demo
 
 release: ## create optimized release version of example
 	rm -rf ./build/release/CMakeCache.txt
 	cmake -S standalone -B build/release -DCMAKE_BUILD_TYPE=Release 
 	cmake --build build/release --config release 
-	which -s build/release/demo && build/release/demo
+	./build/release/demo
 
 bench: ## run benchmark on push operation under bench/sources
 	rm -rf ./build/bench/CMakeCache.txt
 	 cmake -S bench -B build/bench 
 	 cmake --build build/bench 
-	 which -s ./build/bench/unit_bench && ./build/bench/unit_bench
+	 ./build/bench/unit_bench
 
 test: ## exercise all queue operations under test/sources
 	rm -rf ./build/test/CMakeCache.txt
@@ -53,7 +53,7 @@ coverage: ## check code coverage
 	cmake --build build/coverage --config Debug
 	cd build/coverage && ctest -C Debug -VV
 	cd build/coverage && make coverage
-	$(BROWSER) build/coverage/coverage/index.html
+	open build/coverage/coverage/index.html
 
 install: ## move libs to install location
 	rm -rf ./build/release/CMakeCache.txt
