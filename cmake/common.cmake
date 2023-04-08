@@ -13,7 +13,6 @@ include(../cmake/Coverage.cmake)
 download_CPM_cmake()
 include(../cmake/CPM.cmake)
 
-download_Sanitizers_cmake()
 include(../cmake/Sanitizers.cmake)
 
 # --- Import tools ----
