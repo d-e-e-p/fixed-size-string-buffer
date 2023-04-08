@@ -41,42 +41,42 @@ if (q.size() > target_capacity) {
  q.push_back(new_string);
 ```
 
-See [fixed_elem_size_queue.h](include/fssb/fixed_elem_size_queue.h)
+See [fixed_elem_size_queue.h](include/fssb/fixed_elem_size_queue.h) or [boost::circular_buffer](https://www.boost.org/doc/libs/1_61_0/doc/html/boost/circular_buffer.html).  
 You could extend this to take into account the sizes of strings added, eg
 [fixed_char_size_queue.h](include/fssb/fixed_char_size_queue.h)
 This achieves pretty much the same functionality of this library except the requirement to 
 pre-allocate buffer space at compile time.
 
-Turns out that feature can be pretty useful.  For example, in embeded devices we need very predictable
-dynamic allocation limits to maintain sufficient memory headroom.  This ring buffer array can be 
-allocated statically so it ends up in the [.bss section](https://en.wikipedia.org/wiki/.bss), 
-when can be alloted to a dedicated bank (eg CCM Memory on a STM32). This eliminates the possibility
+Turns out that pre-allocation can sometimes be very useful.  For example, in embeded devices 
+we need very predictable dynamic allocation limits to maintain sufficient memory headroom.  
+This ring buffer array can be allocated statically so it ends up in the [.bss section](https://en.wikipedia.org/wiki/.bss), 
+when can then be alloted to a dedicated bank (eg CCM Memory on a STM32). This eliminates the possibility
 of conflict between message buffer and operating heap/stack memory.  See writeup on [Using CCM
 Memory](https://www.openstm32.org/Using%2BCCM%2BMemory). 
 
 There is also a significant speed advantage of using this approach for long strings, eg on macos:
 
 ```bash
-   fixed_size_string_buffer : wallclock time comparison for push operation
- ╭────────┬──────────┬──────────┬─────────┬─────────┬───────────────────────╮
- │ strlen │ max_size │ FixedSize│FixedChar│FixedStr │      R A T I O S      │
- │ (chars)│  (chars) │ stringBuf│std:queue│std:queue┼───────┬───────┬───────┤
- │        │          │    (1)   │   (2)   │   (3)   │(1)/(1)│(2)/(1)│(3)/(1)│
- ├────────┼──────────┼──────────┼─────────┼─────────┼───────┼───────┼───────┤
- │     10 │      103 │      7ns │     6ns │     7ns │  1.0X │  0.9X │  1.0X │
- │    100 │     1030 │      7ns │    24ns │    48ns │  1.0X │  3.4X │  6.9X │
- │   1000 │    10300 │     18ns │    67ns │   141ns │  1.0X │  3.7X │  7.8X │
- ╰────────┴──────────┴──────────┴─────────┴─────────┴───────┴───────┴───────╯
+         fixed_size_string_buffer :
+   wallclock time comparison for push operation
+ ╭────────┬──────────┬──────────┬──────────┬────────╮
+ │ strlen │ max_size │ FixedSize│ FixedChar│ RATIO  │
+ │ (chars)│  (chars) │ stringBuf│ std:queue│        │
+ │        │          │    (1)   │    (2)   │(2)/(1) │
+ ├────────┼──────────┼──────────┼──────────┼────────┤
+ │     10 │      103 │      6ns │      6ns │   1.0X │
+ │    100 │     1030 │      7ns │     25ns │   3.6X │
+ │   1000 │    10300 │     18ns │     70ns │   3.9X │
+ ╰────────┴──────────┴──────────┴──────────┴────────╯
      (1)  FixedSizeStringBuffer<max_size>()
      (2)  FixedCharSizeQueue(max_size)
-     (3)  FixedElemSizeQueue<std::string>(10)
 
-          max_size = strlen * 10.3 chars
+        max_size = (10.3 * strlen) characters
 ```
 
-This run shows a 3.4X speedup for strings longer than 100 characters, compared with a std::queue<string> based approach.
-As strings become longer, the overhead of using bounded or unbounded string std::queue becomes even more pronounced.
-Ring buffer wins over unbounded queues because it avoids the extra memory allocation time..
+This example run shows a 3.6X speedup for strings longer than 100 characters, compared with a std::queue<string> based approach.
+As strings become longer, the overhead of using std::queue becomes even more pronounced.
+Ring buffer wins over unbounded queues because it avoids the extra memory allocation time.
 
 ## Getting Started
 
@@ -229,39 +229,46 @@ Expected results look something like:
 `make bench` runs trials on push operation under varying conditions of string length, eg:
 
 ```bash
-./build/bench/unit_bench
-Unable to determine clock rate from sysctl: hw.cpufrequency: No such file or directory
 This does not affect benchmark measurements, only the metadata output.
-2023-04-06T08:29:53-04:00
+2023-04-08T05:35:38-04:00
 Running ./build/bench/unit_bench
-Run on (10 X 24.0735 MHz CPU s)
+Run on (10 X 24.0056 MHz CPU s)
 CPU Caches:
   L1 Data 64 KiB
   L1 Instruction 128 KiB
   L2 Unified 4096 KiB (x10)
-Load Average: 3.86, 7.40, 7.12
+Load Average: 12.13, 16.52, 19.52
 -----------------------------------------------------------------------------------------------
 Benchmark                                                     Time             CPU   Iterations
 -----------------------------------------------------------------------------------------------
-BM_queue<QType::FixedSizeStringBuffer , 10, 10, 3>         5.46 ns         5.45 ns    125279642
-BM_queue<QType::FixedCharSizeQueue, 10, 10, 3>             6.76 ns         6.75 ns    104608763
-BM_queue<QType::FixedElemSizeQueue, 10, 10, 3>             6.98 ns         6.97 ns    100048595
-BM_queue<QType::StdQueue, 10, 10, 3>                       5.68 ns         5.01 ns    139472793
-BM_queue<QType::FixedSizeStringBuffer , 100, 10, 3>        5.65 ns         5.64 ns    123504711
-BM_queue<QType::FixedCharSizeQueue, 100, 10, 3>            26.1 ns         24.4 ns     28585196
-BM_queue<QType::FixedElemSizeQueue, 100, 10, 3>            48.7 ns         48.6 ns     14253745
-BM_queue<QType::StdQueue, 100, 10, 3>                      46.2 ns         38.2 ns     21016035
-BM_queue<QType::FixedSizeStringBuffer , 1000, 10, 3>       16.4 ns         16.4 ns     42636131
-BM_queue<QType::FixedCharSizeQueue, 1000, 10, 3>           68.2 ns         68.1 ns     10158472
-BM_queue<QType::FixedElemSizeQueue, 1000, 10, 3>            139 ns          139 ns      4973039
-BM_queue<QType::StdQueue, 1000, 10, 3>                      395 ns          160 ns      5182728
+BM_queue<QType::BoostCircularBuffer, 10, 10, 3>             584 ns          477 ns      1541714
+BM_queue<QType::FixedSizeStringBuffer , 10, 10, 3>         2196 ns         2191 ns       312897
+BM_queue<QType::FixedCharSizeQueue, 10, 10, 3>             2013 ns         2008 ns       338128
+BM_queue<QType::FixedElemSizeQueue, 10, 10, 3>             2122 ns         2114 ns       337221
+BM_queue<QType::StdQueue, 10, 10, 3>                       1605 ns         1439 ns       484600
+BM_queue<QType::BoostCircularBuffer, 100, 10, 3>           1485 ns         1484 ns       473165
+BM_queue<QType::FixedSizeStringBuffer , 100, 10, 3>        2345 ns         2344 ns       294500
+BM_queue<QType::FixedCharSizeQueue, 100, 10, 3>            6942 ns         6931 ns       102775
+BM_queue<QType::FixedElemSizeQueue, 100, 10, 3>           13726 ns        13706 ns        50842
+BM_queue<QType::StdQueue, 100, 10, 3>                     10638 ns         9005 ns        89370
+BM_queue<QType::BoostCircularBuffer, 1000, 10, 3>          4837 ns         4794 ns       151938
+BM_queue<QType::FixedSizeStringBuffer , 1000, 10, 3>       5786 ns         5754 ns       117102
+BM_queue<QType::FixedCharSizeQueue, 1000, 10, 3>          19138 ns        19110 ns        36170
+BM_queue<QType::FixedElemSizeQueue, 1000, 10, 3>          38308 ns        38265 ns        18095
+BM_queue<QType::StdQueue, 1000, 10, 3>                    65654 ns        43790 ns        16187
 ``` 
 
-The last line for example is running a case where the string added to queue is 1000 chars, 
-while the queue size is 10.3 * string length = 10300 chars.  
-It takes 160ns per push using an unbounded `std::queue<std::string>`, which reduces to
-68ns with the `std::queue` of fixed char length from [fixed_char_size_queue.h](include/fssb/fixed_char_size_queue.h).
-Using ring buffer with this large string length drops the push time to 16ns.
+The `BM_queue<QType::BoostCircularBuffer, 1000, 10, 3>` line is running boost circular::buffer
+with strings added to queue average 1000 chars each, and queue limit is 10 strings.
+
+FixedSizeStringBuffer and FixedCharSizeQueue have character limits instead of string limits:
+with `1000, 10, 3>` the limit is 1000 * 10.3 = 10300 chars, with `100, 10, 3>` the buffer limit
+is 100 * 10.3 = 1030 characters.
+
+Bottom line: if you know the string lengths up front then the fastest approach is BoostCircularBuffer.
+If strings lengths are variable and there are advantages to pre-allocation of memory, FixedSizeStringBuffer
+gives similar speeds for push operation.
+
 
 ### Porting
 
@@ -280,6 +287,8 @@ See section on `if: runner.os == 'Windows'` in the action config
 
 
 ### Coding style
+
+There's no top level cmake--I find it cleaner to have each target pretend to be top level and build in a separate build dir.
 
 .clang-format for this code looks like
 ```bash
