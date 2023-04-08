@@ -41,7 +41,7 @@ jobs:
         shell: bash
         run: |
           chcp.com 65001
-          for file in */*.cpp */*.h; do
+          for file in */*/*.cpp */*/*.h; do
             iconv -f UTF-8 -t UTF-8 "$file" > "${file%.cpp}.utf8"
             echo -ne '\xEF\xBB\xBF' > "$file"
             cat "${file%.cpp}.utf8" >> "$file"
