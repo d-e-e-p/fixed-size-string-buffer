@@ -27,13 +27,13 @@ debug: ## create slow debug version of standalone example
 	rm -rf ./build/debug/CMakeCache.txt
 	cmake -S standalone -B build/debug -DCMAKE_BUILD_TYPE=Debug 
 	cmake --build build/debug --config Debug 
-	./build/debug/demo
+	./build/debug/bin/demo
 
 release: ## create optimized release version of example
 	rm -rf ./build/release/CMakeCache.txt
 	cmake -S standalone -B build/release -DCMAKE_BUILD_TYPE=Release 
 	cmake --build build/release --config release 
-	./build/release/demo
+	./build/release/bin/demo
 
 bench: ## run benchmark on push operation under bench/sources
 	rm -rf ./build/bench/CMakeCache.txt
@@ -65,5 +65,16 @@ docs: ## generate Doxygen HTML documentation, including API docs
 	cmake -S docs -B build/docs
 	cmake --build build/docs --target GenerateDocs -v
 	open build/docs/doxygen/html/index.html
+
+.ONESHELL:
+windows_unicode_fix:
+	chcp.com 65001
+	for file in */*/*.cpp */*/*.h; do 
+	  iconv -f UTF-8 -t UTF-8 "$$file" > "$${file%.cpp}.utf8"
+	  echo -ne '\xEF\xBB\xBF' > "$$file"
+	  cat "$${file%.cpp}.utf8" >> "$$file"
+	  file "$$file"
+	done
+
 
 
