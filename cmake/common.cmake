@@ -15,10 +15,6 @@ include(../cmake/CPM.cmake)
 include(../cmake/Sanitizers.cmake)
 include(../cmake/Coverage.cmake)
 
-# --- Import tools ----
-# CPMAddPackage("gh:TheLartians/Ccache.cmake@1.2.3")
-
-
 # ---- settings --------
 init_output_directories()             # make all exe live under bin/
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Generate compile_commands.json 
@@ -28,3 +24,8 @@ set(CPM_SOURCE_CACHE "../.cache/CPM") # store all downloaded packages
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest /utf-8")
 endif()
+
+# --- Import tools ----
+# CPMAddPackage("gh:TheLartians/Ccache.cmake@1.2.3")
+
+

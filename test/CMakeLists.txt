@@ -34,3 +34,7 @@ add_test(
   NAME tests
   COMMAND ${PROJECT_NAME}
 )
+
+if(ENABLE_COVERAGE)
+    enable_coverage()
+endif()

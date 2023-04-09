@@ -7,6 +7,7 @@
 .PHONY: *
 .DEFAULT_GOAL := help
 INSTALL_LOCATION := ~/.local
+CPM_SOURCE_CACHE:= /cpm_modules
 # SHELL=/bin/bash -vx # for debug
 #CCMAKE_COLORS='s=39:p=220:c=207:n=196:y=46'
 
@@ -48,12 +49,12 @@ test: ## exercise all queue operations under test/sources
 	cd build/test && ctest -C Debug -VV
 
 coverage: ## check code coverage 
-	rm -rf build/coverage/CMakeCache.txt
+	rm -rf ./build/coverage/CMakeCache.txt
 	cmake -S test -B build/coverage -DENABLE_COVERAGE=1
 	cmake --build build/coverage --config Debug
 	cd build/coverage && ctest -C Debug -VV
 	cd build/coverage && make coverage
-	open build/coverage/coverage/index.html
+	-open build/coverage/index.html
 
 install: ## move libs to install location
 	rm -rf ./build/release/CMakeCache.txt
@@ -64,17 +65,17 @@ docs: ## generate Doxygen HTML documentation, including API docs
 	rm -rf ./build/docs/CMakeCache.txt
 	cmake -S docs -B build/docs
 	cmake --build build/docs --target GenerateDocs -v
-	open build/docs/doxygen/html/index.html
+	-open build/docs/doxygen/html/index.html
 
-.ONESHELL:
+#.ONESHELL:
 windows_unicode_fix:
 	chcp.com 65001
-	for file in */*/*.cpp */*/*.h; do 
-	  iconv -f UTF-8 -t UTF-8 "$$file" > "$${file%.cpp}.utf8"
-	  echo -ne '\xEF\xBB\xBF' > "$$file"
-	  cat "$${file%.cpp}.utf8" >> "$$file"
-	  file "$$file"
-	done
+#	for file in */*/*.cpp */*/*.h; do 
+#	  iconv -f UTF-8 -t UTF-8 "$$file" > "$${file%.cpp}.utf8"
+#	  echo -ne '\xEF\xBB\xBF' > "$$file"
+#	  cat "$${file%.cpp}.utf8" >> "$$file"
+#	  file "$$file"
+#	done
 
 
 
