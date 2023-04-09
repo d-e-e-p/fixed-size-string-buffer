@@ -5,7 +5,12 @@
 
 if(ENABLE_COVERAGE)
   # set compiler flags
-  set(CMAKE_CXX_FLAGS "-O0 -coverage")
+  if(MSVC)
+    SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/PROFILE")
+    set(CMAKE_CXX_FLAGS "/PROFILE")
+  else()
+    set(CMAKE_CXX_FLAGS "-O0 -coverage")
+  endif()
 
   # find required tools
   #find_package(lcov)

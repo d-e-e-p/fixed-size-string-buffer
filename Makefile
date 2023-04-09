@@ -25,25 +25,25 @@ clean: ## remove build dir
 
 debug: ## create slow debug version of standalone example
 	rm -rf ./build/debug/CMakeCache.txt
-	cmake -S standalone -B build/debug -DCMAKE_BUILD_TYPE=Debug 
+	cmake -S standalone -B build/debug 
 	cmake --build build/debug --config Debug 
 	./build/debug/bin/demo
 
 release: ## create optimized release version of example
 	rm -rf ./build/release/CMakeCache.txt
-	cmake -S standalone -B build/release -DCMAKE_BUILD_TYPE=Release 
-	cmake --build build/release --config release 
+	cmake -S standalone -B build/release 
+	cmake --build build/release --config Release 
 	./build/release/bin/demo
 
 bench: ## run benchmark on push operation under bench/sources
 	rm -rf ./build/bench/CMakeCache.txt
 	 cmake -S bench -B build/bench 
-	 cmake --build build/bench 
+	 cmake --build build/bench --config Release
 	 ./build/bench/bin/unit_bench
 
 test: ## exercise all queue operations under test/sources
 	rm -rf ./build/test/CMakeCache.txt
-	cmake -S test -B build/test
+	cmake -S test -B build/test 
 	cmake --build build/test --config Debug
 	cd build/test && ctest -C Debug -VV
 
