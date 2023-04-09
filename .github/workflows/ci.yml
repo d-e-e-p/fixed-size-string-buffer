@@ -45,20 +45,13 @@ jobs:
           path: "**/cpm_modules"
           key: ${{ github.workflow }}-cpm-modules-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake') }}
 
-      - name: change encoding to utf8 with BOM
-        if: runner.os == 'Windows'
-        shell: bash
-        run: make windows_unicode_fix
+            #      - name: change encoding to utf8 with BOM
+            #if: runner.os == 'Windows'
+            #shell: bash
+            #run: make windows_unicode_fix
 
       - run: make ${{ matrix.configuration }}
       - run: make -j4 test
-
-        # skip..use cpm instead
-        #- uses: lyricwulf/abc@v1
-        #with: 
-        #  linux: libboost-all-dev
-        #  macos: boost
-        #  windows: boost-msvc-14.3
       - run: make -j4 bench
       - run: make -j4 coverage
 
@@ -67,6 +60,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }} 
-          verbose: true # optional (default = false)
+          file: build/coverage/coverage.info
+          verbose: true 
 
       - run: echo "🍏 This job's status is ${{ job.status }}."

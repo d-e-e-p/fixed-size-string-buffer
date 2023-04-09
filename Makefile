@@ -54,7 +54,7 @@ coverage: ## check code coverage
 	cmake --build build/coverage --config Debug
 	cd build/coverage && ctest -C Debug -VV
 	cd build/coverage && make coverage
-	-open build/coverage/index.html
+	-open build/coverage//coverage/index.html
 
 install: ## move libs to install location
 	rm -rf ./build/release/CMakeCache.txt
@@ -67,15 +67,8 @@ docs: ## generate Doxygen HTML documentation, including API docs
 	cmake --build build/docs --target GenerateDocs -v
 	-open build/docs/doxygen/html/index.html
 
-#.ONESHELL:
 windows_unicode_fix:
 	chcp.com 65001
-#	for file in */*/*.cpp */*/*.h; do 
-#	  iconv -f UTF-8 -t UTF-8 "$$file" > "$${file%.cpp}.utf8"
-#	  echo -ne '\xEF\xBB\xBF' > "$$file"
-#	  cat "$${file%.cpp}.utf8" >> "$$file"
-#	  file "$$file"
-#	done
 
 
 
