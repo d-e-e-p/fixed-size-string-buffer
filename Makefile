@@ -39,7 +39,7 @@ bench: ## run benchmark on push operation under bench/sources
 	rm -rf ./build/bench/CMakeCache.txt
 	 cmake -S bench -B build/bench 
 	 cmake --build build/bench 
-	 ./build/bench/unit_bench
+	 ./build/bench/bin/unit_bench
 
 test: ## exercise all queue operations under test/sources
 	rm -rf ./build/test/CMakeCache.txt
