@@ -10,8 +10,6 @@ set (ENABLE_CPPCHECK ON)
 # --- Import tools ----
 include(../cmake/common.cmake)
 
-set(CMAKE_CONFIGURATION_TYPES ${CMAKE_BUILD_TYPE})
-
 # ---- Create standalone executables ----
 
 file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp)
