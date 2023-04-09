@@ -62,8 +62,8 @@ jobs:
       - name: Upload coverage reports to Codecov
         if: runner.os == 'Linux'
         uses: codecov/codecov-action@v3
-          with:
-            token: ${{ secrets.CODECOV_TOKEN }} 
-            verbose: true # optional (default = false)
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} 
+          verbose: true # optional (default = false)
 
       - run: echo "🍏 This job's status is ${{ job.status }}."
