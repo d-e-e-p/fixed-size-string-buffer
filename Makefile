@@ -7,7 +7,7 @@
 .PHONY: *
 .DEFAULT_GOAL := help
 INSTALL_LOCATION := ~/.local
-CPM_SOURCE_CACHE:= /cpm_modules
+CPM_SOURCE_CACHE:= .cache/CPM
 # SHELL=/bin/bash -vx # for debug
 #CCMAKE_COLORS='s=39:p=220:c=207:n=196:y=46'
 

@@ -25,7 +25,7 @@ jobs:
       OS: ${{ matrix.sys.os }}
       CTEST_OUTPUT_ON_FAILURE: 1
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      CPM_SOURCE_CACHE: ${{ github.workspace }}/cpm_modules
+      CPM_SOURCE_CACHE: ${{ github.workspace }}/.cache/CPM
       HOMEBREW_NO_AUTO_UPDATE: 1
 
 
@@ -42,14 +42,13 @@ jobs:
 
       - uses: actions/cache@v3
         with:
-          path: "**/cpm_modules"
+          path: "**/.cache/CPM"
           key: ${{ github.workflow }}-cpm-modules-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake') }}
 
-            #      - name: change encoding to utf8 with BOM
-            #if: runner.os == 'Windows'
-            #shell: bash
-            #run: make windows_unicode_fix
-
+      - name: change encoding to utf8 with BOM
+        if: runner.os == 'Windows'
+        shell: bash
+        run: chcp.com 65001
       - run: make ${{ matrix.configuration }}
       - run: make -j4 test
       - run: make -j4 bench
