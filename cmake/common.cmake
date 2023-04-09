@@ -4,7 +4,7 @@
 
 
 # --- Import tools ----
-# prefer actual filenames over CMAKE_MODULE_PATH
+# prefer actual filenames over CMAKE_MODULE_PATH + magic
 include(../cmake/Utils.cmake)
 include(../cmake/CompilerWarnings.cmake)
 include(../cmake/StaticAnalyzers.cmake)
@@ -19,15 +19,10 @@ include(../cmake/Sanitizers.cmake)
 # CPMAddPackage("gh:TheLartians/Ccache.cmake@1.2.3")
 
 
-# ---- Dependencies ----
-include_directories(. ../include)
-
-
 # ---- settings --------
-init_output_directories()
-# Generate compile_commands.json for clang based tools
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CPM_SOURCE_CACHE "../.cache/CPM")
+init_output_directories()             # make all exe live under bin/
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Generate compile_commands.json 
+set(CPM_SOURCE_CACHE "../.cache/CPM") # store all downloaded packages
 
 # make windows unicode work
 if(MSVC)

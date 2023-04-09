@@ -9,7 +9,6 @@ include(../cmake/common.cmake)
 # ---- Settings --------
 set (BENCHMARK_ENABLE_TESTING OFF)
 set(CMAKE_BUILD_TYPE "Release")
-set(CMAKE_CONFIGURATION_TYPES ${CMAKE_BUILD_TYPE})
 
 find_package(Boost REQUIRED)
 

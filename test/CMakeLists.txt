@@ -10,8 +10,7 @@ include(../cmake/common.cmake)
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 set(BUILD_GMOCK ON CACHE BOOL "" FORCE)
-set(CMAKE_BUILD_TYPE "Release")
-set(CMAKE_CONFIGURATION_TYPES ${CMAKE_BUILD_TYPE})
+set(CMAKE_BUILD_TYPE "Debug")
 
 #FetchContent_MakeAvailable(googletest-src)
 CPMAddPackage("gh:google/googletest@1.13.0")
