@@ -8,12 +8,12 @@
 include(../cmake/Utils.cmake)
 include(../cmake/CompilerWarnings.cmake)
 include(../cmake/StaticAnalyzers.cmake)
-include(../cmake/Coverage.cmake)
 
 download_CPM_cmake()
 include(../cmake/CPM.cmake)
 
 include(../cmake/Sanitizers.cmake)
+include(../cmake/Coverage.cmake)
 
 # --- Import tools ----
 # CPMAddPackage("gh:TheLartians/Ccache.cmake@1.2.3")

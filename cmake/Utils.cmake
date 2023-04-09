@@ -2,6 +2,34 @@
 # generals cmake utils
 #
 
+# see https://markdewing.github.io/blog/posts/notes-on-cmake/
+function(find_all_include_directories root_dir include_dirs)
+  set(dirlist "")
+  file(GLOB_RECURSE new_include_dirs LIST_DIRECTORIES true "${root_dir}/*")
+  foreach(dir ${new_include_dirs})
+    if(IS_DIRECTORY ${dir})
+      if(${dir} MATCHES ".*/include$")
+          #message(INFO " match dir = ${dir}")
+        list(APPEND dirlist ${dir})
+      endif()
+    endif()
+  endforeach()
+  SET(${include_dirs} ${dirlist} PARENT_SCOPE)
+  #message(INFO " find_all_include_directories:start ${root_dir} ${${include_dirs}}")
+endfunction()
+
+function(dump_all_vars)
+
+    include(CMakePrintHelpers)
+    get_cmake_property(_varNames VARIABLES)
+    list (REMOVE_DUPLICATES _varNames)
+    list (SORT _varNames)
+    foreach (_varName ${_varNames})
+        cmake_print_variables(${_varName})
+    endforeach()
+
+endfunction()
+
 function(check_for_in_source_build)
     if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
         message(FATAL_ERROR

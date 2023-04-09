@@ -285,6 +285,8 @@ For MS Visual Code to handle unicode correctly on windows, we need 4 steps:
 See section on `if: runner.os == 'Windows'` in the action config 
 [.github/workflows/ci.yml](.github/workflows/ci.yml). 
 
+![ci workflow status](https://github.com/d-e-e-p/fixed-size-string-buffer/actions/workflows/ci.yml/badge.svg)
+
 
 ### Coding style
 

@@ -26,6 +26,7 @@ jobs:
       CTEST_OUTPUT_ON_FAILURE: 1
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       CPM_SOURCE_CACHE: ${{ github.workspace }}/cpm_modules
+      HOMEBREW_NO_AUTO_UPDATE: 1
 
 
     steps:
@@ -51,11 +52,13 @@ jobs:
 
       - run: make ${{ matrix.configuration }}
       - run: make -j4 test
-      - uses: lyricwulf/abc@v1
-        with: 
-          linux: libboost-all-dev
-          macos: boost
-          windows: boost-msvc-14.3
+
+        # skip..use cpm instead
+        #- uses: lyricwulf/abc@v1
+        #with: 
+        #  linux: libboost-all-dev
+        #  macos: boost
+        #  windows: boost-msvc-14.3
       - run: make -j4 bench
       - run: make -j4 coverage
 
