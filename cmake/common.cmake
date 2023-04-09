@@ -24,7 +24,7 @@ include_directories(. ../include)
 
 
 # ---- settings --------
-
+init_output_directories()
 # Generate compile_commands.json for clang based tools
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CPM_SOURCE_CACHE "../.cache/CPM")
