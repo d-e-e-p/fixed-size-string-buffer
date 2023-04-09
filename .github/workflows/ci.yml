@@ -33,34 +33,37 @@ jobs:
           echo "🎉 job triggered by ${{ github.event_name }} event."
           echo "🐧 running on ${{ runner.os }} server branch ${{ github.ref }} repository  ${{ github.repository }}."
           echo "💡 cloning ${{ github.repository }} to ${{ runner.os }}"
+
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
+
       - uses: actions/cache@v3
         with:
           path: "**/cpm_modules"
           key: ${{ github.workflow }}-cpm-modules-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake') }}
+
+      - name: change encoding to utf8 with BOM
+        if: runner.os == 'Windows'
+        shell: bash
+        run: make windows_unicode_fix
+
+      - run: make ${{ matrix.configuration }}
+      - run: make -j4 test
       - uses: lyricwulf/abc@v1
         with: 
           linux: libboost-all-dev
           macos: boost
           windows: boost-msvc-14.3
-      - name: change encoding to utf8 with BOM
-        if: runner.os == 'Windows'
-        shell: bash
-        run: |
-          chcp.com 65001
-          for file in */*/*.cpp */*/*.h; do
-            iconv -f UTF-8 -t UTF-8 "$file" > "${file%.cpp}.utf8"
-            echo -ne '\xEF\xBB\xBF' > "$file"
-            cat "${file%.cpp}.utf8" >> "$file"
-            file "$file"
-          done
-      - run: make ${{ matrix.configuration }}
-      - run: make test
-      - run: make bench
+      - run: make -j4 bench
+      - run: make -j4 coverage
+
       - name: Upload coverage reports to Codecov
         if: runner.os == 'Linux'
         uses: codecov/codecov-action@v3
+          with:
+            token: ${{ secrets.CODECOV_TOKEN }} 
+            verbose: true # optional (default = false)
+
       - run: echo "🍏 This job's status is ${{ job.status }}."
