@@ -28,3 +28,8 @@ include_directories(. ../include)
 # Generate compile_commands.json for clang based tools
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CPM_SOURCE_CACHE "../.cache/CPM")
+
+# make windows unicode work
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest /utf-8")
+endif()
