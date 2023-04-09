@@ -13,7 +13,7 @@ project(
 include(../cmake/common.cmake)
 
 CPMAddPackage("gh:mosra/m.css#ea904dbb82b6e0d10ac2cf319ca065b4cc869ab3")
-find_package(Doxygen REQUIRED dot)
+find_package(Doxygen REQUIRED)
 
 
 # ---- Doxygen variables ----
