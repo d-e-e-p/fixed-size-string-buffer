@@ -13,14 +13,7 @@ project(
 include(../cmake/common.cmake)
 
 CPMAddPackage("gh:mosra/m.css#ea904dbb82b6e0d10ac2cf319ca065b4cc869ab3")
-#CPMAddPackage(NAME ${PROJECT_NAME} SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/../include)
-#find_package(Doxygen QUIET)
-if(NOT Doxygen_FOUND)
-      CPMAddPackage("https://github.com/doxygen/doxygen/archive/refs/tags/Release_1_9_6.zip")
-      #CPMAddPackage("gh:linux-test-project/lcov@1.16")
-      set(LCOV "${lcov_SOURCE_DIR}/bin/lcov")
-      set(GENHTML "${lcov_SOURCE_DIR}/bin/genhtml")
-endif()
+find_package(Doxygen REQUIRED dot)
 
 
 # ---- Doxygen variables ----
