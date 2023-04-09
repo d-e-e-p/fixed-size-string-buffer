@@ -62,4 +62,7 @@ jobs:
           file: build/coverage/coverage.info
           verbose: true 
 
+      - run: make install
+      - run: make docs
+
       - run: echo "🍏 This job's status is ${{ job.status }}."
