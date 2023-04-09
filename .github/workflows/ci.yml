@@ -52,7 +52,9 @@ jobs:
       - run: make ${{ matrix.configuration }}
       - run: make -j4 test
       - run: make -j4 bench
-      - run: make -j4 coverage
+      - name: gen coverage info
+        if: runner.os == 'Linux'
+        run: make -j4 coverage
 
       - name: Upload coverage reports to Codecov
         if: runner.os == 'Linux'

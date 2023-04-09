@@ -1,9 +1,7 @@
-name: Documentation
+name: Docs
 
 on:
   push:
-    tags:
-      - "*"
 
 env:
   CPM_SOURCE_CACHE: ${{ github.workspace }}/.cache/CPM
