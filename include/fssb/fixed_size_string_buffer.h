@@ -39,7 +39,7 @@ template <size_t SPACE>
 class FixedSizeStringBuffer {
  private:
 
-  std::array<char, SPACE> chars_ = {}; // main container for strings
+  std::array<char, SPACE + 1> chars_ = {}; // main container for strings, see plus1 in at()
                                       
   struct Pointer {
     size_t front;  // position in char_ of start of string
@@ -185,8 +185,12 @@ void FixedSizeStringBuffer<SPACE>::push(std::string_view str)
     size_t seg2 = strlen - seg1;
     back_ = seg2;
 
-    std::copy(&str[0], &str[seg1], &chars_[start]);
-    std::copy(&str[seg1], &str[strlen], &chars_[0]);
+    //std::copy(&str[0], &str[seg1], &chars_[start]);
+    //std::copy(&str[seg1], &str[strlen], &chars_[0]);
+
+    str.copy(&chars_[start], seg1);
+    str.copy(&chars_[0], seg2, seg1);
+
   }
   // use emplace object creation instead of ptr_.push_back(Pointer{start, strlen});
   ptr_.emplace_back(start, strlen);
@@ -222,7 +226,7 @@ std::string FixedSizeStringBuffer<SPACE>::at(size_t pos) const
   if (end > start) { 
     str.append(&chars_[start], &chars_[end]); 
   } else {
-    str.append(&chars_[start], &chars_[max_space_]);
+    str.append(&chars_[start], &chars_[max_space_]); // <-- plus1 needed because of &chars_[max_space_])
     str.append(&chars_[0], &chars_[end]);
   }
   return str;
