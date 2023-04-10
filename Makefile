@@ -21,32 +21,34 @@ BROWSER := python3 -c "$$BROWSER_PYSCRIPT"
 help: ## this message
 	@python3 -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
+all: clean debug release test bench coverage install docs
+
 clean: ## remove build dir
 	rm -rf build/
 
-debug: ## create slow debug version of standalone example
+debug: ## create debug version of standalone examples
 	rm -rf ./build/debug/CMakeCache.txt
 	cmake -S standalone -B build/debug 
 	cmake --build build/debug --config Debug 
 	./build/debug/bin/demo
 
-release: ## create optimized release version of example
+release: ## create optimized version of examples
 	rm -rf ./build/release/CMakeCache.txt
 	cmake -S standalone -B build/release 
 	cmake --build build/release --config Release 
 	./build/release/bin/demo
 
-bench: ## run benchmark on push operation under bench/sources
-	rm -rf ./build/bench/CMakeCache.txt
-	 cmake -S bench -B build/bench 
-	 cmake --build build/bench --config Release
-	 ./build/bench/bin/unit_bench
-
-test: ## exercise all queue operations under test/sources
+test: ## exercise all queue operations 
 	rm -rf ./build/test/CMakeCache.txt
 	cmake -S test -B build/test 
 	cmake --build build/test --config Debug
 	cd build/test && ctest -C Debug -VV
+
+bench: ## run benchmark on push operation 
+	rm -rf ./build/bench/CMakeCache.txt
+	 cmake -S bench -B build/bench 
+	 cmake --build build/bench --config Release
+	 ./build/bench/bin/unit_bench
 
 coverage: ## check code coverage 
 	rm -rf ./build/coverage/CMakeCache.txt
@@ -56,7 +58,7 @@ coverage: ## check code coverage
 	cd build/coverage && make coverage
 	-open build/coverage//coverage/index.html
 
-install: ## move libs to install location
+install: ## copy include files to install location
 	rm -rf ./build/release/CMakeCache.txt
 	cmake -S install -B build/install -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION)
 	cmake --build build/install --config Release --target install
@@ -67,7 +69,7 @@ docs: ## generate Doxygen HTML documentation, including API docs
 	cmake --build build/docs --target GenerateDocs -v
 	-open build/docs/doxygen/html/index.html
 
-windows_unicode_fix:
+windows_unicode_fix: ## needed for unicode output on windows
 	chcp.com 65001
 
 

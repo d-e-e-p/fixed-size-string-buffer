@@ -21,12 +21,6 @@ foreach(src ${sources})
     set_target_properties(${target} PROPERTIES CXX_STANDARD 17 )
     set_target_warnings(${target})
     target_include_directories(${target} PRIVATE "../include")
-
-    # https://stackoverflow.com/questions/543203/cmake-runtime-output-directory-on-windows
-    # hack to get around the "Debug" and "Release" directories cmake tries to add on Windows
-    if (MSVC)
-        #set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<1:${PROJECT_BINARY_DIR}/bin>")
-    endif()
 endforeach()
 
 

@@ -85,19 +85,23 @@ Ring buffer wins over unbounded queues because it avoids the extra memory alloca
 ```bash
 help                 this message
 clean                remove build dir
-debug                create slow debug version of standalone example
-release              create optimized release version of example
-bench                run benchmark on push operation under bench/sources
-test                 exercise all queue operations under test/sources
+debug                create debug version of standalone examples
+release              create optimized version of examples
+bench                run benchmark on push operation
+test                 exercise all queue operations
 coverage             check code coverage
+install              copy include files to install location
 docs                 generate Doxygen HTML documentation, including API docs
-install              install the package to the INSTALL_LOCATION=~/.local
-format               format the project sources
+windows_unicode_fix  needed for unicode output on windows
 ```
 
-`make release` builds the example [main.cpp](standalone/source/main.cpp)
+`make -j4 all` will run the following steps: 
+```bash
+all: clean debug release test bench coverage install docs
+```
 
-A trivial example looks like:
+`make release` builds the examples under [standalone/source](standalone/source/)
+A trivial usage looks like:
 
 ```cpp
 #include "fssb/fixed_size_string_buffer.h"
@@ -110,11 +114,10 @@ int main() {
 }
 ```
 
-then compiled with:
+demo can be compiled with:
 
 ```bash
 g++ -std=c++17 -I include test.cpp
-./a.out
 ```
 
 ## API
@@ -275,22 +278,75 @@ gives similar speeds for push operation.
 Linux and MacOS build fine, see [https://github.com/d-e-e-p/fixed-size-string-buffer/actions](https://github.com/d-e-e-p/fixed-size-string-buffer/actions)
 
 On windows, compiling wth unicode in the source files is a bit fragile.
-For MS Visual Code to handle unicode correctly on windows, we need 4 steps:
+For MS Visual Code to handle unicode correctly on windows, we need 3 steps:
 
 1. Update terminal codepage for output to support UTF8 (with `chcp.com 65001`)
-2. Encode source files as UTF-8 *with* BOM
-3. `#pragma execution_character_set("utf-8")` in include files
-4. Compile with `/utf-8` option
+2. `#pragma execution_character_set("utf-8")` in include files
+3. Compile with `/utf-8` option
+<s>4. Encode source files as UTF-8 *with* BOM</s>
 
 See section on `if: runner.os == 'Windows'` in the action config 
 [.github/workflows/ci.yml](.github/workflows/ci.yml). 
 
 ![ci workflow status](https://github.com/d-e-e-p/fixed-size-string-buffer/actions/workflows/ci.yml/badge.svg)
 
+### Dir Structure
+There's no top level cmake--I find it cleaner to have each target pretend to be top level and build in a separate build dir.
+So `make release` runs under `build/release`, while make test runs under `build/test`.  Running `make -j4 all` runs all steps.
+
+```bash
+Makefile                [drive all the steps]
+   
+├── include             [source files]
+│   └── fssb
+│       ├── fixed_char_size_queue.h
+│       ├── fixed_elem_size_queue.h
+│       └── fixed_size_string_buffer.h
+
+
+├── standalone          [examples of operating the queue]
+│   ├── CMakeLists.txt
+│   └── source
+│       ├── basic_example.cpp
+│       ├── demo.cpp
+│       └── unicode_example.cpp
+
+├── test                [exercise all aspects of ring buffer]
+│   ├── CMakeLists.txt
+│   └── source
+│       ├── run_all.cpp
+│       ├── test_basic.cpp
+│       └── test_compare.cpp
+
+
+├── bench               [compare runtime between alternatives]
+│   ├── CMakeLists.txt
+│   └── source
+│       └── bench_push.cpp
+
+
+├── cmake               [cmake helper routines]
+│   ├── CPM.cmake
+│       ...
+
+├── docs                [generation of static documentation site]
+│   ├── CMakeLists.txt
+│   ├── Doxyfile
+│   ├── conf.py
+│   └── pages
+│       └── about.dox
+
+
+├── install             [install collateral and setup]
+│   └── CMakeLists.txt
+
+
+├── scripts             [random scripts]
+│   └── remove_actions.bash
+```
 
 ### Coding style
 
-There's no top level cmake--I find it cleaner to have each target pretend to be top level and build in a separate build dir.
 
 .clang-format for this code looks like
 ```bash
@@ -334,8 +390,8 @@ void set_count(int count);
 
 ## Versioning
 
-This project makes use of [SemVer](http://semver.org/) for versioning. A list of
-existing versions can be found in the
+This project follows [SemVer](http://semver.org/) conventions for versioning. 
+A list of existing versions can be found in the
 [project's releases](https://github.com/d-e-e-p/fixed-size-string-buffer/releases).
 
 ## Authors
