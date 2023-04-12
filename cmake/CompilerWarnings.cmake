@@ -39,7 +39,7 @@ function(set_target_warnings target_name)
       /D _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
   )
 
-  set(CLANG_WARNINGS
+  set(UNIX_WARNINGS
       -Wall
       -Wextra  # reasonable and standard
       -Wshadow # warn the user if a variable declaration shadows one from a
@@ -68,7 +68,7 @@ function(set_target_warnings target_name)
   endif()
 
   set(GCC_WARNINGS
-      ${CLANG_WARNINGS}
+      ${UNIX_WARNINGS}
       -Wmisleading-indentation # warn if indentation implies blocks where blocks
                                # do not exist
       -Wduplicated-cond # warn if if / else chain has duplicated conditions
@@ -76,7 +76,11 @@ function(set_target_warnings target_name)
       -Wlogical-op   # warn about logical operations being used where bitwise were
                      # probably wanted
       -Wuseless-cast # warn if you perform a cast to the same type
-      -Wdocumentation
+  )
+
+  set(CLANG_WARNINGS
+      ${UNIX_WARNINGS}
+      -Wdocumentation  # warn if doxygen documentation tags are incorrect
   )
 
   if(MSVC)
