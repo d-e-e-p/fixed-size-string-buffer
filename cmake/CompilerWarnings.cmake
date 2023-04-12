@@ -60,7 +60,6 @@ function(set_target_warnings target_name)
       -Wformat=2 # warn on security issues around functions that format output
                  # (ie printf)
       -Wno-narrowing
-      -Wdocumentation
   )
 
   if (WARNINGS_AS_ERRORS)
@@ -77,6 +76,7 @@ function(set_target_warnings target_name)
       -Wlogical-op   # warn about logical operations being used where bitwise were
                      # probably wanted
       -Wuseless-cast # warn if you perform a cast to the same type
+      -Wdocumentation
   )
 
   if(MSVC)
