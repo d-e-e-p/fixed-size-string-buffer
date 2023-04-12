@@ -42,7 +42,7 @@ if (q.size() > target_capacity) {
 ```
 
 See [fixed_elem_size_queue.h](include/fssb/fixed_elem_size_queue.h) or [boost::circular_buffer](https://www.boost.org/doc/libs/1_61_0/doc/html/boost/circular_buffer.html).  
-You could extend this to take into account the sizes of strings added, eg
+We could extend this to take into account the sizes of strings added, eg
 [fixed_char_size_queue.h](include/fssb/fixed_char_size_queue.h)
 This achieves pretty much the same functionality of this library except the requirement to 
 pre-allocate buffer space at compile time.
@@ -51,7 +51,7 @@ Turns out that pre-allocation can sometimes be very useful.  For example, in emb
 we need very predictable dynamic allocation limits to maintain sufficient memory headroom.  
 This ring buffer array can be allocated statically so it ends up in the [.bss section](https://en.wikipedia.org/wiki/.bss), 
 when can then be alloted to a dedicated bank (eg CCM Memory on a STM32). This eliminates the possibility
-of conflict between message buffer and operating heap/stack memory.  See writeup on [Using CCM
+of conflict between message buffer and operating heap memory since std::array alloctes in stack.  See writeup on [Using CCM
 Memory](https://www.openstm32.org/Using%2BCCM%2BMemory). 
 
 There is also a significant speed advantage of using this approach for long strings, eg on macos:
@@ -268,9 +268,9 @@ FixedSizeStringBuffer and FixedCharSizeQueue have character limits instead of st
 with `1000, 10, 3>` the limit is 1000 * 10.3 = 10300 chars, with `100, 10, 3>` the buffer limit
 is 100 * 10.3 = 1030 characters.
 
-Bottom line: if you know the string lengths up front then the fastest approach is BoostCircularBuffer.
+Bottom line: if we know the string lengths up front then the fastest approach is BoostCircularBuffer.
 If strings lengths are variable and there are advantages to pre-allocation of memory, FixedSizeStringBuffer
-gives similar speeds for push operation.
+gives similar speeds.
 
 
 ### Porting
@@ -283,7 +283,7 @@ For MS Visual Code to handle unicode correctly on windows, we need 3 steps:
 1. Update terminal codepage for output to support UTF8 (with `chcp.com 65001`)
 2. `#pragma execution_character_set("utf-8")` in include files
 3. Compile with `/utf-8` option
-<s>4. Encode source files as UTF-8 *with* BOM</s>
+4. <s>Encode source files as UTF-8 *with* BOM</s>
 
 See section on `if: runner.os == 'Windows'` in the action config 
 [.github/workflows/ci.yml](.github/workflows/ci.yml). 

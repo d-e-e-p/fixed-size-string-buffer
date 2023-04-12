@@ -46,9 +46,9 @@ test: ## exercise all queue operations
 
 bench: ## run benchmark on push operation 
 	rm -rf ./build/bench/CMakeCache.txt
-	 cmake -S bench -B build/bench 
-	 cmake --build build/bench --config Release
-	 ./build/bench/bin/unit_bench
+	cmake -S bench -B build/bench 
+	cmake --build build/bench --config Release
+	./build/bench/bin/unit_bench
 
 coverage: ## check code coverage 
 	rm -rf ./build/coverage/CMakeCache.txt
