@@ -32,8 +32,8 @@
 TEST(Compare, WithFixedCharSizeQueue) {
 
   constexpr size_t ring_buffer_size_chars = 100;
-  auto q_ssb = FixedSizeStringBuffer<ring_buffer_size_chars>();
-  auto q_csq = FixedCharSizeQueue(ring_buffer_size_chars);
+  auto q_ssb = fssb::FixedSizeStringBuffer<ring_buffer_size_chars>();
+  auto q_csq = fssb::FixedCharSizeQueue(ring_buffer_size_chars);
 
   constexpr size_t seed = 420;
   srand(seed);
@@ -59,8 +59,8 @@ TEST(Compare, WithFixedStrSizeQueue) {
   constexpr size_t ring_buffer_size_chars = 100;
   constexpr size_t strlen = 10;
 
-  auto q_ssb = FixedSizeStringBuffer<ring_buffer_size_chars>();
-  auto q_esq = FixedElemSizeQueue<std::string>(ring_buffer_size_chars/strlen);
+  auto q_ssb = fssb::FixedSizeStringBuffer<ring_buffer_size_chars>();
+  auto q_esq = fssb::FixedElemSizeQueue<std::string>(ring_buffer_size_chars/strlen);
 
   constexpr size_t seed = 420;
   srand(seed);
@@ -87,7 +87,7 @@ TEST(Compare, WithFixedStrSizeQueue) {
 TEST(Compare, WithUnlimitedQueue) {
 
   constexpr size_t ring_buffer_size_chars = 1000;
-  auto q_fsb = FixedSizeStringBuffer<ring_buffer_size_chars>();
+  auto q_fsb = fssb::FixedSizeStringBuffer<ring_buffer_size_chars>();
   auto q_ulq = std::deque<std::string>();
 
   constexpr size_t seed = 420;

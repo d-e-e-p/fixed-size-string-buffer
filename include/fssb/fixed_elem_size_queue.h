@@ -31,6 +31,8 @@
 
 #include <queue>
 
+namespace fssb {
+
 template <typename T>
 class FixedElemSizeQueue : public std::queue<T> {
 
@@ -60,4 +62,4 @@ public:
 
 };
 
-
+} // namespace fssb

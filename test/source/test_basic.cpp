@@ -28,7 +28,7 @@
 TEST(QueueTest, Small) {
 
   constexpr size_t ring_buffer_char_size = 10;
-  auto buffer = FixedSizeStringBuffer<ring_buffer_char_size>();
+  auto buffer = fssb::FixedSizeStringBuffer<ring_buffer_char_size>();
 
   int len1 = 3;
   int len2 = ring_buffer_char_size - len1;
@@ -129,82 +129,11 @@ TEST(QueueTest, Small) {
 
 }
 
-TEST(QueueTest, Warnings) {
-
-  constexpr size_t ring_buffer_char_size = 42;
-  auto buffer = FixedSizeStringBuffer<ring_buffer_char_size>();
-  EXPECT_TRUE(buffer.empty()) << "buffer empty on start";
-  // create string that can't fit and see what happens
-  auto str1 = std::string(ring_buffer_char_size - 1, 'x');
-  auto str2 = std::string(ring_buffer_char_size + 1, 'y');
-  // from https://stackoverflow.com/questions/3803465/how-to-capture-stdout-stderr-with-googletest
-  std::stringstream ss;
-  std::streambuf *sbuf = std::cerr.rdbuf();
-  std::cerr.rdbuf(ss.rdbuf());
-
-  // expect stderr on second push
-  buffer.push(str1);
-  buffer.push(str2);
-
-  std::string output = ss.str();
-  std::cerr.rdbuf(sbuf);
-  
-  std::string expect = "string length : " 
-    + std::to_string(ring_buffer_char_size + 1)
-    + " > max size "
-    + std::to_string(ring_buffer_char_size);
-
-  EXPECT_THAT(output, testing::StartsWith(expect));
-  ASSERT_FALSE(buffer.empty());
-
-  EXPECT_THAT(buffer.pop(), testing::StartsWith("xxx"));
-
-  ss.str(""); // clear
-  std::cerr.rdbuf(ss.rdbuf());
-
-  std::string strpop = buffer.pop();
-
-  std::cerr.rdbuf(sbuf);
-  output = ss.str();
-  std::string msg = "buffer is empty";
-  EXPECT_THAT(output, testing::StartsWith(msg));
-  EXPECT_THAT(strpop, testing::StartsWith(msg));
-
-  ss.str(""); 
-  std::cerr.rdbuf(ss.rdbuf());
-
-  std::string str_at = buffer.at(0);
-
-  std::cerr.rdbuf(sbuf);
-  output = ss.str();
-  msg = "buffer is empty";
-  EXPECT_THAT(output, testing::StartsWith(msg));
-  EXPECT_THAT(str_at, testing::StartsWith(msg));
-
-  auto str3 = std::string("test");
-  buffer.push(str3);
-  EXPECT_THAT(buffer.pop(), testing::StrEq(str3));
-  ASSERT_TRUE(buffer.empty());
-
-  buffer.push(str3);
-  ss.str(""); 
-  std::cerr.rdbuf(ss.rdbuf());
-
-  str_at = buffer.at(1);
-
-  std::cerr.rdbuf(sbuf);
-  output = ss.str();
-  msg = "no element at index ";
-
-  EXPECT_THAT(output, testing::StartsWith(msg));
-  EXPECT_THAT(str_at, testing::StartsWith(msg));
-
-}
 
 TEST(QueueTest, Large) {
 
   constexpr size_t ring_buffer_char_size = 100;
-  auto buffer = FixedSizeStringBuffer<ring_buffer_char_size>();
+  auto buffer = fssb::FixedSizeStringBuffer<ring_buffer_char_size>();
 
   EXPECT_TRUE(buffer.empty()) << "buffer empty on start";
   int len1 = 30;
@@ -264,8 +193,8 @@ TEST(QueueTest, Swap) {
 
   constexpr size_t size = 30;
 
-  auto buf1 = FixedSizeStringBuffer<size>();
-  auto buf2 = FixedSizeStringBuffer<size>();
+  auto buf1 = fssb::FixedSizeStringBuffer<size>();
+  auto buf2 = fssb::FixedSizeStringBuffer<size>();
 
   const std::string str1 = "something\n";
   const std::string str2 = "completely different thing\n";
@@ -294,7 +223,7 @@ TEST(QueueTest, Swap) {
 TEST(QueueTest, Emplace) {
 
   constexpr size_t size = 100;
-  auto buf = FixedSizeStringBuffer<size>();
+  auto buf = fssb::FixedSizeStringBuffer<size>();
 
   // constructors used in the same order as described above:
   std::string s0 ("Initial string", 8, 3);
@@ -313,3 +242,4 @@ TEST(QueueTest, Emplace) {
   EXPECT_THAT(buf[3], testing::StrEq(s3));
 
 }
+

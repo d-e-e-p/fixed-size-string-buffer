@@ -35,7 +35,7 @@
 
 #include <ctype.h>  // for isprint
 
-//namespace fssb {
+namespace fssb {
 
 using std::size_t;
 
@@ -611,4 +611,4 @@ void FixedSizeStringBuffer<SPACE>::print_char_line(std::ostream &os, const SlotS
 }
 
 
-//} // end namespace
+} // namespace fssb

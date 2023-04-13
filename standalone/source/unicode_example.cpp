@@ -9,7 +9,7 @@
 int main() {
 
   constexpr size_t num = 25;
-  auto foo = FixedSizeStringBuffer<num>();
+  auto foo = fssb::FixedSizeStringBuffer<num>();
 
   // push strings into buffer
   std::cout << foo;

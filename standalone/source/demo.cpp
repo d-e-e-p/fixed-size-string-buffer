@@ -27,7 +27,7 @@ void demo()
 {
   std::cout << "fixed_size_string_buffer demo \n\n";
   constexpr size_t max_size = 10;
-  auto rb = FixedSizeStringBuffer<max_size>();
+  auto rb = fssb::FixedSizeStringBuffer<max_size>();
   rb.set_debug(true);
   std::cout << " created ring buffer of " << max_size << " characters\n";
 
@@ -103,8 +103,8 @@ void compare()
   constexpr double str_capacity_in_buffer = CAPACITY + 0.1 * EXCESS;
   constexpr auto max_size = static_cast<size_t>(LEN * str_capacity_in_buffer);
 
-  auto buf0 = FixedSizeStringBuffer<max_size>();          // opt0: char limit ring buffer
-  auto buf1 = FixedCharSizeQueue(max_size);               // opt1: char limit std:queue
+  auto buf0 = fssb::FixedSizeStringBuffer<max_size>();          // opt0: char limit ring buffer
+  auto buf1 = fssb::FixedCharSizeQueue(max_size);               // opt1: char limit std:queue
 
   // time options
   auto delta0 = time_queue(buf0, str_test);

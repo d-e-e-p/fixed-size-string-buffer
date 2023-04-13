@@ -52,6 +52,7 @@ bench: ## run benchmark on push operation
 
 coverage: ## check code coverage 
 	rm -rf ./build/coverage/CMakeCache.txt
+	rm -rf ./build/coverage//CMakeFiles/unit_tests.dir
 	cmake -S test -B build/coverage -DENABLE_COVERAGE=1
 	cmake --build build/coverage --config Debug
 	cd build/coverage && ctest -C Debug -VV

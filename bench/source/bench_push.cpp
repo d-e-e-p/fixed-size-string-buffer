@@ -72,17 +72,17 @@ void BM_queue(benchmark::State& state)
 
   switch (qtype) {
     case QType::FixedSizeStringBuffer: {
-      auto queue = FixedSizeStringBuffer<max_size>();
+      auto queue = fssb::FixedSizeStringBuffer<max_size>();
       QUEUE_TEST
       break;
     }
     case QType::FixedCharSizeQueue: { 
-      auto queue = FixedCharSizeQueue(max_size);
+      auto queue = fssb::FixedCharSizeQueue(max_size);
       QUEUE_TEST
       break;
     }
     case QType::FixedElemSizeQueue: {
-      auto queue = FixedElemSizeQueue<std::string>(CAPACITY);
+      auto queue = fssb::FixedElemSizeQueue<std::string>(CAPACITY);
       QUEUE_TEST
       break;
     }
