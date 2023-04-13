@@ -1,5 +1,10 @@
 /*!
- * @file 
+ * @file fixed_size_string_buffer.h
+ * A compile-time allocated ring buffer for std::string messages
+ *  @code{.cpp}
+ *    auto rb = fssb::FixedSizeStringBuffer<10>();
+ *  @endcode
+ *
  * @author  Sandeep <deep@tensorfield.ag>
  * @version 1.0
  *
@@ -9,7 +14,6 @@
  *
  * @section DESCRIPTION
  *
- * A compile-time allocated ring buffer for std::string messages
  * https://github.com/d-e-e-p/fixed-size-string-buffer
  * @copyright
  * Copyright (c) 2023 Sandeep <deep@tensorfield.ag>
@@ -46,7 +50,7 @@ using std::size_t;
 /// @code{.cpp}
 /// #include "fssb/fixed_size_string_buffer.h"
 /// int main() {
-///   auto rb = FixedSizeStringBuffer<10>();
+///   auto rb = fssb::FixedSizeStringBuffer<10>();
 ///   rb.push("123");
 ///   rb.push("456");
 ///   rb.pop();
@@ -160,8 +164,8 @@ class FixedSizeStringBuffer {
   ///           ⎩ ────────╯╰───────╯         ╰──⎭
   /// @endcode
   /// unprintable characters are marked with �, which is common when multi-char
-  /// unicode is pushed into buffer, eg std::string("🏴☠️";) 
-  /// symbols are shows for unprintable chars, eg for std::string("\t\n\v\f\r")
+  /// unicode, eg std::string("🏴☠️";),  is pushed into buffer.
+  /// symbols are shows for unprintable chars, eg output for std::string("\t\n\v\f\r")
   /// @code{.sh}
   ///            ⎧ ╭─────────────╮               ⎫
   ///  buf[10] = ⎨ ┤␉  ␊  ␋  ␌  ␍├ •  •  •  •  • ⎬
@@ -431,7 +435,9 @@ class fixed_size_string_buffer_utils {
 }; // end class fixed_size_string_buffer_utils
 
 ///
-/// @brief for debugging purposes, dump internal state of queue, eg
+/// @brief for debugging purposes, dump internal state of queue
+///
+///
 /// @code
 ///   std::cout << rb;
 ///   rb.dump(std::cout);

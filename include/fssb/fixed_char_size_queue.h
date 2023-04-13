@@ -1,5 +1,10 @@
 /**
- * @file  
+ * @file fixed_char_size_queue.h
+ * A string queue with upper limit on number of characters:
+ * @code
+ *    auto buf = fssb::FixedCharSizeQueue(max_size);
+ * @endcode
+ *
  * @author  Sandeep <deep@tensorfield.ag>
  * @version 1.0
  *
@@ -8,9 +13,6 @@
  * MIT License <http://opensource.org/licenses/MIT>
  *
  * @section DESCRIPTION
- *
- * A string queue with upper limit on number of characters:
- *    auto buf = FixedCharSizeQueue(max_size);
  *
  * https://github.com/d-e-e-p/fixed-size-string-buffer
  * Copyright (c) 2023 Sandeep <deep@tensorfield.ag>
@@ -23,6 +25,8 @@
 #include <utility>
 #include <iostream>
 
+/// @namespace fssb
+/// @brief fssb
 namespace fssb {
 
 // the string and a cache of it's length
@@ -59,10 +63,10 @@ private:
   size_t free_space_ = 0;
   size_t max_chars_ = 0;
   //using std::queue<Element>::push_range; // disallow push_range
+public:
   
   ///  @brief Constructor that creates a string buffer of fixed character size
   ///  @param[in] SIZE max char size of queue
-public:
   explicit FixedCharSizeQueue(size_t SIZE)
       : free_space_(SIZE), max_chars_(SIZE)
   {

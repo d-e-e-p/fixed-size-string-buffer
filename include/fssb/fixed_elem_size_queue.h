@@ -1,5 +1,10 @@
 /**
  * @file  fixed_elem_size_queue.h
+ * A std:queue with fixed size that you insiantiate like:
+ * @code
+ *    auto q = fssb::FixedElemSizeQueue<std::string>(size);
+ * @endcode
+ *
  * @author  Sandeep <deep@tensorfield.ag>
  * @version 1.0
  *
@@ -8,9 +13,6 @@
  * MIT License <http://opensource.org/licenses/MIT>
  *
  * @section DESCRIPTION
- *
- * A std:queue with fixed size that you insiantiate like:
- *    auto q = FixedElemSizeQueue<std::string>(size);
  *
  * See discussion at:
  *
@@ -21,18 +23,32 @@
  * 
  */
 
-/*
- Usage:
-    auto buf3 = FixedElemSizeQueue<std::string>(CAPACITY);
-*/
-
 
 #pragma once
 
 #include <queue>
 
+/// @namespace fssb
+/// @brief fssb
 namespace fssb {
 
+/// @class FixedElemSizeQueue
+/// @brief A templated queue with upper limit on number of elements
+/// @tparam T type of element
+///
+/// Example usage:
+/// @code{.cpp}
+/// #include "fssb/fixed_elem_size_queue.h"
+/// int main() {
+///   auto rb = FixedElemSizeQueue<std::string>(10);
+///   rb.push("123");
+///   rb.push("456");
+///   rb.pop();
+///   return 0;
+/// }
+/// @endcode
+///
+///
 template <typename T>
 class FixedElemSizeQueue : public std::queue<T> {
 
@@ -40,11 +56,16 @@ private:
   size_t free_space_ = 0;
 
 public:
+  ///  @brief Constructor that creates a buffer of fixed number of elements 
+  ///  @param[in] max_elements max num of elements in queue
   explicit FixedElemSizeQueue(size_t max_elements)
       : free_space_(max_elements)
   {
   }
 
+  ///  @brief add elements to back of queue, 
+  ///  silently pop() if queue has reached max_elements capacity
+  ///  @param[in] value element to add to queue
   void push(const T& value) {
     if (free_space_ == 0) {
        pop();

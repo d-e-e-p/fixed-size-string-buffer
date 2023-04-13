@@ -66,6 +66,7 @@ install: ## copy include files to install location
 
 docs: ## generate Doxygen HTML documentation, including API docs
 	rm -rf ./build/docs/CMakeCache.txt
+	rm -rf ./build/docs/doxygen
 	cmake -S docs -B build/docs
 	cmake --build build/docs --target GenerateDocs -v
 	-open build/docs/doxygen/html/index.html
