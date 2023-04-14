@@ -28,7 +28,7 @@ target_link_libraries(${PROJECT_NAME}
   gtest_main
   gmock_main
 )
-include_directories("../include")
+target_include_directories(${PROJECT_NAME} PRIVATE "../include")
 
 add_test(
   NAME tests

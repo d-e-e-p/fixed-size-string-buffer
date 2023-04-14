@@ -28,7 +28,7 @@ function(enable_coverage)
   add_custom_target(coverage
     # gather data
     COMMAND ${LCOV} --directory CMakeFiles --capture --output-file coverage_all.info 
-    COMMAND ${LCOV} --remove coverage_all.info '*/usr/include/*' '*/googletest/*' --output-file coverage.info
+    COMMAND ${LCOV} --remove coverage_all.info '*/usr/include/*' '*/catch2/*' '*/googletest/*' --output-file coverage.info
     # generate report
     COMMAND ${GENHTML} --demangle-cpp -o coverage coverage.info
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
