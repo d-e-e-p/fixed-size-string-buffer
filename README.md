@@ -17,7 +17,7 @@ This is a small enough example to clone and use as a template to setup a new C++
  [clang-tidy](https://clang.llvm.org/extra/clang-tidy/), 
  [cppcheck](https://cppcheck.sourceforge.io/) etc.
 
-Please see the [wiki](wiki) for a checklist on how to use this project as a template.
+Please see the [wiki](https://github.com/d-e-e-p/fixed-size-string-buffer/wiki) for a checklist on how to use this project as a template.
 
 ## Credits
 
