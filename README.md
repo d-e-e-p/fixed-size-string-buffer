@@ -350,7 +350,8 @@ When multi-char unicode characters are broken into char pieces, they don't have 
 
 ### Dir Structure
 
-There's no top level cmake--I find it cleaner to have each target pretend to be top level and execute in a dedicated build dir.
+The top level cmake is only for external projects that automatically want to incorporate the headers.
+I find it cleaner to have each target pretend to be top level and execute in a dedicated build dir.
 So `make release` runs under `build/release`, while make test runs under `build/test`.  Running `make -j4 all` runs all steps.
 
 ```bash
