@@ -2,27 +2,27 @@
 # A pre-allocated ring buffer for std::string messages
 
 C++ Header-only library 
-[fixed_size_string_buffer.h](include/fixed_size_string_buffer.h) that instantiates
+[fixed_size_string_buffer.h](include/fssb/fixed_size_string_buffer.h) that instantiates
 a char array sized at compile-time. The queue stores string messages in a char ring buffer.
 When this buffer is full, oldest strings are deleted to make way for the new entries.
-Requires at least -std=c++17 . 
+Requires at least -std=c++17 + some tricks dealing with unicode in Visual Studio.
 
 This is a small enough example to clone and use as a template to setup a new C++ project with:
-[cmake](https://cmake.org/cmake/help/latest/), 
-[GoogleTest](https://google.github.io/googletest/), 
-[GoogleBenchmark](https://github.com/google/benchmark), 
-[coverage](https://github.com/linux-test-project/lcov), 
-[doxygen](https://www.doxygen.nl/), 
-[github action](https://github.com/d-e-e-p/fixed-size-string-buffer/actions), 
-[unicode on windows](#Porting),
-[clang-tidy](https://clang.llvm.org/extra/clang-tidy/), 
-[cppcheck](https://cppcheck.sourceforge.io/) etc.
+ [cmake](https://cmake.org/cmake/help/latest/), 
+ [Google Test](https://google.github.io/googletest/), 
+ [Google Benchmark](https://github.com/google/benchmark), 
+ [coverage](https://github.com/linux-test-project/lcov), 
+ [doxygen](https://www.doxygen.nl/) with [m.css](https://mcss.mosra.cz/documentation/doxygen/),
+ [github action](https://github.com/d-e-e-p/fixed-size-string-buffer/actions), 
+ [clang-tidy](https://clang.llvm.org/extra/clang-tidy/), 
+ [cppcheck](https://cppcheck.sourceforge.io/) etc.
+
+Please see the [wiki](wiki] for a checklist on how to use this project as a template.
 
 ## Credits
 
 - Cmake and other setup from [ModernCppStarter](https://github.com/TheLartians/ModernCppStarter)
 - Compiler/Analyzer template from [modern-cpp-template](https://github.com/filipdutescu/modern-cpp-template)
-- Setting and conventions from [p-ranav](https://github.com/p-ranav)
 - Google test and benchmark example from [starter project](https://github.com/PhDP/cmake-gtest-gbench-starter)
 - Discussion at stackexchange [Elegant Circular Buffer](https://codereview.stackexchange.com/questions/164130/elegant-circular-buffer)
 
@@ -51,8 +51,13 @@ Turns out that pre-allocation can sometimes be very useful.  For example, in emb
 we need very predictable dynamic allocation limits to maintain sufficient memory headroom.  
 This ring buffer array can be allocated statically so it ends up in the [.bss section](https://en.wikipedia.org/wiki/.bss), 
 when can then be alloted to a dedicated bank (eg CCM Memory on a STM32). This eliminates the possibility
-of conflict between message buffer and operating heap memory since std::array alloctes in stack.  See writeup on [Using CCM
-Memory](https://www.openstm32.org/Using%2BCCM%2BMemory). 
+of conflict between message buffer and operating heap memory since std::array alloctes on stack.  
+See writeup on [Using CCM Memory](https://www.openstm32.org/Using%2BCCM%2BMemory). Eg instantiating a queue with:
+```cpp
+constexpr size_t queueSizeMaxChars = 30000;
+fssb::FixedSizeStringBuffer<queueSizeMaxChars> cmdHistory;
+```
+gives us allocation in CCMRAM that looks like ![CCMRAM in STM32](doc/assets/bss.png). 
 
 There is also a significant speed advantage of using this approach for long strings, eg on macos:
 
@@ -106,7 +111,7 @@ A trivial usage looks like:
 ```cpp
 #include "fssb/fixed_size_string_buffer.h"
 int main() {
-  auto rb = FixedSizeStringBuffer<10>();
+  auto rb = fssb::FixedSizeStringBuffer<10>();
   rb.push("123");
   rb.push("456");
   rb.pop();
@@ -132,7 +137,7 @@ because buffer doesn't have enough space for 9 chars.
 #include "fssb/fixed_size_string_buffer.h"
 
 int main() {
-  auto foo = FixedSizeStringBuffer<8>();
+  auto foo = fssb::FixedSizeStringBuffer<8>();
 
   // push strings into buffer
   std::cout << foo;
@@ -232,8 +237,6 @@ Expected results look something like:
 `make bench` runs trials on push operation under varying conditions of string length, eg:
 
 ```bash
-This does not affect benchmark measurements, only the metadata output.
-2023-04-08T05:35:38-04:00
 Running ./build/bench/unit_bench
 Run on (10 X 24.0056 MHz CPU s)
 CPU Caches:
@@ -290,8 +293,63 @@ See section on `if: runner.os == 'Windows'` in the action config
 
 ![ci workflow status](https://github.com/d-e-e-p/fixed-size-string-buffer/actions/workflows/ci.yml/badge.svg)
 
+### Unicode
+
+see [unicode_example.cpp](standalone/source/unicode_example.cpp) for an example of how to store unicode chars:
+```cpp
+#include <iostream>
+#include "fssb/fixed_size_string_buffer.h"
+
+/*
+ * test out printing of queues with special characters
+ */
+
+
+int main() {
+
+  constexpr size_t num = 25;
+  auto foo = fssb::FixedSizeStringBuffer<num>();
+
+  // push strings into buffer
+  std::cout << foo;
+  foo.push("1\t✊\n");   std::cout << foo;
+  foo.push("2✋\t\v");   std::cout << foo;
+  foo.push("3 ✌️i\r\n"); std::cout << foo;
+  foo.push("1\t✊\n");   std::cout << foo;
+
+  return 0;
+}
+```
+this example can be compiled and run with:
+```bash
+g++ -std=c++17 -I include src/unicode_example.cpp
+./a.out
+```
+which should produce:
+```bash
+           ⎧                                                                            ⎫
+ buf[25] = ⎨  •  •  •  •  •  •  •  •  •  •  •  •  •  •  •  •  •  •  •  •  •  •  •  •  • ⎬
+           ⎩                                                                            ⎭
+           ⎧ ╭────────────────╮                                                         ⎫
+ buf[25] = ⎨ ┤1  ␉  �  �  �  ␊├ •  •  •  •  •  •  •  •  •  •  •  •  •  •  •  •  •  •  • ⎬
+           ⎩ ╰────────────────╯                                                         ⎭
+           ⎧ ╭────────────────╮╭────────────────╮                                       ⎫
+ buf[25] = ⎨ ┤1  ␉  �  �  �  ␊││2  �  �  �  ␉  ␋├ •  •  •  •  •  •  •  •  •  •  •  •  • ⎬
+           ⎩ ╰────────────────╯╰────────────────╯                                       ⎭
+           ⎧ ╭────────────────╮╭────────────────╮╭────────────────────────────╮         ⎫
+ buf[25] = ⎨ ┤1  ␉  �  �  �  ␊││2  �  �  �  ␉  ␋││3  ␠  �  �  �  �  �  �  ␍  ␊├ •  •  • ⎬
+           ⎩ ╰────────────────╯╰────────────────╯╰────────────────────────────╯         ⎭
+           ⎧ ────────╮         ╭────────────────╮╭────────────────────────────╮╭────────⎫
+ buf[25] = ⎨  �  �  ␊├ �  �  ␊ ┤2  �  �  �  ␉  ␋││3  ␠  �  �  �  �  �  �  ␍  ␊││1  ␉  � ⎬
+           ⎩ ────────╯         ╰────────────────╯╰────────────────────────────╯╰────────⎭
+```
+
+When multi-char unicode characters are broken into char pieces, they don't have a valid printable value.
+
+
 ### Dir Structure
-There's no top level cmake--I find it cleaner to have each target pretend to be top level and build in a separate build dir.
+
+There's no top level cmake--I find it cleaner to have each target pretend to be top level and execute in a dedicated build dir.
 So `make release` runs under `build/release`, while make test runs under `build/test`.  Running `make -j4 all` runs all steps.
 
 ```bash
@@ -386,7 +444,6 @@ void set_count(int count);
 
 
 ```
-
 
 ## Versioning
 
