@@ -13,7 +13,7 @@ include(../cmake/common.cmake)
 # ---- Create install package ----- ----
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE  
-    $<INSTALL_INTERFACE:../include>  # <prefix>/include/mylib
+    $<INSTALL_INTERFACE:include>  # <prefix>/include/mylib
 )
 
 CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.10.0")
