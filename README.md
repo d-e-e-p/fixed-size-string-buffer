@@ -96,13 +96,14 @@ bench                run benchmark on push operation
 test                 exercise all queue operations
 coverage             check code coverage
 install              copy include files to install location
+validate             execute from the installed version
 docs                 generate Doxygen HTML documentation, including API docs
 windows_unicode_fix  needed for unicode output on windows
 ```
 
 `make -j4 all` will run the following steps: 
 ```bash
-all: clean debug release test bench coverage install docs
+all: clean debug release test bench coverage install validate docs
 ```
 
 `make release` builds the examples under [standalone/source](standalone/source/)
