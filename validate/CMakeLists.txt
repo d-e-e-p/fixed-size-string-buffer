@@ -24,7 +24,7 @@ foreach(tgt ${targets})
 endforeach()
 
 set(rep https://github.com/d-e-e-p/fixed-size-string-buffer)
-get_latest_git_hash_with_tag(${rep} tag)
+get_latest_git_tag(${rep} tag)
 CPMAddPackage(NAME ${PROJECT_NAME} GIT_REPOSITORY ${rep} GIT_TAG ${tag})
 
 

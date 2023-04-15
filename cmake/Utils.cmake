@@ -96,16 +96,18 @@ endmacro()
 
 #execute_process(COMMAND ${GIT_EXECUTABLE} ls-remote --tags --sort=v:refname https://github.com/TheLartians/ModernCppStarter | tail -1 | sed 's/.*refs\/tags\/v//'
 
-function(get_latest_git_hash_with_tag rep RES)
+function(get_latest_git_tag rep RES)
     find_package(Git QUIET)
 
     set(pattern "s;refs/tags/v")
-    set(CMD "${GIT_EXECUTABLE} ls-remote --tags --sort=v:refname ${rep} | tail -1 | sed 's/\\t.*$//'")
+    set(CMD "${GIT_EXECUTABLE} ls-remote --refs --heads --tags --sort=v:refname ${rep} | tail -1 | sed 's:.*refs/tags/::' " )
+    # set(CMD "${GIT_EXECUTABLE} ls-remote  --heads --tags --sort=v:refname ${rep} | tail -1 | sed 's/\\t.*//' ")
     execute_process(
         COMMAND bash "-c" ${CMD}
         OUTPUT_VARIABLE OUT
+        OUTPUT_STRIP_TRAILING_WHITESPACE
     )
-    message("latest hash with tag from ${rep} is:  ${OUT}")
+    message("latest tag: ${OUT}  from ${rep}")
     set(${RES} ${OUT} PARENT_SCOPE)
 
 endfunction()

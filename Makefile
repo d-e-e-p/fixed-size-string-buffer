@@ -65,7 +65,7 @@ install: ## copy include files to install location
 	cmake --build build/install --config Release --target install
 
 validate: ## execute from the installed version
-	-rf ./build/validate/CMakeCache.txt
+	rm -rf ./build/validate/CMakeCache.txt
 	#cmake -S validate -B build/validate -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCMAKE_RULE_MESSAGES=OFF -DCMAKE_VERBOSE_MAKEFILE=ON
 	cmake -S validate -B build/validate -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION)
 	cmake --build build/validate --config Release
