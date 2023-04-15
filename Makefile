@@ -69,7 +69,7 @@ validate: ## execute from the installed version
 	#cmake -S validate -B build/validate -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCMAKE_RULE_MESSAGES=OFF -DCMAKE_VERBOSE_MAKEFILE=ON
 	cmake -S validate -B build/validate -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION)
 	cmake --build build/validate --config Release
-	./build/validate/bin/demo
+	build/validate/bin/*
 
 docs: ## generate Doxygen HTML documentation, including API docs
 	rm -rf ./build/docs/CMakeCache.txt

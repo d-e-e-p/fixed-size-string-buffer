@@ -1,7 +1,7 @@
+# debug/release cmake
 cmake_minimum_required(VERSION 3.15...3.22)
 
-project(fixed_size_string_buffer LANGUAGES CXX)
-
+project(fixed-size-string-buffer LANGUAGES CXX)
 
 # ---- Settings --------
 set (ENABLE_CLANG_TIDY ON)

@@ -5,20 +5,23 @@
 
 # --- Import tools ----
 # prefer actual filenames over CMAKE_MODULE_PATH + magic
-include(../cmake/Utils.cmake)
-include(../cmake/CompilerWarnings.cmake)
-include(../cmake/StaticAnalyzers.cmake)
+
+set(dir ${CMAKE_CURRENT_LIST_DIR})
+
+include(${dir}/Utils.cmake)
+include(${dir}/CompilerWarnings.cmake)
+include(${dir}/StaticAnalyzers.cmake)
 
 download_CPM_cmake()
-include(../cmake/CPM.cmake)
+include(${dir}/CPM.cmake)
 
-include(../cmake/Sanitizers.cmake)
-include(../cmake/Coverage.cmake)
+include(${dir}/Sanitizers.cmake)
+include(${dir}/Coverage.cmake)
 
 # ---- settings --------
 init_output_directories()             # make all exe live under bin/
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Generate compile_commands.json 
-set(CPM_SOURCE_CACHE "../.cache/CPM") # store all downloaded packages
+set(CPM_SOURCE_CACHE "${dir}/../.cache/CPM") # store all downloaded packages
 
 # make windows unicode work
 if(MSVC)
