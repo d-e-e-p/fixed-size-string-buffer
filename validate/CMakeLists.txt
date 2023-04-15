@@ -23,7 +23,11 @@ foreach(tgt ${targets})
     target_link_libraries(${target} PRIVATE  ${PROJECT_NAME})
 endforeach()
 
-CPMAddPackage("gh:d-e-e-p/${PROJECT_NAME}@1.1.0")
+set(rep https://github.com/d-e-e-p/fixed-size-string-buffer)
+get_latest_git_hash_with_tag(${rep} tag)
+CPMAddPackage(NAME ${PROJECT_NAME} GIT_REPOSITORY ${rep} GIT_TAG ${tag})
+
+
 foreach(tgt ${targets})
     get_filename_component(target ${tgt}_cpm NAME_WE)
     set(target ${target}_cpm)

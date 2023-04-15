@@ -279,6 +279,13 @@ gives similar speeds.
 
 ### Porting
 
+If you like, you could incorporate this header into your package with
+something like:
+
+```bash
+CPMAddPackage("gh:d-e-e-p/fixed-size-string-buffer@1.2.0")
+```
+
 Linux and MacOS build fine, see [https://github.com/d-e-e-p/fixed-size-string-buffer/actions](https://github.com/d-e-e-p/fixed-size-string-buffer/actions)
 
 On windows, compiling wth unicode in the source files is a bit fragile.
