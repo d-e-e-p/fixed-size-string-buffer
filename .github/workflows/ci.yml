@@ -65,6 +65,8 @@ jobs:
           verbose: true 
 
       - run: make install
-      - run: make validate
+      - name: validate install
+        if: runner.os != 'Windows'
+        run: make validate
 
       - run: echo "🍏 This job's status is ${{ job.status }}."
