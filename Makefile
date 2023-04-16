@@ -47,7 +47,7 @@ test: ## exercise all queue operations
 bench: ## run benchmark on push operation 
 	rm -rf ./build/bench/CMakeCache.txt
 	cmake -S bench -B build/bench -DCMAKE_BUILD_TYPE=Release
-	cmake --build build/bench --config Release
+	cmake --build build/bench --config Release --target unit_bench
 	./build/bench/bin/unit_bench
 
 coverage: ## check code coverage 
@@ -69,7 +69,8 @@ validate: ## execute from the installed version
 	#cmake -S validate -B build/validate -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCMAKE_RULE_MESSAGES=OFF -DCMAKE_VERBOSE_MAKEFILE=ON
 	cmake -S validate -B build/validate -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION)
 	cmake --build build/validate --config Release
-	build/validate/bin/*
+	build/validate/bin/basic_example_fp
+	build/validate/bin/basic_example_cpm
 
 docs: ## generate Doxygen HTML documentation, including API docs
 	rm -rf ./build/docs/CMakeCache.txt
