@@ -487,9 +487,9 @@ void FixedSizeStringBuffer<SPACE>::dump_short_str(std::ostream &os)
 // each char has 3 slots:
 //  [open][word][close]
 //
-// open slot: marker for start of string
-// word slot: characters of string
-// clos slot: marker for end of sting
+// open slot: marker for start of char, eg | for start of string  
+// word slot: the character
+// clos slot: marker for end of char, eg | for end of string
 //
 template <size_t SPACE>
 typename FixedSizeStringBuffer<SPACE>::SlotState FixedSizeStringBuffer<SPACE>::mark_open_close_slots() 
@@ -527,14 +527,22 @@ typename FixedSizeStringBuffer<SPACE>::SlotState FixedSizeStringBuffer<SPACE>::m
   return slot;
 }
 
+// print_box_line
+// eg, for a string = "ab", the top/bot lines look like:
+//
+//     [open][word][clos][open][word][clos]
+// top   ╭     ─     ─     ─     ─     ╮
+//                                            
+// bot   ╰     ─     ─     ─     ─     ╯ 
+//
 template <size_t SPACE>
 void FixedSizeStringBuffer<SPACE>::print_box_line(std::ostream &os, const SlotState& slot, bool is_top) const
 {
   constexpr auto ws2s = fixed_size_string_buffer_utils::ws2s;
   enum class CT {left, open, close, dash, space, right};
-  typedef std::unordered_map<CT,wchar_t> box_t;
+  typedef std::unordered_map<CT,wchar_t> BOX;
 
-  static const box_t box_top = {
+  static const BOX box_top = {
       {CT::left,  L'⎧'},
       {CT::open,  L'╭'},
       {CT::close, L'╮'},
@@ -543,7 +551,7 @@ void FixedSizeStringBuffer<SPACE>::print_box_line(std::ostream &os, const SlotSt
       {CT::right, L'⎫'},
    };
 
-  static const box_t box_bot = {
+  static const BOX box_bot = {
       {CT::left,  L'⎩'},
       {CT::open,  L'╰'},
       {CT::close, L'╯'},
@@ -553,7 +561,7 @@ void FixedSizeStringBuffer<SPACE>::print_box_line(std::ostream &os, const SlotSt
    };
 
 
-  box_t box = is_top ? box_top : box_bot;
+  auto box = is_top ? box_top : box_bot;
 
   // insert space on left
   wchar_t cleft = box[CT::left];
@@ -587,6 +595,13 @@ void FixedSizeStringBuffer<SPACE>::print_box_line(std::ostream &os, const SlotSt
 
 }
 
+// print_char_line
+// eg, for a string = "ab", the char lines look like:
+//
+//     [open][word][clos][open][word][clos]
+// char  │     a                 b     │
+//                                            
+//
 template <size_t SPACE>
 void FixedSizeStringBuffer<SPACE>::print_char_line(std::ostream &os, const SlotState& slot) const
 {
