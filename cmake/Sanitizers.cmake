@@ -13,8 +13,9 @@ function(enable_sanitizers)
     endif()
 
     set(MSVC_SANITIZERS
-      /fsanitize=address                    #
-      /fsanitize-address-use-after-return   # 
+      /fsanitize=address                     #
+      #/fsanitize-address-use-after-return   # 
+      /MTd  # link into exe
      )
     
      set(GCC_SANITIZERS
@@ -31,7 +32,7 @@ function(enable_sanitizers)
 
     if (MSVC)
         set(CFLAGS ${MSVC_SANITIZERS})
-        set(LFLAGS)
+        set(LFLAGS /INFERASANLIBS)
     elseif(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
         set(CFLAGS ${CLANG_SANITIZERS})
         set(LFLAGS ${CLANG_SANITIZERS})
