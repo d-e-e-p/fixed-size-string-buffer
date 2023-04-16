@@ -71,7 +71,7 @@ TEST(StreamTest, FixedSizeStringBuffer) {
 
   // test1 : push too big
   serr.ss.str("");
-  int len1 = ring_buffer_char_size + 1;
+  size_t len1 = ring_buffer_char_size + 1;
   auto str1 = std::string(len1, 'a');
 
   buffer.push(str1);
@@ -84,11 +84,11 @@ TEST(StreamTest, FixedSizeStringBuffer) {
   // test2 : access invalid element
   serr.ss.str("");
   buffer.clear();
-  int len2 = ring_buffer_char_size - 1;
+  size_t len2 = ring_buffer_char_size - 1;
   auto str2 = std::string(len2, 'a');
 
   buffer.push(str2);
-  int pos = 2;
+  size_t pos = 2;
   std::string outmsg = buffer[pos];
 
   output = serr.ss.str();
@@ -99,15 +99,14 @@ TEST(StreamTest, FixedSizeStringBuffer) {
   // test3 : access element
   serr.ss.str("");
   buffer.clear();
-  int len3 = ring_buffer_char_size - 1;
+  size_t len3 = ring_buffer_char_size - 1;
   auto str3 = std::string(len3, 'a');
 
   buffer.push(str3);
-  pos = -1;
-  outmsg = buffer[pos];
+  outmsg = buffer[-1];
 
   output = serr.ss.str();
-  msg = "no element at index ";
+  msg = "no element at index";
   EXPECT_THAT(output, testing::StartsWith(msg));
   
 }
@@ -124,7 +123,7 @@ TEST(StreamTest, FixedCharSizeQueue) {
 
   // test1 : push too big
   serr.ss.str("");
-  int len1 = ring_buffer_char_size + 1;
+  size_t len1 = ring_buffer_char_size + 1;
   auto str1 = std::string(len1, 'a');
 
   buffer.push(str1);

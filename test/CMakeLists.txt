@@ -16,20 +16,31 @@ set(CMAKE_BUILD_TYPE "Debug")
 #FetchContent_MakeAvailable(googletest-src)
 CPMAddPackage("gh:google/googletest@1.13.0")
 
-# ---Config Src --------
+# ---Config Lib Src ----
+set(libs)
+file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../src/*/*.cpp)
+foreach(source ${sources})
+    get_filename_component(src ${source} NAME_WE)
+    message(INFO " adding target ${src} from ${source}")
+    add_library(${src} STATIC ${source})
+    set_target_properties(${src} PROPERTIES CXX_STANDARD 17 )
+    set_target_warnings(${src})
+    target_include_directories(${src} PRIVATE "../include")
+    list(APPEND libs ${src})
+endforeach()
 
-file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp)
-
+# ---Config Test Src ---
+file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 message(STATUS "sources = ${sources} dir=${CMAKE_CURRENT_SOURCE_DIR}")
 
 add_executable(${PROJECT_NAME} ${sources})
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
-
+target_include_directories(${PROJECT_NAME} PRIVATE "../include")
 target_link_libraries(${PROJECT_NAME}
   gtest_main
   gmock_main
+  ${libs}
 )
-target_include_directories(${PROJECT_NAME} PRIVATE "../include")
 
 add_test(
   NAME tests

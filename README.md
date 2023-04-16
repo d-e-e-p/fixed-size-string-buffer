@@ -108,7 +108,7 @@ windows_unicode_fix  needed for unicode output on windows
 all: clean debug release test bench coverage install validate docs
 ```
 
-`make release` builds the examples under [standalone/source](standalone/source/)
+`make release` builds the examples under [standalone/src](standalone/src/)
 A trivial usage looks like:
 
 ```cpp
@@ -185,7 +185,7 @@ foo.pop()  : 1bb
 foo[0]     : 2cc
 ```
 
-See example1 in [basic_example.cpp](standalone/source/basic_example.cpp) for a similar demo.
+See example1 in [basic_example.cpp](standalone/src/basic_example.cpp) for a similar demo.
 Run `make docs` to see doxygen version of class descriptions.
 
 ### Coverage
@@ -317,7 +317,7 @@ see [validate/CMakeLists.txt](validate/CMakeLists.txt) for examples.
 
 ### Unicode
 
-see [unicode_example.cpp](standalone/source/unicode_example.cpp) for an example of how to store unicode chars:
+see [unicode_example.cpp](standalone/src/unicode_example.cpp) for an example of how to store unicode chars:
 ```cpp
 #include <iostream>
 #include "fssb/fixed_size_string_buffer.h"
@@ -377,8 +377,14 @@ So `make release` runs under `build/release`, while make test runs under `build/
 
 ```bash
 Makefile                [drive all the steps]
+
+├── src                 [shim source files]
+│   └── fssb
+│       ├── fixed_char_size_queue.cpp
+│       ├── fixed_elem_size_queue.cpp
+│       └── fixed_size_string_buffer.cpp
    
-├── include             [source files]
+├── include             [headers with implementation]
 │   └── fssb
 │       ├── fixed_char_size_queue.h
 │       ├── fixed_elem_size_queue.h
@@ -387,14 +393,14 @@ Makefile                [drive all the steps]
 
 ├── standalone          [examples of operating the queue]
 │   ├── CMakeLists.txt
-│   └── source
+│   └── src
 │       ├── basic_example.cpp
 │       ├── demo.cpp
 │       └── unicode_example.cpp
 
 ├── test                [exercise all aspects of ring buffer]
 │   ├── CMakeLists.txt
-│   └── source
+│   └── src
 │       ├── run_all.cpp
 │       ├── test_basic.cpp
 │       └── test_compare.cpp
@@ -402,7 +408,7 @@ Makefile                [drive all the steps]
 
 ├── bench               [compare runtime between alternatives]
 │   ├── CMakeLists.txt
-│   └── source
+│   └── src
 │       └── bench_push.cpp
 
 
@@ -423,7 +429,7 @@ Makefile                [drive all the steps]
 
 └── validate            [validate install using find_package/CPM]
     ├── CMakeLists.txt
-    └── source
+    └── src
         └── basic_example.cpp
 
 ├── scripts             [random scripts]

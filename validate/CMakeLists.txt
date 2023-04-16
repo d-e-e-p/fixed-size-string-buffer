@@ -8,7 +8,7 @@ include(../cmake/common.cmake)
 include(CMakePrintHelpers)
 
 # ---- Create standalone executables ----
-file(GLOB targets CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp)
+file(GLOB targets CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
 # root CMakeLists.txt by default doesn't automatically alias, so after
 # CPMAddPackage we could do:

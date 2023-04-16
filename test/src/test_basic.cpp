@@ -30,8 +30,8 @@ TEST(QueueTest, Small) {
   constexpr size_t ring_buffer_char_size = 10;
   auto buffer = fssb::FixedSizeStringBuffer<ring_buffer_char_size>();
 
-  int len1 = 3;
-  int len2 = ring_buffer_char_size - len1;
+  size_t len1 = 3;
+  size_t len2 = ring_buffer_char_size - len1;
 
   auto str1 = std::string(len1, 'a');
   auto str2 = std::string(len2, 'b');
@@ -136,8 +136,8 @@ TEST(QueueTest, Large) {
   auto buffer = fssb::FixedSizeStringBuffer<ring_buffer_char_size>();
 
   EXPECT_TRUE(buffer.empty()) << "buffer empty on start";
-  int len1 = 30;
-  int len2 = ring_buffer_char_size - len1;
+  size_t len1 = 30;
+  size_t len2 = ring_buffer_char_size - len1;
 
   auto str1 = std::string(len1, 'a');
   auto str2 = std::string(len2, 'b');

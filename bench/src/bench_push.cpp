@@ -61,10 +61,13 @@ void BM_queue(benchmark::State& state)
 
   // create str of 3 different sizes
   constexpr double scaling_factor = 1.2;
+  auto scale_long  = static_cast<size_t>(static_cast<double>(LEN) * scaling_factor);
+  auto scale_med   = LEN;
+  auto scale_short = static_cast<size_t>(static_cast<double>(LEN) / scaling_factor);
 
-  auto str_long   = std::string(LEN * scaling_factor  , 'x');
-  auto str_med    = std::string(LEN, 'y');
-  auto str_short  = std::string(LEN / scaling_factor, 'z');
+  auto str_long   = std::string(scale_long,  'l');
+  auto str_med    = std::string(scale_med,   'm');
+  auto str_short  = std::string(scale_short, 's');
 
   constexpr double str_capacity_in_buffer = CAPACITY + 0.1 * EXCESS;
   constexpr auto max_size = static_cast<size_t>(LEN * str_capacity_in_buffer);

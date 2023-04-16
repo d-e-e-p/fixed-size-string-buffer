@@ -62,10 +62,6 @@ function(set_target_warnings target_name)
       -Wno-narrowing
   )
 
-  if (WARNINGS_AS_ERRORS)
-    set(CLANG_WARNINGS ${CLANG_WARNINGS} -Werror)
-    set(MSVC_WARNINGS ${MSVC_WARNINGS} /WX)
-  endif()
 
   set(GCC_WARNINGS
       ${UNIX_WARNINGS}
@@ -80,8 +76,19 @@ function(set_target_warnings target_name)
 
   set(CLANG_WARNINGS
       ${UNIX_WARNINGS}
-      -Wdocumentation  # warn if doxygen documentation tags are incorrect
+      -Wdocumentation  
   )
+
+  set(CLANG_WARNINGS ${UNIX_WARNINGS})
+  if(uppercase_CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+      # warn if doxygen documentation tags are incorrect
+      string(CONCAT CLANG_WARNINGS -Wdocumentation)
+  endif()
+
+  if (WARNINGS_AS_ERRORS)
+    set(CLANG_WARNINGS ${CLANG_WARNINGS} -Werror)
+    set(MSVC_WARNINGS ${MSVC_WARNINGS} /WX)
+  endif()
 
   if(MSVC)
     set(PROJECT_WARNINGS ${MSVC_WARNINGS})

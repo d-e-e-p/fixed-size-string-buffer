@@ -12,29 +12,32 @@ include(../cmake/common.cmake)
 
 # ---- Create standalone executables ----
 
-file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp)
 
-foreach(src ${sources})
-    get_filename_component(target ${src} NAME_WE)
-    message(INFO " adding target ${target} from ${src}")
-    add_executable(${target} ${src})
-    set_target_properties(${target} PROPERTIES CXX_STANDARD 17 )
-    set_target_warnings(${target})
-    target_include_directories(${target} PRIVATE "../include")
+#file(GLOB headers CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../include/*/*.h)
+file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../src/*/*.cpp)
+file(GLOB targets CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+
+set(libs)
+foreach(source ${sources})
+    get_filename_component(src ${source} NAME_WE)
+    message(INFO " adding target ${src} from ${source}")
+    add_library(${src} STATIC ${source})
+    set_target_properties(${src} PROPERTIES CXX_STANDARD 17 )
+    set_target_warnings(${src})
+    target_include_directories(${src} PRIVATE "../include")
+    list(APPEND libs ${src})
 endforeach()
 
-
-file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/source/*boost*.cpp)
-
-foreach(src ${sources})
-    get_filename_component(target ${src} NAME_WE)
-    message(INFO " adding boost to target ${target} from ${src}")
-
-    find_package(Boost REQUIRED)
-    target_link_libraries(${target} ${Boost_LIBRARIES})
-    target_include_directories(${target} PRIVATE ${Boost_INCLUDE_DIRS})
-
+foreach(target ${targets})
+    get_filename_component(tgt ${target} NAME_WE)
+    message(INFO " adding target ${tgt} from ${target}")
+    add_executable(${tgt} ${target})
+    set_target_properties(${tgt} PROPERTIES CXX_STANDARD 17 )
+    set_target_warnings(${tgt})
+    target_include_directories(${tgt} PRIVATE "../include")
+    target_link_libraries(${tgt} ${libs})
 endforeach()
+
 enable_sanitizer("Undefined;Address")
 
 
