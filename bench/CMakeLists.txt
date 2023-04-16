@@ -19,6 +19,7 @@ CPMAddPackage(
   NAME Boost
   GITHUB_REPOSITORY "boostorg/boost"
   GIT_TAG "boost-1.82.0"
+  DOWNLOAD_ONLY
 )
 include(CMakePrintHelpers)
 cmake_print_properties(TARGETS Boost::circular_buffer PROPERTIES NAME TYPE INTERFACE_INCLUDE_DIRECTORIES)
