@@ -1,5 +1,5 @@
 #
-# generals cmake utils
+# general cmake utils
 #
 
 # see https://markdewing.github.io/blog/posts/notes-on-cmake/

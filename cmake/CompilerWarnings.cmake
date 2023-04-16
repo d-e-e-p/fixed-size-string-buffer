@@ -74,11 +74,6 @@ function(set_target_warnings target_name)
       -Wuseless-cast # warn if you perform a cast to the same type
   )
 
-  set(CLANG_WARNINGS
-      ${UNIX_WARNINGS}
-      -Wdocumentation  
-  )
-
   set(CLANG_WARNINGS ${UNIX_WARNINGS})
   if(uppercase_CMAKE_BUILD_TYPE STREQUAL "DEBUG")
       # warn if doxygen documentation tags are incorrect

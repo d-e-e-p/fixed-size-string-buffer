@@ -9,6 +9,7 @@ set (ENABLE_CPPCHECK ON)
 
 # --- Import tools ----
 include(../cmake/common.cmake)
+enable_sanitizers()
 
 # ---- Create standalone executables ----
 
@@ -38,7 +39,6 @@ foreach(target ${targets})
     target_link_libraries(${tgt} ${libs})
 endforeach()
 
-enable_sanitizer("Undefined;Address")
 
 
 

@@ -28,7 +28,6 @@ void demo()
   std::cout << "fixed_size_string_buffer demo \n\n";
   constexpr size_t max_size = 10;
   auto rb = fssb::FixedSizeStringBuffer<max_size>();
-  rb.set_debug(true);
   std::cout << " created ring buffer of " << max_size << " characters\n";
 
   // add strings
@@ -126,6 +125,7 @@ void compare()
 
 }
 
+/// @brief simple benchmark
 void bench()
 {
   std::cout << R"(

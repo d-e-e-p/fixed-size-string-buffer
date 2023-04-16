@@ -2,6 +2,10 @@
 # shared by all cmake runs
 #
 
+# --- Settings  -------
+
+# at flag at compile time in Debug config
+#add_compile_definitions("$<$<NOT:$<CONFIG:Debug>>:NDEBUG>")
 
 # --- Import tools ----
 # prefer actual filenames over CMAKE_MODULE_PATH + magic
