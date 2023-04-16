@@ -50,11 +50,11 @@ jobs:
         shell: bash
         run: chcp.com 65001
       - run: make ${{ matrix.configuration }}
-      - run: make -j4 test
-      - run: make -j4 bench
+      - run: make test
+      - run: make bench
       - name: gen coverage info
         if: runner.os == 'Linux'
-        run: make -j4 coverage
+        run: make coverage
 
       - name: Upload coverage reports to Codecov
         if: runner.os == 'Linux'
