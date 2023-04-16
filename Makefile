@@ -8,7 +8,8 @@
 .DEFAULT_GOAL := help
 INSTALL_LOCATION := ~/.local
 CPM_SOURCE_CACHE:= .cache/CPM
-MAKEFLAGS += -j4
+#MAKEFLAGS += -j4
+CMAKE_BUILD_PARALLEL_LEVEL:= 4
 # SHELL=/bin/bash -vx # for debug
 
 include cmake/utils.mk
