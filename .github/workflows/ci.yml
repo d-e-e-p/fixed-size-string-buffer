@@ -17,7 +17,7 @@ jobs:
           - { os: ubuntu-latest,  shell: bash }
           - { os: macos-latest,   shell: bash }
         configuration:
-          - release
+          - placeholder
     defaults:
       run:
         shell: ${{ matrix.sys.shell }}
@@ -45,11 +45,12 @@ jobs:
           path: "**/.cache/CPM"
           key: ${{ github.workflow }}-${{ runner.os }}-cpm-modules-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake') }}
 
-      - name: change encoding to utf8 with BOM
+      - name: set windows code page to support unicode (UTF-8)
         if: runner.os == 'Windows'
         shell: bash
         run: chcp.com 65001
-      - run: make ${{ matrix.configuration }}
+      - run: make debug
+      - run: make release
       - run: make test
       - run: make bench
       - name: gen coverage info

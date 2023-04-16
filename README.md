@@ -61,7 +61,7 @@ fssb::FixedSizeStringBuffer<queueSizeMaxChars> cmdHistory;
 ```
 gives us allocation in CCMRAM that looks like ![CCMRAM in STM32](doc/assets/bss.png). 
 
-There is also a significant speed advantage of using this approach for long strings, eg on macos:
+There is also a significant speed advantage of using this approach for long strings, eg on macOS:
 
 ```bash
          fixed_size_string_buffer :
