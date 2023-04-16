@@ -35,7 +35,7 @@ foreach(src ${sources})
     target_include_directories(${target} PRIVATE ${Boost_INCLUDE_DIRS})
 
 endforeach()
-enable_sanitizer("Address")
+enable_sanitizer("Undefined;Address")
 
 
 

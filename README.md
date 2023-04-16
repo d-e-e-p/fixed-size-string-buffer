@@ -24,7 +24,9 @@ Please see the [wiki](https://github.com/d-e-e-p/fixed-size-string-buffer/wiki) 
 - Cmake and other setup from [ModernCppStarter](https://github.com/TheLartians/ModernCppStarter)
 - Compiler/Analyzer template from [modern-cpp-template](https://github.com/filipdutescu/modern-cpp-template)
 - Google test and benchmark example from [starter project](https://github.com/PhDP/cmake-gtest-gbench-starter)
-- Discussion at stackexchange [Elegant Circular Buffer](https://codereview.stackexchange.com/questions/164130/elegant-circular-buffer)
+- Ideas on dir structure and header-only libs
+  [pitchfork](https://api.csswg.org/bikeshed/?force=1&url=https://raw.githubusercontent.com/vector-of-bool/pitchfork/develop/data/spec.bs)
+- Discussions in stackexchange, eg [Elegant Circular Buffer](https://codereview.stackexchange.com/questions/164130/elegant-circular-buffer)
 
 ## Motivation
 
@@ -277,10 +279,9 @@ If strings lengths are variable and there are advantages to pre-allocation of me
 gives similar speeds.
 
 
-### Porting
+### Using the library
 
-If you like, you could incorporate this header into your package with
-something like:
+You could incorporate this header into your package automatically with something like:
 
 ```bash
 CPMAddPackage("gh:d-e-e-p/fixed-size-string-buffer@1.2.0")
@@ -300,6 +301,19 @@ See section on `if: runner.os == 'Windows'` in the action config
 [.github/workflows/ci.yml](.github/workflows/ci.yml). 
 
 ![ci workflow status](https://github.com/d-e-e-p/fixed-size-string-buffer/actions/workflows/ci.yml/badge.svg)
+
+Anyway, there are 3 ways to use a single-header include lib like this:
+1. Just add header to include path
+2. Install as library and use `find_package`
+3. Automatically download and use with `CPMAddPackage`
+
+To reduce compile times, it may be useful to create a stub .cpp file which only has a single line:
+```cpp
+#include "fssb/fixed_size_string_buffer.h"
+```
+
+This can then be separately compiled standalone and linked into executable.
+see [validate/CMakeLists.txt](validate/CMakeLists.txt) for examples.
 
 ### Unicode
 
@@ -407,6 +421,10 @@ Makefile                [drive all the steps]
 ├── install             [install collateral and setup]
 │   └── CMakeLists.txt
 
+└── validate            [validate install using find_package/CPM]
+    ├── CMakeLists.txt
+    └── source
+        └── basic_example.cpp
 
 ├── scripts             [random scripts]
 │   └── remove_actions.bash

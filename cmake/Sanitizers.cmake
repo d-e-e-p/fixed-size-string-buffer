@@ -85,8 +85,8 @@ if(USE_SANITIZER)
         endif()
       else()
         message(
-          FATAL_ERROR
-            "Address sanitizer not available for ${CMAKE_CXX_COMPILER}")
+          INFO
+            " Address sanitizer not available for ${CMAKE_CXX_COMPILER}")
       endif()
     endif()
 
@@ -114,8 +114,8 @@ if(USE_SANITIZER)
         endif()
       else()
         message(
-          FATAL_ERROR
-            "Memory [With Origins] sanitizer not available for ${CMAKE_CXX_COMPILER}"
+          INFO
+            " Memory [With Origins] sanitizer not available for ${CMAKE_CXX_COMPILER}"
         )
       endif()
     endif()
@@ -137,8 +137,8 @@ if(USE_SANITIZER)
         endif()
       else()
         message(
-          FATAL_ERROR
-            "Undefined Behaviour sanitizer not available for ${CMAKE_CXX_COMPILER}"
+          INFO
+            " Undefined Behaviour sanitizer not available for ${CMAKE_CXX_COMPILER}"
         )
       endif()
     endif()
@@ -157,7 +157,7 @@ if(USE_SANITIZER)
         endif()
       else()
         message(
-          FATAL_ERROR "Thread sanitizer not available for ${CMAKE_CXX_COMPILER}"
+          INFO " Thread sanitizer not available for ${CMAKE_CXX_COMPILER}"
         )
       endif()
     endif()
@@ -176,7 +176,7 @@ if(USE_SANITIZER)
         endif()
       else()
         message(
-          FATAL_ERROR "Thread sanitizer not available for ${CMAKE_CXX_COMPILER}"
+          INFO " Thread sanitizer not available for ${CMAKE_CXX_COMPILER}"
         )
       endif()
     endif()
@@ -195,8 +195,8 @@ if(USE_SANITIZER)
         endif()
       else()
         message(
-          FATAL_ERROR
-            "Control Flow Integrity(CFI) sanitizer not available for ${CMAKE_CXX_COMPILER}"
+          INFO
+            " Control Flow Integrity(CFI) sanitizer not available for ${CMAKE_CXX_COMPILER}"
         )
       endif()
     endif()
@@ -215,6 +215,7 @@ if(USE_SANITIZER)
     if(USE_SANITIZER MATCHES "([Aa]ddress)")
       message(STATUS "Building with Address sanitizer")
       append("-fsanitize=address" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+      append("-fsanitize-address-use-after-return" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
 
       if(AFL)
         append_quoteless(AFL_USE_ASAN=1 CMAKE_C_COMPILER_LAUNCHER
@@ -222,7 +223,7 @@ if(USE_SANITIZER)
       endif()
     else()
       message(
-        FATAL_ERROR
+          INFO
           "This sanitizer not yet supported in the MSVC environment: ${USE_SANITIZER}"
       )
     endif()
