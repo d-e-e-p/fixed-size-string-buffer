@@ -303,9 +303,10 @@ std::string FixedSizeStringBuffer<SPACE>::at(size_t pos) const
     return msg;
   }
   // reject out of bound requests with just a stern message
+  // weird msg if pos is negative...
   if (pos >= ptr_.size()) {
     std::string msg = "no element at index " + std::to_string(pos) +
-                      " : max index is " + std::to_string(ptr_.size() - 1);
+                          " : max index is " + std::to_string(ptr_.size() - 1);
     std::cerr << msg << "\n";
     return msg;
   }
