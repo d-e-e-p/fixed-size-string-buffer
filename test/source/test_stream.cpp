@@ -44,7 +44,6 @@ private:
 TEST(StreamTest, FixedSizeStringBuffer) {
 
   // override cout and cerr
-  StreamRedirect sout(std::cout);
   StreamRedirect serr(std::cerr);
 
   constexpr size_t ring_buffer_char_size = 10;
@@ -52,10 +51,19 @@ TEST(StreamTest, FixedSizeStringBuffer) {
   std::string output;
 
   // test0 : pop on empty
-  serr.ss.str("");
-  sout.ss.str("");
+  std::string msg0;
 
-  std::string msg0 = buffer.pop();
+  serr.ss.str("");
+
+  msg0 = buffer.pop();
+
+  output = serr.ss.str();
+  EXPECT_THAT(output, testing::StartsWith("buffer is empty"));
+  EXPECT_THAT(msg0,   testing::StartsWith("buffer is empty"));
+
+  serr.ss.str("");
+
+  msg0 = buffer[0];
 
   output = serr.ss.str();
   EXPECT_THAT(output, testing::StartsWith("buffer is empty"));
@@ -63,7 +71,6 @@ TEST(StreamTest, FixedSizeStringBuffer) {
 
   // test1 : push too big
   serr.ss.str("");
-  sout.ss.str("");
   int len1 = ring_buffer_char_size + 1;
   auto str1 = std::string(len1, 'a');
 
@@ -76,7 +83,6 @@ TEST(StreamTest, FixedSizeStringBuffer) {
 
   // test2 : access invalid element
   serr.ss.str("");
-  sout.ss.str("");
   buffer.clear();
   int len2 = ring_buffer_char_size - 1;
   auto str2 = std::string(len2, 'a');
@@ -92,7 +98,6 @@ TEST(StreamTest, FixedSizeStringBuffer) {
 
   // test3 : access element
   serr.ss.str("");
-  sout.ss.str("");
   buffer.clear();
   int len3 = ring_buffer_char_size - 1;
   auto str3 = std::string(len3, 'a');
@@ -111,7 +116,6 @@ TEST(StreamTest, FixedSizeStringBuffer) {
 TEST(StreamTest, FixedCharSizeQueue) {
 
   // override cout and cerr
-  StreamRedirect sout(std::cout);
   StreamRedirect serr(std::cerr);
 
   constexpr size_t ring_buffer_char_size = 10;
@@ -120,7 +124,6 @@ TEST(StreamTest, FixedCharSizeQueue) {
 
   // test1 : push too big
   serr.ss.str("");
-  sout.ss.str("");
   int len1 = ring_buffer_char_size + 1;
   auto str1 = std::string(len1, 'a');
 
