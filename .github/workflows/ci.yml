@@ -9,7 +9,7 @@ on:
 jobs:
   build-and-test:
     runs-on: ${{ matrix.sys.os }}
-    timeout-minutes: 20
+    timeout-minutes: 25
     strategy:
       matrix:
         sys:
