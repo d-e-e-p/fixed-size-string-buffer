@@ -43,7 +43,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: "**/.cache/CPM"
-          key: ${{ github.workflow }}-cpm-modules-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake') }}
+          key: ${{ github.workflow }}-${{ runner.os }}-cpm-modules-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake') }}
 
       - name: change encoding to utf8 with BOM
         if: runner.os == 'Windows'
