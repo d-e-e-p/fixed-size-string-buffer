@@ -92,7 +92,7 @@ Ring buffer wins over unbounded queues because it avoids the extra memory alloca
 ```bash
 help                 this message
 clean                remove build dir
-debug                create debug version of standalone examples
+debug                create debug version of examples
 release              create optimized version of examples
 bench                run benchmark on push operation
 test                 exercise all queue operations
@@ -108,7 +108,7 @@ windows_unicode_fix  needed for unicode output on windows
 all: clean debug release test bench coverage install validate docs
 ```
 
-`make release` builds the examples under [standalone/src](standalone/src/)
+`make release` builds the standalone examples under [examples/src](examples/src/)
 A trivial usage looks like:
 
 ```cpp
@@ -185,7 +185,7 @@ foo.pop()  : 1bb
 foo[0]     : 2cc
 ```
 
-See example1 in [basic_example.cpp](standalone/src/basic_example.cpp) for a similar demo.
+See [basic_example.cpp](examples/src/basic_example.cpp) for a similar demo.
 Run `make docs` to see doxygen version of class descriptions.
 
 ### Coverage
@@ -312,12 +312,12 @@ To reduce compile times, it may be useful to create a stub .cpp file which only 
 #include "fssb/fixed_size_string_buffer.h"
 ```
 
-This can then be separately compiled standalone and linked into executable.
+This can then be separately compiled examples and linked into executable.
 see [validate/CMakeLists.txt](validate/CMakeLists.txt) for examples.
 
 ### Unicode
 
-see [unicode_example.cpp](standalone/src/unicode_example.cpp) for an example of how to store unicode chars:
+see [unicode_example.cpp](examples/src/unicode_example.cpp) for an example of how to store unicode chars:
 ```cpp
 #include <iostream>
 #include "fssb/fixed_size_string_buffer.h"
@@ -391,7 +391,7 @@ Makefile                [drive all the steps]
 │       └── fixed_size_string_buffer.h
 
 
-├── standalone          [examples of operating the queue]
+├── examples          [examples of operating the queue]
 │   ├── CMakeLists.txt
 │   └── src
 │       ├── basic_example.cpp

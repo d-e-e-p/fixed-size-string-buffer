@@ -5,3 +5,4 @@ project(fixed-size-string-buffer LANGUAGES CXX)
 
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE include)
+#add_library(${PROJECT_NAME} ALIAS ${PROJECT_NAME}::${PROJECT_NAME})

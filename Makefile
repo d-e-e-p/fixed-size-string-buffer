@@ -27,15 +27,15 @@ all: clean debug release test bench coverage install validate docs
 clean: ## remove build dir
 	rm -rf build/
 
-debug: ## create debug version of standalone examples
+debug: ## create debug version of examples examples
 	rm -rf ./build/debug/CMakeCache.txt
-	cmake -S standalone -B build/debug -DCMAKE_BUILD_TYPE=Debug
+	cmake -S examples -B build/debug -DCMAKE_BUILD_TYPE=Debug
 	cmake --build build/debug --config Debug 
 	./build/debug/bin/demo
 
 release: ## create optimized version of examples
 	rm -rf ./build/release/CMakeCache.txt
-	cmake -S standalone -B build/release -DCMAKE_BUILD_TYPE=Release
+	cmake -S examples -B build/release -DCMAKE_BUILD_TYPE=Release
 	cmake --build build/release --config Release 
 	./build/release/bin/demo
 

@@ -17,6 +17,11 @@
  *
  */
 
+#pragma clang diagnostic ignored "-Wimplicit-int-float-conversion"
+#pragma clang diagnostic ignored "-Wsign-conversion"
+#pragma clang diagnostic ignored "-Wold-style-cast"
+#pragma clang diagnostic ignored "-Wnarrowing"
+
 #include <iostream>
 #include <sstream>
 #include <regex>
@@ -105,7 +110,7 @@ TEST(Compare, WithUnlimitedQueue) {
   }
 
   size_t qdiff = q_ulq.size() - q_fsb.size();
-  for (auto i=0 ; i < q_fsb.size() ; i++) {
+  for (size_t i=0 ; i < q_fsb.size() ; i++) {
     EXPECT_THAT(q_ulq[i+qdiff], testing::StrEq(q_fsb[i]));
   }
 
