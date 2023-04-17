@@ -3,7 +3,28 @@
 # https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md
 # Courtesy of Jason Turner
 
+function(enable_warnings)
+    get_compiler_warnings(_flags)
+    add_compile_options("${_flags}")
+    message(STATUS "enable_warnings: adding compiler flags ${_flags}")
+endfunction()
+
+
 function(set_target_warnings target_name)
+    get_compiler_warnings(_flags)
+    if(BUILD_HEADERS_ONLY)
+          target_compile_options(${target_name} INTERFACE ${_flags})
+    else()
+          target_compile_options(${target_name} PUBLIC ${_flags})
+    endif()
+  
+    if(NOT TARGET ${target_name})
+      message(AUTHOR_WARNING " ${target_name} is not a target, so no compiler warning were added.")
+    endif()
+endfunction()
+
+function(get_compiler_warnings flags)
+
   set(MSVC_WARNINGS
       /W4     # Baseline reasonable warnings
       /w14242 # 'identifier': conversion from 'type1' to 'type1', possible loss
@@ -36,6 +57,7 @@ function(set_target_warnings target_name)
       /w14928 # illegal copy-initialization; more than one user-defined
               # conversion has been implicitly applied
       /permissive- # standards conformance mode for MSVC compiler.
+      /wd4068 # /wd<n>  unknown pragma 'GCC' 
       /D _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
   )
 
@@ -95,13 +117,6 @@ function(set_target_warnings target_name)
     message(AUTHOR_WARNING "No compiler warnings set for '${CMAKE_CXX_COMPILER_ID}' compiler.")
   endif()
 
-  if(BUILD_HEADERS_ONLY)
-        target_compile_options(${target_name} INTERFACE ${PROJECT_WARNINGS})
-  else()
-        target_compile_options(${target_name} PUBLIC ${PROJECT_WARNINGS})
-  endif()
+  set(${flags} ${PROJECT_WARNINGS} PARENT_SCOPE)
 
-  if(NOT TARGET ${target_name})
-    message(AUTHOR_WARNING "${target_name} is not a target, thus no compiler warning were added.")
-  endif()
 endfunction()

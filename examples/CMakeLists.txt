@@ -10,6 +10,7 @@ set (ENABLE_CPPCHECK ON)
 # --- Import tools ----
 include(../cmake/common.cmake)
 enable_sanitizers()
+enable_warnings()
 
 # ---- Create standalone executables ----
 
@@ -24,7 +25,6 @@ foreach(source ${sources})
     message(INFO " adding lib ${src} from ${source}")
     add_library(${src} STATIC ${source})
     set_target_properties(${src} PROPERTIES CXX_STANDARD 17 )
-    set_target_warnings(${src})
     target_include_directories(${src} PRIVATE "../include")
     list(APPEND libs ${src})
 endforeach()
@@ -34,7 +34,6 @@ foreach(target ${targets})
     message(INFO " adding exe ${tgt} from ${target}")
     add_executable(${tgt} ${target})
     set_target_properties(${tgt} PROPERTIES CXX_STANDARD 17 )
-    set_target_warnings(${tgt})
     target_include_directories(${tgt} PRIVATE "../include")
     target_link_libraries(${tgt} ${libs})
 endforeach()
