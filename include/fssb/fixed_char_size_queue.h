@@ -21,9 +21,11 @@
 
 #pragma once
 
-#include <queue>
-#include <utility>
-#include <iostream>
+#include <cstddef>             // for size_t
+#include <iostream>            // for <<
+#include <queue>               // for queue
+#include <string>              // for string
+#include <string_view>         // for string_view
 
 /// @namespace fssb
 /// @brief fssb

@@ -26,6 +26,7 @@
 
 #pragma once
 
+#include <cstddef>  // for size_t
 #include <queue>
 
 /// @namespace fssb

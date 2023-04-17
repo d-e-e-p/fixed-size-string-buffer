@@ -36,12 +36,10 @@
 #include <iomanip>
 #include <codecvt>
 #include <iostream>
-
-#include <ctype.h>  // for isprint
+#include <cstddef>          // for size_t
+#include <cctype>           // for isprint
 
 namespace fssb {
-
-using std::size_t;
 
 /// @class FixedSizeStringBuffer
 /// @brief A compile-time allocated ring buffer for std::string messages
