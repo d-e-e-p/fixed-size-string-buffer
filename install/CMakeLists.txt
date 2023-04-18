@@ -1,15 +1,14 @@
 # install cmake
 cmake_minimum_required(VERSION 3.15...3.22)
-
-project(
-  fixed-size-string-buffer
-  VERSION 1.4.0
-  LANGUAGES CXX
-  DESCRIPTION "A C++ pre-allocated ring buffer for std::string messages"
-  HOMEPAGE_URL "https://github.com/d-e-e-p/fixed-size-string-buffer/wiki"
-)
-
 include(../cmake/common.cmake)
+
+# ---- Setup project -------
+project(${PROJECT} 
+    LANGUAGES ${LANGUAGE}
+    VERSION ${VERSION} 
+    DESCRIPTION ${DESCRIPTION} 
+    HOMEPAGE_URL ${HOMEPAGE_URL}
+)
 
 # ---- Create install package ----- ----
 add_library(${PROJECT_NAME} INTERFACE)

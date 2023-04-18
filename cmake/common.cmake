@@ -6,10 +6,14 @@
 
 # at flag at compile time in Debug config
 #add_compile_definitions("$<$<NOT:$<CONFIG:Debug>>:NDEBUG>")
+set(PROJECT fixed-size-string-buffer)
+set(VERSION 1.4.0)
+set(LANGUAGE CXX)
+set(DESCRIPTION "A C++ pre-allocated ring buffer for std::string messages")
+set(HOMEPAGE_URL "https://github.com/d-e-e-p/fixed-size-string-buffer/wiki")
 
 # --- Import tools ----
-# prefer actual filenames over CMAKE_MODULE_PATH + magic
-
+# prefer actual filenames over CMAKE_MODULE_PATH + magic include
 set(dir ${CMAKE_CURRENT_LIST_DIR})
 
 include(${dir}/Utils.cmake)

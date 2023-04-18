@@ -1,15 +1,15 @@
 # bench cmake 
 
 cmake_minimum_required(VERSION 3.14...3.22)
-
-project(unit_bench LANGUAGES CXX)
-
-# ---- Dependencies ----
 include(../cmake/common.cmake)
 
+
+# ---- Setup project----
+project(unit_bench LANGUAGES CXX)
+
 # ---- Settings --------
-set(BENCHMARK_ENABLE_TESTING OFF)
 set(CMAKE_BUILD_TYPE "Release")
+set(BENCHMARK_ENABLE_TESTING OFF)
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)

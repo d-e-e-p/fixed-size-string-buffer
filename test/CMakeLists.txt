@@ -1,11 +1,11 @@
 # cmake test
 cmake_minimum_required(VERSION 3.15...3.22)
+include(../cmake/common.cmake)
 
+# --- Setup project ---
 project(unit_tests LANGUAGES CXX)
 enable_testing()
 
-# --- Import tools ----
-include(../cmake/common.cmake)
 
 # ---Setup GoogleTest --
 

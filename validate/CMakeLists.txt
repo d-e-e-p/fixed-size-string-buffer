@@ -1,11 +1,10 @@
 # validate cmake
 cmake_minimum_required(VERSION 3.15...3.22)
-
-project(fixed-size-string-buffer LANGUAGES CXX)
-
-# --- Import tools ----
 include(../cmake/common.cmake)
 include(CMakePrintHelpers)
+
+# --- Setup Project----
+project(${PROJECT} LANGUAGES ${LANGUAGE})
 
 # ---- Create standalone executables ----
 file(GLOB targets CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)

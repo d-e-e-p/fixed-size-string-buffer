@@ -1,17 +1,14 @@
 # debug/release cmake
 cmake_minimum_required(VERSION 3.15...3.22)
-
-project(fixed-size-string-buffer LANGUAGES CXX)
-
-# ---- Settings --------
 include(../cmake/common.cmake)
 
+# ---- Setup Project ---
+project(${PROJECT} LANGUAGES ${LANGUAGE}) 
 enable_sanitizers()
 enable_warnings()
 enable_analyzers()
 
-# ---- Create standalone executables ----
-
+# ---- Create libs and standalone example executables ----
 #file(GLOB headers CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../include/*/*.h)
 file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../src/*/*.cpp)
 file(GLOB targets CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
