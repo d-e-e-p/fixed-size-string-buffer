@@ -4,6 +4,7 @@ include(../cmake/common.cmake)
 
 # --- Setup project ---
 project(unit_tests LANGUAGES CXX)
+compiler_settings()
 enable_testing()
 
 
@@ -35,16 +36,8 @@ message(STATUS "sources = ${sources} dir=${CMAKE_CURRENT_SOURCE_DIR}")
 add_executable(${PROJECT_NAME} ${sources})
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 target_include_directories(${PROJECT_NAME} PRIVATE "../include")
-target_link_libraries(${PROJECT_NAME}
-  gtest_main
-  gmock_main
-  ${libs}
-)
-
-add_test(
-  NAME tests
-  COMMAND ${PROJECT_NAME}
-)
+target_link_libraries(${PROJECT_NAME} gtest_main gmock_main ${libs}) 
+add_test(NAME tests COMMAND ${PROJECT_NAME})
 
 if(ENABLE_COVERAGE)
     enable_coverage()

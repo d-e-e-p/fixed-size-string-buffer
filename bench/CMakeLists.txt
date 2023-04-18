@@ -3,9 +3,9 @@
 cmake_minimum_required(VERSION 3.14...3.22)
 include(../cmake/common.cmake)
 
-
-# ---- Setup project----
+# ---- Setup Project----
 project(unit_bench LANGUAGES CXX)
+compiler_settings()
 
 # ---- Settings --------
 set(CMAKE_BUILD_TYPE "Release")

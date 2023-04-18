@@ -1,6 +1,7 @@
 # install cmake
 cmake_minimum_required(VERSION 3.15...3.22)
 include(../cmake/common.cmake)
+include(CMakePrintHelpers)
 
 # ---- Setup project -------
 project(${PROJECT} 
@@ -16,7 +17,6 @@ add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME} INTERFACE  
     $<INSTALL_INTERFACE:include>  
 )
-include(CMakePrintHelpers)
 cmake_print_properties(TARGETS ${PROJECT_NAME} PROPERTIES NAME TYPE INTERFACE_INCLUDE_DIRECTORIES)
 
 CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.10.0")
