@@ -4,6 +4,7 @@ include(../cmake/common.cmake)
 
 # ---- Setup Project ---
 project(${PROJECT} LANGUAGES ${LANGUAGE}) 
+compiler_settings()
 enable_sanitizers()
 enable_warnings()
 enable_analyzers()

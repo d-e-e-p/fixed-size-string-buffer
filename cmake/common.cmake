@@ -19,6 +19,7 @@ set(dir ${CMAKE_CURRENT_LIST_DIR})
 include(${dir}/Utils.cmake)
 include(${dir}/CompilerWarnings.cmake)
 include(${dir}/StaticAnalyzers.cmake)
+include(${dir}/CompilerSettings.cmake)
 
 download_CPM_cmake()
 include(${dir}/CPM.cmake)
@@ -27,15 +28,8 @@ include(${dir}/Sanitizers.cmake)
 include(${dir}/Coverage.cmake)
 
 # ---- settings --------
-init_output_directories()             # make all exe live under bin/
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Generate compile_commands.json 
 set(CPM_SOURCE_CACHE "${dir}/../.cache/CPM") # store all downloaded packages
 
-# make windows unicode work
-if(MSVC)
-    add_compile_options(/std:c++latest /utf-8)
-    message(STATUS "adding compile option /utf-8")
-endif()
 
 # --- Import tools ----
 # CPMAddPackage("gh:TheLartians/Ccache.cmake@1.2.3")

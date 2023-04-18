@@ -32,7 +32,7 @@ function(enable_sanitizers)
 
     if (MSVC)
         set(CFLAGS ${MSVC_SANITIZERS})
-        set(LFLAGS /INFERASANLIBS)
+        set(LFLAGS /INFERASANLIBS /ignore:4075)
     elseif(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
         set(CFLAGS ${CLANG_SANITIZERS})
         set(LFLAGS ${CLANG_SANITIZERS})
