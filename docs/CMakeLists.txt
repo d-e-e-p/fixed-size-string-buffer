@@ -3,12 +3,7 @@ cmake_minimum_required(VERSION 3.14...3.22)
 include(../cmake/common.cmake)
 
 # ---- Setup project -------
-project(${PROJECT} 
-    LANGUAGES ${LANGUAGE}
-    VERSION ${VERSION} 
-    DESCRIPTION ${DESCRIPTION} 
-    HOMEPAGE_URL ${HOMEPAGE_URL}
-)
+project(${PROJECT} VERSION ${VERSION})
 
 # ---- Dependencies ----
 CPMAddPackage("gh:mosra/m.css#ea904dbb82b6e0d10ac2cf319ca065b4cc869ab3")

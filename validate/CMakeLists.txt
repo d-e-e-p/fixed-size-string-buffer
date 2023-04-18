@@ -1,10 +1,10 @@
 # validate cmake
 cmake_minimum_required(VERSION 3.15...3.22)
 include(../cmake/common.cmake)
-include(CMakePrintHelpers)
 
 # --- Setup Project----
 project(${PROJECT} LANGUAGES ${LANGUAGE})
+common_compiler_settings()
 
 # ---- Create standalone executables ----
 file(GLOB targets CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)

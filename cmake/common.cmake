@@ -13,6 +13,9 @@ set(DESCRIPTION "A C++ pre-allocated ring buffer for std::string messages")
 set(HOMEPAGE_URL "https://github.com/d-e-e-p/fixed-size-string-buffer/wiki")
 
 # --- Import tools ----
+
+include(CMakePrintHelpers)
+
 # prefer actual filenames over CMAKE_MODULE_PATH + magic include
 set(dir ${CMAKE_CURRENT_LIST_DIR})
 

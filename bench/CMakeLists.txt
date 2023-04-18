@@ -5,7 +5,7 @@ include(../cmake/common.cmake)
 
 # ---- Setup Project----
 project(unit_bench LANGUAGES CXX)
-compiler_settings()
+common_compiler_settings()
 
 # ---- Settings --------
 set(CMAKE_BUILD_TYPE "Release")
@@ -21,7 +21,6 @@ CPMAddPackage(
   GIT_TAG "boost-1.82.0"
   DOWNLOAD_ONLY
 )
-include(CMakePrintHelpers)
 cmake_print_properties(TARGETS Boost::circular_buffer PROPERTIES NAME TYPE INTERFACE_INCLUDE_DIRECTORIES)
 
 #  URL https://github.com/google/benchmark/archive/refs/tags/v1.7.1.zip

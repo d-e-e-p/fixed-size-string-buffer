@@ -1,7 +1,6 @@
 # install cmake
 cmake_minimum_required(VERSION 3.15...3.22)
 include(../cmake/common.cmake)
-include(CMakePrintHelpers)
 
 # ---- Setup project -------
 project(${PROJECT} 

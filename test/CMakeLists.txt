@@ -4,7 +4,7 @@ include(../cmake/common.cmake)
 
 # --- Setup project ---
 project(unit_tests LANGUAGES CXX)
-compiler_settings()
+common_compiler_settings()
 enable_testing()
 
 

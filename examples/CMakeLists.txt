@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.15...3.22)
 include(../cmake/common.cmake)
 
 # ---- Setup Project ---
-project(${PROJECT} LANGUAGES ${LANGUAGE}) 
-compiler_settings()
+project(examples LANGUAGES ${LANGUAGE}) 
+common_compiler_settings()
 enable_sanitizers()
 enable_warnings()
 enable_analyzers()
