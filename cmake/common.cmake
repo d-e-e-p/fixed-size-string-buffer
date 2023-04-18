@@ -33,7 +33,8 @@ set(CPM_SOURCE_CACHE "${dir}/../.cache/CPM") # store all downloaded packages
 
 # make windows unicode work
 if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest /utf-8")
+    add_compile_options(/std:c++latest /utf-8)
+    message(STATUS "adding compile option /utf-8")
 endif()
 
 # --- Import tools ----
