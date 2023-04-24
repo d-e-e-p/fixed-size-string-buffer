@@ -27,7 +27,6 @@ cmake_print_properties(TARGETS Boost::circular_buffer PROPERTIES NAME TYPE INTER
 CPMAddPackage("gh:google/benchmark@1.7.1")
 
 # ---- Libraries -------
-# ---Config Lib Src ----
 set(libs)
 file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../src/*/*.cpp)
 foreach(source ${sources})

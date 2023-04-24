@@ -135,7 +135,7 @@ class FixedSizeStringBuffer {
   /// @brief access element using rb[1] notation
   inline std::string operator[](size_t pos) const { return at(pos); }
   /// @brief access element using rb.at(1) notation
-  inline std::string at(size_t pos) const; // see below
+  inline std::string at(size_t pos) const; // implementation below
 
   // ***********************************************************************
   /// @name Debug
@@ -178,7 +178,7 @@ class FixedSizeStringBuffer {
   //@} 
 
  private:
-  // used for pretty print of buffer
+  // marker for char position used for pretty print of buffer
   struct SlotState {
     std::vector<bool> bopen;
     std::vector<bool> bword;
@@ -227,7 +227,8 @@ void FixedSizeStringBuffer<SPACE>::push(std::string_view str)
   if (end < max_chars_) {
     // case1: str is in one segment
     // |   [start]-->[end]    |
-    std::copy(str.begin(), str.end(), &chars_[start]);
+    //std::copy(str.begin(), str.end(), &chars_[start]);
+    str.copy(&chars_[start], strlen);
     back_ = end;
 
   } else {
@@ -236,13 +237,16 @@ void FixedSizeStringBuffer<SPACE>::push(std::string_view str)
     // |-->[end]   [start]--->|
     size_t seg1 = max_chars_ - start;
     size_t seg2 = strlen - seg1;
-    back_ = seg2;
 
+    //
+    // str.copy and std::copy take about the same time, 
+    // but syntax is cleaner with str.copy
+    //
     //std::copy(&str[0], &str[seg1], &chars_[start]);
     //std::copy(&str[seg1], &str[strlen], &chars_[0]);
-
     str.copy(&chars_[start], seg1);
     str.copy(&chars_[0], seg2, seg1);
+    back_ = seg2;
 
   }
   // use emplace object creation instead of ptr_.push_back(Pointer{start, strlen});
@@ -373,7 +377,7 @@ class fixed_size_string_buffer_utils {
 
   
   // https://stackoverflow.com/questions/39262323/print-a-string-variable-with-its-special-characters
-  static wchar_t escaped(char const ch) {
+  static wchar_t escaped(const char ch) {
 
       // from https://en.wikipedia.org/wiki/ASCII#Control_code_chart
     static const std::unordered_map<int, wchar_t> k_escapes =
