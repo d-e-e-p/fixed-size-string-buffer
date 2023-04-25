@@ -59,7 +59,7 @@ See writeup on [Using CCM Memory](https://www.openstm32.org/Using%2BCCM%2BMemory
 constexpr size_t queueSizeMaxChars = 30000;
 fssb::FixedSizeStringBuffer<queueSizeMaxChars> cmdHistory;
 ```
-gives us allocation in CCMRAM that looks like ![CCMRAM in STM32](doc/assets/bss.png). 
+gives us allocation in CCMRAM that looks like ![CCMRAM in STM32](docs/assets/bss.png). 
 
 There is also a significant speed advantage of using this approach for long strings, eg on macOS:
 
